@@ -1,0 +1,19 @@
+> Define BOB_statusses
+> Use for GAP component
+> Sorted lookup for Tests.
+> Use for IO component
+> Same setup for Components.
+Setup autoconf/automake
+Design logging infrastructure
+Develop skeleton
+Implement getopt and structure using getopt
+Implement BOB::exists
+Implement BOB::which
+Implement BOB::sh
+Implement BOB::get using libcurl
+Implement BOB::getindirectly without checksumming
+Implement BOB::untar using libarchive
+Implement checksumming using libssl
+Implement test for architecture
+Implement test for C compiler
+Implement test for C++ compiler

@@ -3,7 +3,9 @@
 #include <unistd.h>
 #include <iostream>
 
-int HaveMakeTest(void)
+using namespace BOB;
+
+int HaveMakeTest()
 {
     if (access("/usr/bin/make",X_OK))
         return 0;
@@ -20,7 +22,7 @@ int main(int argc, const char *argv[])
     for (p = 1;p < 9;p++) {
         for (i = 0;i < tests.size();i++) {
             t = tests[i];
-            if (t->priority == p) {
+            if (t->phase == p) {
                 t->run();
             }
         }

@@ -1,10 +1,16 @@
 // bob.h - Copyright 2012 by Max Neunhoeffer
 
+#include <unistd.h>
 #include <string.h>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
+
+namespace BOB {
+
+enum Status { OK, WARN, ERROR };
 
 typedef int (*inttestfunc_t)(void);
 typedef string (*strtestfunc_t)(void);
@@ -17,25 +23,33 @@ vector<Test *> &alltests(void)
     return *alltests_;
 }
 
+bool compareTestPtrs(Test *a, Test *b);
+
 class Test {
   public:
-    const char *name;
-    int priority;
+    string name;
+    int phase;
     inttestfunc_t inttest;
     strtestfunc_t strtest;
     int intres;
     string strres;
 
-    Test(const char *name, int priority, inttestfunc_t tester)
-        :name(name),priority(priority),inttest(tester),strtest(NULL)
+    Test(string name, int phase, inttestfunc_t tester)
+        :name(name),phase(phase),inttest(tester),strtest(NULL)
     {
-        alltests().push_back(this);
+        vector<Test *>::iterator pos 
+            = lower_bound(alltests().begin(),alltests().end(),this,
+                          compareTestPtrs);
+        alltests().insert(pos,this);
     }
 
-    Test(const char *name, int priority, strtestfunc_t tester)
-        :name(name),priority(priority),inttest(NULL),strtest(tester)
+    Test(string name, int phase, strtestfunc_t tester)
+        :name(name),phase(phase),inttest(NULL),strtest(tester)
     {
-        alltests().push_back(this);
+        vector<Test *>::iterator pos 
+            = lower_bound(alltests().begin(),alltests().end(),this,
+                          compareTestPtrs);
+        alltests().insert(pos,this);
     }
 
     void run(void)
@@ -44,22 +58,111 @@ class Test {
         else         strres = strtest();
     }
 
-    static Test *find(const char *name)
+    static Test *find(string name)
     {
         static vector<Test *> &tests = alltests();
-        int i;
-        Test *t;
-        for (i = 0;i < tests.size();i++) {
-            t = tests[i];
-            if (!strcmp(name,t->name)) return t;
+        int i = 0;
+        int j = tests.size();
+        int k;
+        int res;
+        // invariant: the right position is >= i and < j
+        while (j-i >= 1) {
+            k = (i+j)/2;   // we always have i <= k < j
+            res = name.compare(tests[k]->name);
+            if (res < 0)        // name < tests[k]->name
+                j = k;
+            else if (res > 0)   // name > tests[k]->name
+                i = k+1;
+            else                // we found it
+                return tests[k];
         }
         return NULL;
     }
 };
 
+bool compareTestPtrs(Test *a, Test *b)
+{
+    return a->name < b->name;
+}
+
+// Some standard tests:
+
+extern Test Have_C_Compiler;
+
+// Build components:
+
+class Component;
+
+vector<Component *> &allcomps(void)
+{
+    static vector<Component *> *allcomponents_ = new vector<Component *>;
+    return *allcomponents_;
+}
+
+bool compareComponentPtrs(Component *a, Component *b);
+
 class Component {
   public:
-    const char *name;
-    const char *version;
+    typedef Status (*workerfunc)(string targetdir);
 
+    string name;
+    int phase;
+    vector<string> depends;
+    workerfunc prereq;
+    workerfunc get;
+    workerfunc build;
+
+    Component(string name, int phase, const char *dependencies[],
+              workerfunc prerequisites, workerfunc getter, workerfunc builder)
+             : name(name), phase(phase), prereq(prerequisites),
+               get(getter), build(builder)
+    {
+        int i = 0;
+        const char *p;
+        while (true) {
+            p = dependencies[i++];
+            if (!p) break;
+            depends.push_back(string(p));
+        }
+        vector<Component *>::iterator pos 
+            = lower_bound(allcomps().begin(),allcomps().end(),this,
+                          compareComponentPtrs);
+        allcomps().insert(pos,this);
+    }
+
+    static Component *find(string name)
+    {
+        static vector<Component *> &comps = allcomps();
+        int i = 0;
+        int j = comps.size();
+        int k;
+        int res;
+        // invariant: the right position is >= i and < j
+        while (j-i >= 1) {
+            k = (i+j)/2;   // we always have i <= k < j
+            res = name.compare(comps[k]->name);
+            if (res < 0)        // name < tests[k]->name
+                j = k;
+            else if (res > 0)   // name > tests[k]->name
+                i = k+1;
+            else                // we found it
+                return comps[k];
+        }
+        return NULL;
+    }
 };
+
+// Access to the environment:
+
+vector<string> environment;
+
+// Some utility functions:
+
+void out(Status severity, string msg);
+int untar(string archivename);
+int sh(string cmd);
+int get(string targetdir, string url, string filename);
+int getindirectly(string targetdir, string url, string archivename);
+bool which(string name, string &res);
+
+}  // namespace BOB

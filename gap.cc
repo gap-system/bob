@@ -1,23 +1,63 @@
-#include <bob.h>
+#include "bob.h"
 
-static const char *GAP_dependencies
+using namespace BOB;
+
+static const char *dependencies
   = { NULL };
 
-static BOBstatus GAP_prerequisites()
+static Status prerequisites(string targetdir)
 {
-    return BOB_OK;
+    Status res = OK;
+    string path;
+    if (!Have_C_Compiler.intres) {
+        out(ERROR,"Need a C-compiler, preferably gcc, please install one.");
+        res = ERROR;
+    }
+    if (!which("make",path)) {
+        out(ERROR,"Need the 'make' utility, please install it.");
+        res = ERROR;
+    }
+    if (!which("m4",path)) {
+        out(ERROR,"Need the 'm4' utility, please install it.");
+        res = ERROR;
+    }
+    return res;
 }
 
-static BOBstatus GAP_get(string targetdir)
+static string archivename;
+
+static Status getfunc(string targetdir)
 {
-    return BOB_getindirectly(targetdir,
-           "http://www-groups.mcs.st-and.ac.uk/~neunhoef/for/BOB/GAP.link");
+    if (getindirectly(targetdir,
+           "http://www-groups.mcs.st-and.ac.uk/~neunhoef/for/BOB/GAP.link",
+           archivename)) {
+        out(ERROR,"Could not download GAP archive.");
+        return ERROR;
+    } else 
+        return OK;
 }
 
-static BOBstatus GAP_build(string targetdir)
+static Status buildfunc(string targetdir)
 {
-    return BOB_OK;
+    // By convention, we are in the target directory.
+    if (untar("downloads"+archivename)) {
+        out(ERROR,"A problem occurred when extracting the archive.");
+        return ERROR;
+    }
+    if (chdir("gap4r5")) {
+        out(ERROR,"Cannot change to GAP's root directory.");
+        return ERROR;
+    }
+    if (sh("./configure")) {
+        out(ERROR,"Error in configure stage.");
+        return ERROR;
+    }
+    if (sh("make")) {
+        out(ERROR,"Error in compilation stage.");
+        return ERROR;
+    }
+    return OK;
 }
 
-Component GAP(1,GAP_dependencies,GAP_prerequisites,GAP_get,GAP_build);
+Component GAP("GAP",1,&dependencies,prerequisites,getfunc,buildfunc);
 
