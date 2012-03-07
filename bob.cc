@@ -5,6 +5,8 @@
 
 using namespace BOB;
 
+// Some standard tests:
+
 int HaveMakeTest()
 {
     if (access("/usr/bin/make",X_OK))
@@ -14,8 +16,37 @@ int HaveMakeTest()
 }
 Test HaveMake("HaveMake",1,HaveMakeTest);
 
-int main(int argc, const char *argv[])
+
+string targetdir;
+int verbose = 1;
+
+int main(int argc, char * const argv[])
 {
+    int opt;
+
+    // Initialise targetdir with the realpath of the current dir:
+    char *cwd = getcwd(NULL,1024);
+    targetdir = cwd;
+    free(cwd);
+
+    while ((opt = getopt(argc, argv, "vqt:")) != -1) {
+        switch (opt) {
+          case 'v':
+              verbose = 2;
+              break;
+          case 'q':
+              verbose = 0;
+              break;
+          case 't':
+              targetdir = optarg;
+              break;
+          default: /* '?' */
+              cerr << "Usage: " << argv[0] << "[-v] [-q] [-t TARGETDIR]\n";
+              return -1;
+        }
+    }
+    // At this stage we ignore further arguments.
+
     static vector<Test *> &tests = alltests();
     Test *t;
     int p,i;

@@ -3,10 +3,10 @@
 > Sorted lookup for Tests.
 > Use for IO component
 > Same setup for Components.
-Setup autoconf/automake
-Design logging infrastructure
+> Setup autoconf/automake
+> Implement getopt and structure using getopt
 Develop skeleton
-Implement getopt and structure using getopt
+Design logging infrastructure
 Implement BOB::exists
 Implement BOB::which
 Implement BOB::sh
@@ -17,3 +17,4 @@ Implement checksumming using libssl
 Implement test for architecture
 Implement test for C compiler
 Implement test for C++ compiler
+Implement BOB::getindirectly with checksummming using libssl
