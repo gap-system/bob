@@ -1,0 +1,9 @@
+AC_PREREQ(2.68)
+AC_INIT([bob], 0.1, neunhoef@mcs.st-and.ac.uk)
+AC_CONFIG_SRCDIR([bob.cc])
+AC_CONFIG_AUXDIR([cnf])
+AM_INIT_AUTOMAKE([foreign])
+AM_MAINTAINER_MODE
+AC_PROG_CXX
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
