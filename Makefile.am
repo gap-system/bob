@@ -1,5 +1,6 @@
 bin_PROGRAMS = bob
-bob_SOURCES = bob.cc gap.cc io.cc
+BOB_MODULES = @BOB_MODULES@
+bob_SOURCES = bob.cc ${BOB_MODULES}
 bob_CPPFLAGS = `libs/bin/curl-config --cflags`
 bob_LDADD = libs/lib/libcurl.a -lrt
 
