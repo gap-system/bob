@@ -9,11 +9,11 @@ static Status prerequisites(string targetdir)
 {
     Status res = OK;
     string path;
-    if (!Have_C_Compiler.intres) {
+    if (Which_C_Compiler.strres.size() == 0) {
         out(ERROR,"Need a C-compiler, preferably gcc, please install one.");
         res = ERROR;
     }
-    if (!which("make",path)) {
+    if (Have_make.intres) {
         out(ERROR,"Need the 'make' utility, please install it.");
         res = ERROR;
     }

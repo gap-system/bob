@@ -23,5 +23,5 @@ static Status buildfunc(string targetdir)
     return OK;
 }
 
-Component GAP("IO",2,&dependencies,NULL,NULL,buildfunc);
+Component IO_pkg("IO",2,&dependencies,NULL,NULL,buildfunc);
 

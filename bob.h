@@ -17,11 +17,7 @@ typedef string (*strtestfunc_t)(void);
 
 class Test;
 
-vector<Test *> &alltests(void)
-{
-    static vector<Test *> *alltests_ = new vector<Test *>;
-    return *alltests_;
-}
+vector<Test *> &alltests(void);
 
 bool compareTestPtrs(Test *a, Test *b);
 
@@ -80,24 +76,16 @@ class Test {
     }
 };
 
-bool compareTestPtrs(Test *a, Test *b)
-{
-    return a->name < b->name;
-}
-
 // Some standard tests:
 
-extern Test Have_C_Compiler;
+extern Test Have_make;
+extern Test Which_C_Compiler;
 
 // Build components:
 
 class Component;
 
-vector<Component *> &allcomps(void)
-{
-    static vector<Component *> *allcomponents_ = new vector<Component *>;
-    return *allcomponents_;
-}
+vector<Component *> &allcomps(void);
 
 bool compareComponentPtrs(Component *a, Component *b);
 
@@ -154,7 +142,13 @@ class Component {
 
 // Access to the environment:
 
-vector<string> environment;
+extern vector<string> envkeys;
+extern vector<string> envvals;
+
+void initenvironment();
+string getenvironment(string key);
+void setenvironment(string key, string val);
+void delenvironment(string key);
 
 // Some utility functions:
 
@@ -166,3 +160,4 @@ int getindirectly(string targetdir, string url, string archivename);
 bool which(string name, string &res);
 
 }  // namespace BOB
+
