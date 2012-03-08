@@ -6,15 +6,15 @@
 > Setup autoconf/automake
 > Implement getopt and structure using getopt
 > setup environment infrastructure
-Develop skeleton
-Design logging infrastructure
+> Design logging infrastructure
+> Develop skeleton
 Implement BOB::which
 Implement test for C compiler
 Implement test for C++ compiler
 Implement test for architecture
-Implement BOB::sh
 Implement BOB::get using libcurl
 Implement BOB::getindirectly without checksumming
 Implement BOB::untar using libarchive
+Implement BOB::sh
 Implement checksumming using libssl
 Implement BOB::getindirectly with checksummming using libssl

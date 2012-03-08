@@ -6,14 +6,14 @@
 #include <vector>
 #include <algorithm>
 
-using namespace std;
+using std::vector;
+using std::string;
 
 namespace BOB {
 
-enum Status { OK, WARN, ERROR };
+enum Status { UNKNOWN = -1, OK = 0, WARN = 1, ERROR = 2 };
 
-typedef int (*inttestfunc_t)(void);
-typedef string (*strtestfunc_t)(void);
+typedef int (*testfunc_t)(string &st);
 
 class Test;
 
@@ -25,55 +25,20 @@ class Test {
   public:
     string name;
     int phase;
-    inttestfunc_t inttest;
-    strtestfunc_t strtest;
-    int intres;
-    string strres;
+    testfunc_t tester;
+    int num;
+    string str;
+    Status res;
 
-    Test(string name, int phase, inttestfunc_t tester)
-        :name(name),phase(phase),inttest(tester),strtest(NULL)
-    {
-        vector<Test *>::iterator pos 
-            = lower_bound(alltests().begin(),alltests().end(),this,
-                          compareTestPtrs);
-        alltests().insert(pos,this);
-    }
-
-    Test(string name, int phase, strtestfunc_t tester)
-        :name(name),phase(phase),inttest(NULL),strtest(tester)
-    {
-        vector<Test *>::iterator pos 
-            = lower_bound(alltests().begin(),alltests().end(),this,
-                          compareTestPtrs);
-        alltests().insert(pos,this);
-    }
+    Test(string name, int phase, testfunc_t tester);
 
     void run(void)
     {
-        if (inttest) intres = inttest();
-        else         strres = strtest();
+        num = tester(str);
+        res = OK;
     }
 
-    static Test *find(string name)
-    {
-        static vector<Test *> &tests = alltests();
-        int i = 0;
-        int j = tests.size();
-        int k;
-        int res;
-        // invariant: the right position is >= i and < j
-        while (j-i >= 1) {
-            k = (i+j)/2;   // we always have i <= k < j
-            res = name.compare(tests[k]->name);
-            if (res < 0)        // name < tests[k]->name
-                j = k;
-            else if (res > 0)   // name > tests[k]->name
-                i = k+1;
-            else                // we found it
-                return tests[k];
-        }
-        return NULL;
-    }
+    static Test *find(string name);
 };
 
 // Some standard tests:
@@ -92,52 +57,22 @@ bool compareComponentPtrs(Component *a, Component *b);
 class Component {
   public:
     typedef Status (*workerfunc)(string targetdir);
+    typedef Status (*prereqfunc)(string targetdir, Status depsresult);
 
     string name;
-    int phase;
     vector<string> depends;
-    workerfunc prereq;
+    prereqfunc prereq;
+    Status prereqres;
     workerfunc get;
+    Status getres;
     workerfunc build;
+    Status buildres;
 
-    Component(string name, int phase, const char *dependencies[],
-              workerfunc prerequisites, workerfunc getter, workerfunc builder)
-             : name(name), phase(phase), prereq(prerequisites),
-               get(getter), build(builder)
-    {
-        int i = 0;
-        const char *p;
-        while (true) {
-            p = dependencies[i++];
-            if (!p) break;
-            depends.push_back(string(p));
-        }
-        vector<Component *>::iterator pos 
-            = lower_bound(allcomps().begin(),allcomps().end(),this,
-                          compareComponentPtrs);
-        allcomps().insert(pos,this);
-    }
+    Component(string name, const char *dependencies[],
+              prereqfunc prerequisites, workerfunc getter, workerfunc builder);
 
-    static Component *find(string name)
-    {
-        static vector<Component *> &comps = allcomps();
-        int i = 0;
-        int j = comps.size();
-        int k;
-        int res;
-        // invariant: the right position is >= i and < j
-        while (j-i >= 1) {
-            k = (i+j)/2;   // we always have i <= k < j
-            res = name.compare(comps[k]->name);
-            if (res < 0)        // name < tests[k]->name
-                j = k;
-            else if (res > 0)   // name > tests[k]->name
-                i = k+1;
-            else                // we found it
-                return comps[k];
-        }
-        return NULL;
-    }
+    static int findnr(string name);
+    static Component *find(string name);
 };
 
 // Access to the environment:
@@ -153,11 +88,11 @@ void delenvironment(string key);
 // Some utility functions:
 
 void out(Status severity, string msg);
+bool which(string name, string &res);
+int get(string targetdir, string url, string &filename);
+int getindirectly(string targetdir, string url, string &archivename);
 int untar(string archivename);
 int sh(string cmd);
-int get(string targetdir, string url, string filename);
-int getindirectly(string targetdir, string url, string archivename);
-bool which(string name, string &res);
 
 }  // namespace BOB
 
