@@ -166,6 +166,7 @@ bob_CPPFLAGS = `libs/bin/curl-config --cflags`
 bob_LDADD = libs/lib/libcurl.a -lrt
 CURLVERSION = 7.24.0
 LIBARCHIVEVERSION = 3.0.3
+ZLIBVERSION = 1.2.6
 all: all-am
 
 .SUFFIXES:
@@ -656,13 +657,29 @@ libcurl:
 	    --disable-imap --disable-imaps --disable-ldap --disable-ldaps \
 	    --disable-pop3 --disable-pop3s --disable-rtsp --disable-smtp \
 	    --disable-smtps --disable-telnet --disable-gopher --without-ssl \
-	    --without-zlib --without-libidn --disable-threaded-resolver ; \
+	    --without-libidn --disable-threaded-resolver ; \
 	  make ; make install )
 
 libarchive:
-	curl http://libarchive.googlecode.com/files/libarchive-${LIBARCHVERSION}.tar.gz \
+	curl http://libarchive.googlecode.com/files/libarchive-${LIBARCHIVEVERSION}.tar.gz \
 	     -o libarchive-${LIBARCHIVEVERSION}.tar.gz
 	tar xzvf libarchive-${LIBARCHIVEVERSION}.tar.gz
+	if [ ! -e libs ] ; then mkdir libs ; fi
+	( export MYPATH=`pwd` ; cd libarchive-${LIBARCHIVEVERSION} ; \
+	  ./configure --prefix=$$MYPATH/libs --disable-shared \
+	    --without-bz2lib --without-lzmadec --without-iconv \
+	    --without-lzma --without-nettle --without-openssl \
+	    --without-xml2 --without-expat ; \
+	  make ; make install )
+
+libz:
+	curl http://zlib.net/zlib-${ZLIBVERSION}.tar.gz \
+	     -o zlib-${ZLIBVERSION}.tar.gz
+	tar xzvf zlib-${ZLIBVERSION}.tar.gz
+	if [ ! -e libs ] ; then mkdir libs ; fi
+	( export MYPATH=`pwd` ; cd zlib-${ZLIBVERSION} ; \
+	  ./configure --prefix=$$MYPATH/libs --static ; \
+	  make ; make install )
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
