@@ -1,9 +1,6 @@
-SYSTEMINFO=@SYSTEMINFO@
-HOSTOS=@HOSTOS@
-
 bin_PROGRAMS = bob
 bob_SOURCES = bob.cc gap.cc
-bob_CPPFLAGS = `libs/bin/curl-config --cflags` ${SYSTEMINFO} ${HOSTOS}
+bob_CPPFLAGS = `libs/bin/curl-config --cflags`
 bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a -lrt
 bob_LDFLAGS = -static
 

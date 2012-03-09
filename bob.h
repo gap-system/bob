@@ -6,6 +6,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "config.h"
+
 using std::vector;
 using std::string;
 

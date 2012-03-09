@@ -120,7 +120,7 @@ Component *Component::find(string name)
 
 // Some standard tests:
 
-int Have_make_Test(string &st)
+static int Have_make_Test(string &st)
 {
     if (which("make",st)) return 0;
     else {
@@ -130,7 +130,7 @@ int Have_make_Test(string &st)
 }
 Test Have_make("Have_make",1,Have_make_Test);
 
-int Which_C_Compiler_Test(string &st)
+static int Which_C_Compiler_Test(string &st)
 {
     string CC = getenvironment("CC");
     if (CC.size() > 0 && which(CC,st)) return 0;
@@ -141,6 +141,30 @@ int Which_C_Compiler_Test(string &st)
     return -1;
 }
 Test Which_C_Compiler("Which_C_Compiler",1,Which_C_Compiler_Test);
+
+static int Which_Architecture_Test(string &st)
+{
+#if SYS_IS_WINDOWS
+    st = "WINDOWS";
+    return 0;
+#endif
+#if SYS_IS_LINUX
+    st = "LINUX";
+    return 0;
+#endif
+#if SYS_IS_OSX
+    st = "OSX";
+    return 0;
+#endif
+#if SYS_IS_BSD
+    st = "BSD";
+    return 0;
+#endif
+    st = "UNKNOWN";
+    return 0;
+}
+Test Which_Architecture("Which_Architecture",1,Which_Architecture_Test);
+
 
 // Access to the environment:
 
