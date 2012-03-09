@@ -89,10 +89,10 @@ void delenvironment(string key);
 
 void out(Status severity, string msg);
 bool which(string name, string &res);
-int get(string targetdir, string url, string &filename);
-int getindirectly(string targetdir, string url, string &archivename);
-int untar(string archivename);
-int sh(string cmd);
+Status get(string targetdir, string url, string &filename);
+Status getindirectly(string targetdir, string url, string &archivename);
+Status untar(string archivename);
+Status sh(string cmd);
 
 }  // namespace BOB
 

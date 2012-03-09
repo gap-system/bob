@@ -1,8 +1,15 @@
 #include "bob.h"
 
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
 #include <unistd.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
+
+#include <curl/curl.h>
 
 using namespace std;
 
@@ -111,17 +118,23 @@ Component *Component::find(string name)
 
 int Have_make_Test(string &st)
 {
-    if (!access("/usr/bin/make",X_OK))
-        return 1;
-    else
-        return 0;
+    if (which("make",st)) return 0;
+    else {
+        st = "";
+        return -1;
+    }
 }
 Test Have_make("Have_make",1,Have_make_Test);
 
 int Which_C_Compiler_Test(string &st)
 {
-    st = "gcc";
-    return 1;
+    string CC = getenvironment("CC");
+    if (CC.size() > 0 && which(CC,st)) return 0;
+    if (which("gcc",st)) return 0;
+    if (which("cc",st)) return 0;
+    if (which("CC",st)) return 0;
+    st = "";
+    return -1;
 }
 Test Which_C_Compiler("Which_C_Compiler",1,Which_C_Compiler_Test);
 
@@ -242,15 +255,15 @@ bool which(string name, string &res)
             absname = path.substr(posold,pos-posold);
             if (absname[absname.size()-1] != '/') absname.push_back('/');
             absname += name;
-            if (!access(absname.c_str(),X_OK)) {
+            if (access(absname.c_str(),X_OK) == 0) {
                 res = absname;
                 return true;
             }
-            posold = pos;
+            posold = pos+1;
             pos = path.find(':',pos+1);
         }
     } else {   // We are given a pathname
-        if (!access(name.c_str(),X_OK)) {
+        if (access(name.c_str(),X_OK) == 0) {
             res = name;
             return true;
         } else {
@@ -260,24 +273,110 @@ bool which(string name, string &res)
     }
 }
 
-int get(string targetdir, string url, string &filename)
+static CURL *curl = NULL;
+
+void shutdowncurl()
 {
-    return 0;
+    if (curl) {
+        curl_easy_cleanup(curl);
+        curl = NULL;
+        curl_global_cleanup();
+    }
 }
 
-int getindirectly(string targetdir, string url, string &archivename)
+Status get(string targetdir, string url, string &filename)
 {
-    return 0;
+    CURLcode res;
+
+    if (curl == NULL) {
+        curl_global_init(CURL_GLOBAL_ALL);
+        curl = curl_easy_init();
+        if (curl == NULL) {
+            out(ERROR,"Cannot initialize curl library.");
+            return ERROR;
+        }
+        atexit(shutdowncurl);
+    }
+    size_t pos = url.rfind('/');
+    if (pos == string::npos) {
+        out(ERROR,"Given URL does not contain /.");
+        return ERROR;
+    }
+    filename = targetdir+"download/"+url.substr(pos+1);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    FILE *outs = fopen(filename.c_str(),"w");
+    if (outs == NULL) {
+        out(ERROR,"Cannot write to "+filename+" .");
+        return ERROR;
+    }
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, fwrite); 
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, outs); 
+    if (verbose >= 3)
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+    else
+        curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 1);
+
+    res = curl_easy_perform(curl);
+    if (res != 0) {
+        stringstream msg(stringstream::out);
+        msg << "Curl error " << res << ".";
+        out(ERROR,msg.str());
+        fclose(outs);
+        return ERROR;
+    }
+    if (fclose(outs) != 0) {
+        out(ERROR,"Cannot close "+filename+" .");
+        return ERROR;
+    }
+
+    return OK;
 }
 
-int untar(string archivename)
+Status getindirectly(string targetdir, string url, string &archivename)
 {
-    return 0;
+    string filename;
+    string url2;
+    string hash;
+    Status res;
+
+    res = get(targetdir, url, filename);
+    if (res == ERROR) return ERROR;
+    fstream file;
+    file.exceptions ( ifstream::failbit | ifstream::badbit );
+    try {
+        file.open(filename.c_str(),fstream::in);
+    }
+    catch (ifstream::failure e) {
+        out(ERROR,"Could not write link file "+filename+" .");
+        return ERROR;
+    }
+    try {
+        getline(file,url2);
+        if (url2 != "BOB") {
+            file.close();
+            out(ERROR,"Link file "+filename+" corrupt.");
+            return ERROR;
+        }
+        getline(file,url2);
+        getline(file,hash);
+        file.close();
+    } 
+    catch (ifstream::failure e) {
+        file.close();
+        out(ERROR,"Could not read link file "+filename+" .");
+        return ERROR;
+    }
+    return get(targetdir, url2, archivename);
 }
 
-int sh(string cmd)
+Status untar(string archivename)
 {
-    return 0;
+    return OK;
+}
+
+Status sh(string cmd)
+{
+    return OK;
 }
 
 }   // namespace BOB
@@ -366,6 +465,18 @@ int main(int argc, char * const argv[], char *envp[])
 
     // Change to target directory:
     chdir(targetdir.c_str());  // has worked before, we assume it does again
+    struct stat statbuf;
+    if (stat("download",&statbuf) == -1) {
+        if (mkdir("download",S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH) != 0 &&
+            errno != EEXIST) {
+            out(ERROR,"Cannot create \"download\" directory in "+
+                      targetdir+" .");
+            return 7;
+        }
+    } else if (!S_ISDIR(statbuf.st_mode)) {
+        out(ERROR,"Cannot create \"download\" directory in "+targetdir+" .");
+        return ERROR;
+    }
 
     static vector<Component *> &comps = allcomps();
     Component *c,*cc;

@@ -2,8 +2,8 @@
 
 using namespace BOB;
 
-static const char *dependencies
-  = { "GAP" };
+static const char *dependencies[]
+  = { "GAP", NULL };
 
 static Status buildfunc(string targetdir)
 {
@@ -23,5 +23,5 @@ static Status buildfunc(string targetdir)
     return OK;
 }
 
-Component IO_Pkg("IO_Pkg",&dependencies,NULL,NULL,buildfunc);
+Component IO_Pkg("IO_Pkg",dependencies,NULL,NULL,buildfunc);
 

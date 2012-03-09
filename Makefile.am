@@ -4,6 +4,7 @@ bob_CPPFLAGS = `libs/bin/curl-config --cflags`
 bob_LDADD = libs/lib/libcurl.a -lrt
 
 CURLVERSION = 7.24.0
+LIBARCHIVEVERSION = 3.0.3
 
 libcurl:
 	curl http://curl.haxx.se/download/curl-${CURLVERSION}.tar.gz \
@@ -18,3 +19,7 @@ libcurl:
 	    --without-zlib --without-libidn --disable-threaded-resolver ; \
 	  make ; make install )
 
+libarchive:
+	curl http://libarchive.googlecode.com/files/libarchive-${LIBARCHVERSION}.tar.gz \
+	     -o libarchive-${LIBARCHIVEVERSION}.tar.gz
+	tar xzvf libarchive-${LIBARCHIVEVERSION}.tar.gz

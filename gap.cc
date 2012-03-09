@@ -2,18 +2,18 @@
 
 using namespace BOB;
 
-static const char *dependencies
+static const char *dependencies[]
   = { NULL };
 
 static Status prerequisites(string targetdir, Status depsresult)
 {
     Status res = OK;
     string path;
-    if (Which_C_Compiler.num == 0) {
+    if (Which_C_Compiler.num != 0) {
         out(ERROR,"Need a C-compiler, preferably gcc, please install one.");
         res = ERROR;
     }
-    if (Have_make.num == 0) {
+    if (Have_make.num != 0) {
         out(ERROR,"Need the 'make' utility, please install it.");
         res = ERROR;
     }
@@ -59,5 +59,5 @@ static Status buildfunc(string targetdir)
     return OK;
 }
 
-Component GAP("GAP",&dependencies,prerequisites,getfunc,buildfunc);
+Component GAP("GAP",dependencies,prerequisites,getfunc,buildfunc);
 
