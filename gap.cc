@@ -66,7 +66,7 @@ Component GAP("GAP",GAP_dependencies,GAP_prerequisites,
                     GAP_getfunc,GAP_buildfunc);
 
 
-static const char *IO_dependencies[]
+static const char *dependencies_onlyGAP[]
   = { "GAP", NULL };
 
 static Status IO_buildfunc(string targetdir)
@@ -88,6 +88,47 @@ static Status IO_buildfunc(string targetdir)
     }
     return OK;
 }
+Component IO_Pkg("IO_Pkg",dependencies_onlyGAP,NULL,NULL,IO_buildfunc);
 
-Component IO_Pkg("IO_Pkg",IO_dependencies,NULL,NULL,IO_buildfunc);
+static Status Orb_buildfunc(string targetdir)
+{
+    // By convention, we are in the target directory.
+    if (chdir("gap4r5/pkg/orb")) {
+        out(ERROR,"Cannot change to the Orb package's directory.");
+        return ERROR;
+    }
+    out(OK,"Running ./configure for Orb_Pkg...");
+    if (sh("./configure")) {
+        out(ERROR,"Error in configure stage.");
+        return ERROR;
+    }
+    out(OK,"Running make for Orb_Pkg...");
+    if (sh("make")) {
+        out(ERROR,"Error in compilation stage.");
+        return ERROR;
+    }
+    return OK;
+}
+Component Orb_Pkg("Orb_Pkg",dependencies_onlyGAP,NULL,NULL,Orb_buildfunc);
+
+static Status CVec_buildfunc(string targetdir)
+{
+    // By convention, we are in the target directory.
+    if (chdir("gap4r5/pkg/cvec")) {
+        out(ERROR,"Cannot change to the CVec package's directory.");
+        return ERROR;
+    }
+    out(OK,"Running ./configure for CVec_Pkg...");
+    if (sh("./configure")) {
+        out(ERROR,"Error in configure stage.");
+        return ERROR;
+    }
+    out(OK,"Running make for CVec_Pkg...");
+    if (sh("make")) {
+        out(ERROR,"Error in compilation stage.");
+        return ERROR;
+    }
+    return OK;
+}
+Component CVec_Pkg("CVec_Pkg",dependencies_onlyGAP,NULL,NULL,CVec_buildfunc);
 

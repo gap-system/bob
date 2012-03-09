@@ -17,7 +17,7 @@
 > Implement -v echoing of building stuff
 > Implement -static
 > Implement test for architecture
-Implement 64bit/32bit distinction
+> Implement 64bit/32bit distinction
 Implement more packages
 
 Implement checksumming using libssl
