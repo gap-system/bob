@@ -309,6 +309,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
+bob-bob.o: bob.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bob-bob.o -MD -MP -MF $(DEPDIR)/bob-bob.Tpo -c -o bob-bob.o `test -f 'bob.cc' || echo '$(srcdir)/'`bob.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bob-bob.Tpo $(DEPDIR)/bob-bob.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bob.cc' object='bob-bob.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bob-bob.o `test -f 'bob.cc' || echo '$(srcdir)/'`bob.cc
+
 bob-bob.obj: bob.cc
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bob-bob.obj -MD -MP -MF $(DEPDIR)/bob-bob.Tpo -c -o bob-bob.obj `if test -f 'bob.cc'; then $(CYGPATH_W) 'bob.cc'; else $(CYGPATH_W) '$(srcdir)/bob.cc'; fi`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bob-bob.Tpo $(DEPDIR)/bob-bob.Po
@@ -666,17 +673,7 @@ uninstall-am: uninstall-binPROGRAMS
 	uninstall-am uninstall-binPROGRAMS
 
 
-bob-bob.o:    bob.cc bob.h zlib bz2lib libarchive libcurl
-
-libs/lib/libcurl.a: libcurl
-
-libs/lib/libz.a: zlib
-
-libs/lib/libbz2.a: bz2lib
-
-libs/lib/libarchive.a: libarchive
-
-.PHONY:	libcurl zlib bz2lib libarchive
+libs:	zlib bz2lib libarchive libcurl
 
 libcurl:
 	( if [ ! -e curl-${CURLVERSION}.tar.gz ] ; then \
@@ -723,6 +720,8 @@ bz2lib:
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd bzip2-${BZ2LIBVERSION} ; \
 	  make ; make install PREFIX=$$MYPATH/libs )
+
+.PHONY:	libs libcurl zlib bz2lib libarchive
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

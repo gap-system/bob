@@ -4,17 +4,7 @@ bob_CPPFLAGS = `libs/bin/curl-config --cflags`
 bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a -lrt
 bob_LDFLAGS = -static
 
-bob-bob.o:    bob.cc bob.h zlib bz2lib libarchive libcurl
-
-libs/lib/libcurl.a: libcurl
-
-libs/lib/libz.a: zlib
-
-libs/lib/libbz2.a: bz2lib
-
-libs/lib/libarchive.a: libarchive
-
-.PHONY:	libcurl zlib bz2lib libarchive
+libs:	zlib bz2lib libarchive libcurl
 
 CURLVERSION = 7.24.0
 LIBARCHIVEVERSION = 3.0.3
@@ -66,4 +56,6 @@ bz2lib:
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd bzip2-${BZ2LIBVERSION} ; \
 	  make ; make install PREFIX=$$MYPATH/libs )
+
+.PHONY:	libs libcurl zlib bz2lib libarchive
 
