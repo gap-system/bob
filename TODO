@@ -18,7 +18,7 @@
 > Implement -static
 > Implement test for architecture
 > Implement 64bit/32bit distinction
-Implement more packages
+> Implement more packages
 
 Implement checksumming using libssl
 Implement BOB::getindirectly with checksummming using libssl
