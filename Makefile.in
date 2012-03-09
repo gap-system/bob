@@ -50,7 +50,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_bob_OBJECTS = bob-bob.$(OBJEXT) bob-gap.$(OBJEXT) bob-io.$(OBJEXT)
 bob_OBJECTS = $(am_bob_OBJECTS)
-bob_DEPENDENCIES = libs/lib/libcurl.a
+bob_DEPENDENCIES = libs/lib/libcurl.a libs/lib/libarchive.a \
+	libs/lib/libz.a
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/cnf/depcomp
 am__depfiles_maybe = depfiles
@@ -163,7 +164,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 bob_SOURCES = bob.cc gap.cc io.cc
 bob_CPPFLAGS = `libs/bin/curl-config --cflags`
-bob_LDADD = libs/lib/libcurl.a -lrt
+bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a -lrt
 CURLVERSION = 7.24.0
 LIBARCHIVEVERSION = 3.0.3
 ZLIBVERSION = 1.2.6
@@ -669,7 +670,7 @@ libarchive:
 	  ./configure --prefix=$$MYPATH/libs --disable-shared \
 	    --without-bz2lib --without-lzmadec --without-iconv \
 	    --without-lzma --without-nettle --without-openssl \
-	    --without-xml2 --without-expat ; \
+	    --without-xml2 --without-expat --disable-acl ; \
 	  make ; make install )
 
 libz:

@@ -1,7 +1,7 @@
 bin_PROGRAMS = bob
 bob_SOURCES = bob.cc gap.cc io.cc
 bob_CPPFLAGS = `libs/bin/curl-config --cflags`
-bob_LDADD = libs/lib/libcurl.a -lrt
+bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a -lrt
 
 CURLVERSION = 7.24.0
 LIBARCHIVEVERSION = 3.0.3
@@ -29,7 +29,7 @@ libarchive:
 	  ./configure --prefix=$$MYPATH/libs --disable-shared \
 	    --without-bz2lib --without-lzmadec --without-iconv \
 	    --without-lzma --without-nettle --without-openssl \
-	    --without-xml2 --without-expat ; \
+	    --without-xml2 --without-expat --disable-acl ; \
 	  make ; make install )
 
 libz:
