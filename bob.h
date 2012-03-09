@@ -91,7 +91,7 @@ void out(Status severity, string msg);
 bool which(string name, string &res);
 Status get(string targetdir, string url, string &filename);
 Status getindirectly(string targetdir, string url, string &archivename);
-Status untar(string archivename);
+Status unpack(string archivename);
 Status sh(string cmd);
 
 }  // namespace BOB

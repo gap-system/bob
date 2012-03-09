@@ -32,11 +32,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
 bin_PROGRAMS = bob$(EXEEXT)
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(top_srcdir)/configure TODO cnf/depcomp \
-	cnf/install-sh cnf/missing
+	$(srcdir)/Makefile.in $(top_srcdir)/configure TODO \
+	cnf/config.guess cnf/config.sub cnf/depcomp cnf/install-sh \
+	cnf/missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -48,10 +51,12 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_bob_OBJECTS = bob-bob.$(OBJEXT) bob-gap.$(OBJEXT) bob-io.$(OBJEXT)
+am_bob_OBJECTS = bob-bob.$(OBJEXT) bob-gap.$(OBJEXT)
 bob_OBJECTS = $(am_bob_OBJECTS)
 bob_DEPENDENCIES = libs/lib/libcurl.a libs/lib/libarchive.a \
 	libs/lib/libz.a
+bob_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(bob_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/cnf/depcomp
 am__depfiles_maybe = depfiles
@@ -95,6 +100,7 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EXEEXT = @EXEEXT@
+HOSTOS = @HOSTOS@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -119,6 +125,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+SYSTEMINFO = @SYSTEMINFO@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -131,14 +138,22 @@ am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -162,9 +177,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-bob_SOURCES = bob.cc gap.cc io.cc
-bob_CPPFLAGS = `libs/bin/curl-config --cflags`
+bob_SOURCES = bob.cc gap.cc
+bob_CPPFLAGS = `libs/bin/curl-config --cflags` ${SYSTEMINFO} ${HOSTOS}
 bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a -lrt
+bob_LDFLAGS = -static
 CURLVERSION = 7.24.0
 LIBARCHIVEVERSION = 3.0.3
 ZLIBVERSION = 1.2.6
@@ -245,7 +261,7 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 bob$(EXEEXT): $(bob_OBJECTS) $(bob_DEPENDENCIES) 
 	@rm -f bob$(EXEEXT)
-	$(CXXLINK) $(bob_OBJECTS) $(bob_LDADD) $(LIBS)
+	$(bob_LINK) $(bob_OBJECTS) $(bob_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -255,7 +271,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bob-bob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bob-gap.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bob-io.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -298,20 +313,6 @@ bob-gap.obj: gap.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gap.cc' object='bob-gap.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bob-gap.obj `if test -f 'gap.cc'; then $(CYGPATH_W) 'gap.cc'; else $(CYGPATH_W) '$(srcdir)/gap.cc'; fi`
-
-bob-io.o: io.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bob-io.o -MD -MP -MF $(DEPDIR)/bob-io.Tpo -c -o bob-io.o `test -f 'io.cc' || echo '$(srcdir)/'`io.cc
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bob-io.Tpo $(DEPDIR)/bob-io.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='io.cc' object='bob-io.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bob-io.o `test -f 'io.cc' || echo '$(srcdir)/'`io.cc
-
-bob-io.obj: io.cc
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bob-io.obj -MD -MP -MF $(DEPDIR)/bob-io.Tpo -c -o bob-io.obj `if test -f 'io.cc'; then $(CYGPATH_W) 'io.cc'; else $(CYGPATH_W) '$(srcdir)/io.cc'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bob-io.Tpo $(DEPDIR)/bob-io.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='io.cc' object='bob-io.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bob-io.obj `if test -f 'io.cc'; then $(CYGPATH_W) 'io.cc'; else $(CYGPATH_W) '$(srcdir)/io.cc'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \

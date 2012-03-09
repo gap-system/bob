@@ -30,7 +30,7 @@ static Status GAP_getfunc(string targetdir)
 {
     if (getindirectly(targetdir,
            "http://www-groups.mcs.st-and.ac.uk/~neunhoef/for/BOB/GAP.link",
-           archivename)) {
+           GAP_archivename)) {
         out(ERROR,"Could not download GAP archive.");
         return ERROR;
     } else 
@@ -40,18 +40,21 @@ static Status GAP_getfunc(string targetdir)
 static Status GAP_buildfunc(string targetdir)
 {
     // By convention, we are in the target directory.
-    if (unpack("downloads"+archivename)) {
+    out(OK,"Unpacking GAP archive...");
+    if (unpack(GAP_archivename)) {
         out(ERROR,"A problem occurred when extracting the archive.");
         return ERROR;
     }
-    if (chdir("gap4r5")) {
+    if (chdir("gap4r5") != 0) {
         out(ERROR,"Cannot change to GAP's root directory.");
         return ERROR;
     }
-    if (sh("./configure")) {
+    out(OK,"Running ./configure for GAP...");
+    if (sh("./configure --with-gmp=no --with-readline=no")) {
         out(ERROR,"Error in configure stage.");
         return ERROR;
     }
+    out(OK,"Running make for GAP...");
     if (sh("make")) {
         out(ERROR,"Error in compilation stage.");
         return ERROR;
@@ -73,10 +76,12 @@ static Status IO_buildfunc(string targetdir)
         out(ERROR,"Cannot change to the IO package's directory.");
         return ERROR;
     }
+    out(OK,"Running ./configure for IO_Pkg...");
     if (sh("./configure")) {
         out(ERROR,"Error in configure stage.");
         return ERROR;
     }
+    out(OK,"Running make for IO_Pkg...");
     if (sh("make")) {
         out(ERROR,"Error in compilation stage.");
         return ERROR;

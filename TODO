@@ -12,9 +12,14 @@
 > Implement test for C compiler
 > Implement BOB::get using libcurl
 > Implement BOB::getindirectly without checksumming
-Implement BOB::sh
-Implement BOB::untar using libarchive and zlib
-Implement checksumming using libssl
+> Implement BOB::sh
+> Implement BOB::untar using libarchive and zlib
+> Implement -v echoing of building stuff
+> Implement -static
 Implement test for architecture
+Implement 64bit/32bit distinction
+Implement more packages
+
+Implement checksumming using libssl
 Implement BOB::getindirectly with checksummming using libssl
 Implement test for C++ compiler

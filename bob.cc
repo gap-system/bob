@@ -11,6 +11,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <archive.h>
+#include <archive_entry.h>
 #include <curl/curl.h>
 
 using namespace std;
@@ -305,6 +307,10 @@ Status get(string targetdir, string url, string &filename)
         return ERROR;
     }
     filename = targetdir+"download/"+url.substr(pos+1);
+    if (access(filename.c_str(),R_OK) == 0) {
+        out(OK,"Already have "+url);
+        return OK;
+    }
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     FILE *outs = fopen(filename.c_str(),"w");
     if (outs == NULL) {
@@ -371,9 +377,85 @@ Status getindirectly(string targetdir, string url, string &archivename)
     return get(targetdir, url2, archivename);
 }
 
-Status untar(string archivename)
+static int copy_data(struct archive *ar, struct archive *aw)
 {
-    return OK;
+    int r;
+    const void *buff;
+    size_t size;
+#if ARCHIVE_VERSION >= 3000000
+    int64_t offset;
+#else
+    off_t offset;
+#endif
+
+    for (;;) {
+        r = archive_read_data_block(ar, &buff, &size, &offset);
+        if (r == ARCHIVE_EOF) return ARCHIVE_OK;
+        if (r != ARCHIVE_OK) return r;
+        r = archive_write_data_block(aw, buff, size, offset);
+        if (r != ARCHIVE_OK) {
+            out(ERROR,string("Unpack write error: ")+
+                      archive_error_string(aw));
+            return r;
+        }
+    }
+}
+
+Status unpack(string archivename)
+{
+    struct archive *a;
+    struct archive *ext;
+    struct archive_entry *entry;
+    int r;
+    const char *filename = archivename.c_str();
+    Status res = ERROR;
+
+    a = archive_read_new();
+    archive_read_support_format_tar(a);
+    archive_read_support_format_zip(a);
+    archive_read_support_compression_gzip(a);
+    archive_read_support_compression_compress(a);
+    if (filename != NULL && strcmp(filename, "-") == 0) filename = NULL;
+    if ((r = archive_read_open_filename(a, filename, 10240))) {
+        out(ERROR,"Cannot read archive "+archivename+"\nMessage: "+
+            archive_error_string(a));
+        archive_read_finish(a);
+        return ERROR;
+    }
+    ext = archive_write_disk_new();
+    archive_write_disk_set_options(ext, ARCHIVE_EXTRACT_TIME);
+    archive_write_disk_set_standard_lookup(ext);
+    while (true) {   // will be left by break
+        r = archive_read_next_header(a, &entry);
+        if (r == ARCHIVE_EOF) { res = OK; break; }
+        if (r != ARCHIVE_OK) {
+            out(ERROR,"Bad entry in archive "+archivename+"\nMessage: "+
+                      archive_error_string(a));
+            break;
+        }
+        if (verbose >= 4) out(OK,string("x ")+archive_entry_pathname(entry));
+        r = archive_write_header(ext, entry);
+        if (r != ARCHIVE_OK) {
+            out(ERROR,"Could not write header for entry extracting "+
+                      archivename+"\nMessage: "+
+                      archive_error_string(ext));
+            break;
+        } else {
+            copy_data(a, ext);
+            r = archive_write_finish_entry(ext);
+            if (r != ARCHIVE_OK) {
+                out(ERROR,"Could not finish extraction of "+
+                          archivename+"\nMessage: "+
+                          archive_error_string(ext));
+                break;
+            }
+        }
+    }
+    archive_read_close(a);
+    archive_read_finish(a);
+    archive_write_close(ext);
+    archive_write_finish(ext);
+    return res;
 }
 
 Status sh(string cmd)
@@ -402,6 +484,7 @@ Status sh(string cmd)
             if (pos > oldpos) args.push_back(cmd.substr(oldpos,pos-oldpos));
         }
     } else prog = cmd;
+    argv.push_back(prog.c_str());   // Give the prog as 0-th argument
     for (i = 0;i < args.size();i++)
         argv.push_back(args[i].c_str());
     argv.push_back(NULL);
@@ -411,25 +494,56 @@ Status sh(string cmd)
         return ERROR;
     }
 
+    int fds[2];
+    if (pipe(fds) != 0) {
+        out(ERROR,"Could not create pipes for:\n  "+cmd);
+        return ERROR;
+    }
+
     pid = fork();
+
     if (pid == 0) {   // the child
         // Open file build.log, dup to stdout and stderr
         // Close all other file descriptors
-        int fd = open(buildlogfilename.c_str(),O_WRONLY|O_APPEND);
         close(1);
         close(2);
-        dup2(fd,1);
-        dup2(fd,2);
-        for (fd = 3;fd < 16;fd++) close(fd);
+        dup2(fds[1],1);
+        dup2(fds[1],2);
+        for (int fd = 3;fd < 64;fd++) close(fd);
 
+        envp = prepareenvironment();
         if (execve(path.c_str(), (char *const *) &(argv[0]),envp) == -1) {
+            freepreparedenvironment(envp);
+            cerr << "Errno: " << errno << "\n";
             out(ERROR,"Cannot execve.");
             exit(17);
         }
     }
+    close(fds[1]);
+    fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
+    FILE *output = fdopen(fds[0],"r");
+    setlinebuf(output);
+    char buf[1024];
+    char *p;
+
+    while (true) {
+        p = fgets(buf,1024,output);
+        if (p != NULL) {
+            if (verbose >= 4) cout << buf;
+            logfile << buf;
+            logfile.flush();
+        }
+        else break;
+    }
+    fclose(output);
+    logfile.close();
+
     int status;
     waitpid(pid,&status,0);
-
+    if (WEXITSTATUS(status) != 0) {
+        out(ERROR,"Subprocess "+cmd+" returned with an error.");
+        return ERROR;
+    }
     return OK;
 }
 
@@ -466,8 +580,11 @@ int main(int argc, char * const argv[], char *envp[])
               verbose--;
               break;
           case 't':
-              if (chdir(optarg)) {
-                  chdir(origdir.c_str());
+              if (chdir(optarg) != 0) {
+                  if (chdir(origdir.c_str()) != 0) {
+                      cerr << "Cannot chdir to original dir. Stopping.\n";
+                      return 16;
+                  }
               } else {
                   targetdir = optarg;
                   if (targetdir[targetdir.size()-1] != '/')
@@ -518,7 +635,11 @@ int main(int argc, char * const argv[], char *envp[])
     }
 
     // Change to target directory:
-    chdir(targetdir.c_str());  // has worked before, we assume it does again
+    if (chdir(targetdir.c_str()) != 0) {
+        // has worked before, we assume it does again
+        cerr << "Cannot chdir to target dir. Stopping.\n";
+        return 15;
+    }
     struct stat statbuf;
     if (stat("download",&statbuf) == -1) {
         if (mkdir("download",S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH) != 0 &&
@@ -627,14 +748,20 @@ int main(int argc, char * const argv[], char *envp[])
             return 6;
         }
         c = deporder[i];
-        chdir(targetdir.c_str());
+        if (chdir(targetdir.c_str()) != 0) {
+            out(ERROR,"Cannot chdir to target directory. Stopping.");
+            return 7;
+        }
         res = OK;
         if (c->get != NULL) {
             out(OK,"Getting component "+c->name);
             res = c->get(targetdir);
         }
         if (res == OK) {
-            chdir(targetdir.c_str());
+            if (chdir(targetdir.c_str()) != 0) {
+                out(ERROR,"Cannot chdir to target directory. Stopping.");
+                return 8;
+            }
             out(OK,"Building component "+c->name);
             res = c->build(targetdir);
         }
