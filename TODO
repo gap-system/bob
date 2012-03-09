@@ -23,3 +23,9 @@
 Implement checksumming using libssl
 Implement BOB::getindirectly with checksummming using libssl
 Implement test for C++ compiler
+
+Sort out local usage of libs
+Can we do sha1 with libcurl native?
+More archive-types/compressions?
+More tests?
+Test for bash?
