@@ -29,3 +29,4 @@ Can we do sha1 with libcurl native?
 More archive-types/compressions?
 More tests?
 Test for bash?
+Automatic downloading of libraries as dependencies?
