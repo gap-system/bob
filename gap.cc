@@ -132,3 +132,45 @@ static Status CVec_buildfunc(string targetdir)
 }
 Component CVec_Pkg("CVec_Pkg",dependencies_onlyGAP,NULL,NULL,CVec_buildfunc);
 
+static Status Edim_buildfunc(string targetdir)
+{
+    // By convention, we are in the target directory.
+    if (chdir("gap4r5/pkg/edim")) {
+        out(ERROR,"Cannot change to the Edim package's directory.");
+        return ERROR;
+    }
+    out(OK,"Running ./configure for Edim_Pkg...");
+    if (sh("./configure")) {
+        out(ERROR,"Error in configure stage.");
+        return ERROR;
+    }
+    out(OK,"Running make for Edim_Pkg...");
+    if (sh("make")) {
+        out(ERROR,"Error in compilation stage.");
+        return ERROR;
+    }
+    return OK;
+}
+Component Edim_Pkg("Edim_Pkg",dependencies_onlyGAP,NULL,NULL,Edim_buildfunc);
+
+static Status Browse_buildfunc(string targetdir)
+{
+    // By convention, we are in the target directory.
+    if (chdir("gap4r5/pkg/Browse")) {
+        out(ERROR,"Cannot change to the Browse package's directory.");
+        return ERROR;
+    }
+    out(OK,"Running ./configure for Browse_Pkg...");
+    if (sh("./configure")) {
+        out(ERROR,"Error in configure stage.");
+        return ERROR;
+    }
+    out(OK,"Running make for Browse_Pkg...");
+    if (sh("make")) {
+        out(ERROR,"Error in compilation stage.");
+        return ERROR;
+    }
+    return OK;
+}
+Component Browse("Browse_Pkg",dependencies_onlyGAP,NULL,NULL,Browse_buildfunc);
+
