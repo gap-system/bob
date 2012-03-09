@@ -12,8 +12,8 @@
 > Implement test for C compiler
 > Implement BOB::get using libcurl
 > Implement BOB::getindirectly without checksumming
-Implement BOB::untar using libarchive
 Implement BOB::sh
+Implement BOB::untar using libarchive and zlib
 Implement checksumming using libssl
 Implement test for architecture
 Implement BOB::getindirectly with checksummming using libssl

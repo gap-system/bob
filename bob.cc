@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
 #include <iostream>
@@ -376,6 +378,58 @@ Status untar(string archivename)
 
 Status sh(string cmd)
 {
+    string prog;
+    string path;
+    vector<string> args;
+    vector<char const *> argv;
+    char **envp;
+    int i;
+    int pos,oldpos;
+    pid_t pid;
+
+    // Split string into command and arguments:
+    pos = cmd.find(' ');
+    if (pos != string::npos) {
+        prog = cmd.substr(0,pos);
+        while (true) {
+            oldpos = pos+1;
+            pos = cmd.find(' ',oldpos);
+            if (pos == string::npos) {
+                if (oldpos < cmd.size()-1)
+                    args.push_back(cmd.substr(oldpos));
+                break;
+            }
+            if (pos > oldpos) args.push_back(cmd.substr(oldpos,pos-oldpos));
+        }
+    } else prog = cmd;
+    for (i = 0;i < args.size();i++)
+        argv.push_back(args[i].c_str());
+    argv.push_back(NULL);
+
+    if (!which(prog,path)) {
+        out(ERROR,"Could not execute command:\n  "+cmd);
+        return ERROR;
+    }
+
+    pid = fork();
+    if (pid == 0) {   // the child
+        // Open file build.log, dup to stdout and stderr
+        // Close all other file descriptors
+        int fd = open(buildlogfilename.c_str(),O_WRONLY|O_APPEND);
+        close(1);
+        close(2);
+        dup2(fd,1);
+        dup2(fd,2);
+        for (fd = 3;fd < 16;fd++) close(fd);
+
+        if (execve(path.c_str(), (char *const *) &(argv[0]),envp) == -1) {
+            out(ERROR,"Cannot execve.");
+            exit(17);
+        }
+    }
+    int status;
+    waitpid(pid,&status,0);
+
     return OK;
 }
 
