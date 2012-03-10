@@ -6,23 +6,42 @@ bob_CPPFLAGS = `libs/bin/curl-config --cflags`
 bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a libs/lib/libbz2.a ${FORLDADD}
 bob_LDFLAGS = ${FORLDFLAGS}
 
-BUILT_SOURCES = libs/stamp
+BUILT_SOURCES = libs/include/zlib.h libs/include/bzlib.h \
+		libs/include/archive.h libs/include/curl/curl.h
 
-libs/stamp:	libs
-
-libs:	zlib bz2lib libarchive libcurl
-	touch libs/stamp
-
-CURLVERSION = 7.24.0
-LIBARCHIVEVERSION = 3.0.3
 ZLIBVERSION = 1.2.6
 BZ2LIBVERSION = 1.0.6
+LIBARCHIVEVERSION = 3.0.3
+CURLVERSION = 7.24.0
 
-libcurl:
-	( if [ ! -e curl-${CURLVERSION}.tar.gz ] ; then \
-	     curl http://curl.haxx.se/download/curl-${CURLVERSION}.tar.gz \
-	     -o curl-${CURLVERSION}.tar.gz ; fi )
-	tar xzvf curl-${CURLVERSION}.tar.gz
+CURLARCH = curl-${CURLVERSION}.tar.gz
+LIBARCHIVEARCH = libarchive-${LIBARCHIVEVERSION}.tar.gz
+ZLIBARCH = zlib-${ZLIBVERSION}.tar.gz
+BZ2LIBARCH = bzip2-${BZ2LIBVERSION}.tar.gz
+
+libs/include/zlib.h:
+	( if [ ! -e ${ZLIBARCH} ] ; then \
+	     curl http://zlib.net/${ZLIBARCH} -o ${ZLIBARCH} ; fi )
+	tar xzvf ${ZLIBARCH}
+	if [ ! -e libs ] ; then mkdir libs ; fi
+	( export MYPATH=`pwd` ; cd zlib-${ZLIBVERSION} ; \
+	  ./configure --prefix=$$MYPATH/libs --static ; \
+	  make ; make install )
+
+libs/include/bzlib.h:
+	( if [ ! -e ${BZ2LIBARCH} ] ; then \
+	     curl http://bzip.org/${BZ2LIBVERSION}/${BZ2LIBARCH} \
+	     -o ${BZ2LIBARCH} ; fi )
+	tar xzvf ${BZ2LIBARCH}
+	if [ ! -e libs ] ; then mkdir libs ; fi
+	( export MYPATH=`pwd` ; cd bzip2-${BZ2LIBVERSION} ; \
+	  make ; make install PREFIX=$$MYPATH/libs )
+
+libs/include/curl/curl.h:
+	( if [ ! -e ${CURLARCH} ] ; then \
+	     curl http://curl.haxx.se/download/${CURLARCH} \
+	     -o ${CURLARCH} ; fi )
+	tar xzvf ${CURLARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd curl-${CURLVERSION} ; \
 	  ./configure --prefix=$$MYPATH/libs --disable-shared \
@@ -34,11 +53,11 @@ libcurl:
 	    LDFLAGS="-L$$MYPATH/libs/lib" ; \
 	  make ; make install )
 
-libarchive:
-	( if [ ! -e libarchive-${LIBARCHIVEVERSION}.tar.gz ] ; then \
-	     curl http://libarchive.googlecode.com/files/libarchive-${LIBARCHIVEVERSION}.tar.gz \
-	     -o libarchive-${LIBARCHIVEVERSION}.tar.gz ; fi )
-	tar xzvf libarchive-${LIBARCHIVEVERSION}.tar.gz
+libs/include/archive.h:
+	( if [ ! -e ${LIBARCHIVEARCH} ] ; then \
+	     curl http://libarchive.googlecode.com/files/${LIBARCHIVEARCH} \
+	     -o ${LIBARCHIVEARCH} ; fi )
+	tar xzvf ${LIBARCHIVEARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd libarchive-${LIBARCHIVEVERSION} ; \
 	  ./configure --prefix=$$MYPATH/libs --disable-shared \
@@ -48,25 +67,4 @@ libarchive:
 	    CPPFLAGS="-I$$MYPATH/libs/include" \
 	    LDFLAGS="-L$$MYPATH/libs/lib" ; \
 	  make ; make install )
-
-zlib:
-	( if [ ! -e zlib-${ZLIBVERSION}.tar.gz ] ; then \
-	     curl http://zlib.net/zlib-${ZLIBVERSION}.tar.gz \
-	     -o zlib-${ZLIBVERSION}.tar.gz ; fi )
-	tar xzvf zlib-${ZLIBVERSION}.tar.gz
-	if [ ! -e libs ] ; then mkdir libs ; fi
-	( export MYPATH=`pwd` ; cd zlib-${ZLIBVERSION} ; \
-	  ./configure --prefix=$$MYPATH/libs --static ; \
-	  make ; make install )
-
-bz2lib:
-	( if [ ! -e bzip2-${BZ2LIBVERSION}.tar.gz ] ; then \
-	     curl http://bzip.org/${BZ2LIBVERSION}/bzip2-${BZ2LIBVERSION}.tar.gz \
-	     -o bzip2-${BZ2LIBVERSION}.tar.gz ; fi )
-	tar xzvf bzip2-${BZ2LIBVERSION}.tar.gz
-	if [ ! -e libs ] ; then mkdir libs ; fi
-	( export MYPATH=`pwd` ; cd bzip2-${BZ2LIBVERSION} ; \
-	  make ; make install PREFIX=$$MYPATH/libs )
-
-.PHONY:	libs libcurl zlib bz2lib libarchive
 
