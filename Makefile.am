@@ -49,6 +49,7 @@ libs/include/curl/curl.h:
 	    --disable-pop3 --disable-pop3s --disable-rtsp --disable-smtp \
 	    --disable-smtps --disable-telnet --disable-gopher --without-ssl \
 	    --without-libidn --disable-threaded-resolver --disable-thread \
+	    --without-libssh2 \
 	    CPPFLAGS="-I$$MYPATH/libs/include" \
 	    LDFLAGS="-L$$MYPATH/libs/lib" ; \
 	  make ; make install )
