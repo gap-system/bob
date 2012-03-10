@@ -6,11 +6,12 @@ bob_CPPFLAGS = `libs/bin/curl-config --cflags`
 bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a libs/lib/libbz2.a ${FORLDADD}
 bob_LDFLAGS = ${FORLDFLAGS}
 
-BUILT_SOURCES = libs/include/curl/curl.h
+BUILT_SOURCES = libs/stamp
 
-libs/include/curl/curl.h:	libs
+libs/stamp:	libs
 
 libs:	zlib bz2lib libarchive libcurl
+	touch libs/stamp
 
 CURLVERSION = 7.24.0
 LIBARCHIVEVERSION = 3.0.3
