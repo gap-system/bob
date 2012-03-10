@@ -25,7 +25,7 @@ libcurl:
 	    --disable-pop3 --disable-pop3s --disable-rtsp --disable-smtp \
 	    --disable-smtps --disable-telnet --disable-gopher --without-ssl \
 	    --without-libidn --disable-threaded-resolver --disable-thread \
-	    CFLAGS="-I$$MYPATH/libs/include" ; \
+	    CPPFLAGS="-I$$MYPATH/libs/include" ; \
 	  make ; make install )
 
 libarchive:
@@ -39,7 +39,7 @@ libarchive:
 	    --without-lzmadec --without-iconv \
 	    --without-lzma --without-nettle --without-openssl \
 	    --without-xml2 --without-expat --disable-acl \
-	    CFLAGS="-I$$MYPATH/libs/include" ; \
+	    CPPFLAGS="-I$$MYPATH/libs/include" ; \
 	  make ; make install )
 
 zlib:
