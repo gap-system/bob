@@ -1,8 +1,10 @@
+FORLDADD=@FORLDADD@
+FORLDFLAGS=@FORLDFLAGS@
 bin_PROGRAMS = bob
 bob_SOURCES = bob.cc gap.cc
 bob_CPPFLAGS = `libs/bin/curl-config --cflags`
-bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a -lrt
-bob_LDFLAGS = -static
+bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a libs/lib/libbz2.a ${FORLDADD}
+bob_LDFLAGS = ${FORLDFLAGS}
 
 libs:	zlib bz2lib libarchive libcurl
 
@@ -22,7 +24,8 @@ libcurl:
 	    --disable-imap --disable-imaps --disable-ldap --disable-ldaps \
 	    --disable-pop3 --disable-pop3s --disable-rtsp --disable-smtp \
 	    --disable-smtps --disable-telnet --disable-gopher --without-ssl \
-	    --without-libidn --disable-threaded-resolver ; \
+	    --without-libidn --disable-threaded-resolver --disable-thread \
+	    CFLAGS="-I$$MYPATH/libs/include" ; \
 	  make ; make install )
 
 libarchive:
@@ -35,7 +38,8 @@ libarchive:
 	  ./configure --prefix=$$MYPATH/libs --disable-shared \
 	    --without-lzmadec --without-iconv \
 	    --without-lzma --without-nettle --without-openssl \
-	    --without-xml2 --without-expat --disable-acl ; \
+	    --without-xml2 --without-expat --disable-acl \
+	    CFLAGS="-I$$MYPATH/libs/include" ; \
 	  make ; make install )
 
 zlib:

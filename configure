@@ -615,6 +615,8 @@ CCDEPMODE
 ac_ct_CC
 CFLAGS
 CC
+FORLDFLAGS
+FORLDADD
 host_os
 host_vendor
 host_cpu
@@ -3460,20 +3462,36 @@ case "$host_os" in
    *cygwin*)
 
 $as_echo "#define SYS_IS_WINDOWS 1" >>confdefs.h
-;;
+
+      FORLDADD="-lrt"
+      FORLDFLAGS=""
+      ;;
     *darwin*)
 
 $as_echo "#define SYS_IS_OSX 1" >>confdefs.h
-;;
+
+      FORLDADD="-framework CoreServices"
+      FORLDFLAGS=""
+      ;;
     *linux*)
 
 $as_echo "#define SYS_IS_LINUX 1" >>confdefs.h
-;;
+
+      FORLDADD="-lrt"
+      FORLDFLAGS=""
+      ;;
     *bsd*)
 
 $as_echo "#define SYS_IS_BSD 1" >>confdefs.h
-;;
+
+      FORLDADD="-lrt"
+      FORLDFLAGS=""
+      ;;
 esac
+FORLDADD=${FORLDADD}
+
+FORLDFLAGS=${FORLDFLAGS}
+
 
 $as_echo "#define HOSTOS \${host_os}" >>confdefs.h
 
