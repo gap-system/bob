@@ -83,6 +83,6 @@ libs/include/openssl/ssl.h:
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd openssl-${OPENSSLVERSION} ; \
 	  ./config --prefix=$$MYPATH/libs --openssldir=$$MYPATH/libs/openssl \
-	    no-threads no-shared 386 no-sse2 zlib ; \
+	    no-threads no-shared no-sse2 zlib ; \
 	  make ; make test ; make install )
 
