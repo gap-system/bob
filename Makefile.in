@@ -754,7 +754,7 @@ libs/include/openssl/ssl.h:
 	  ./Configure --prefix=$$MYPATH/libs \
 	              --openssldir=$$MYPATH/libs/openssl \
 	              no-threads no-shared no-sse2 zlib darwin64-x86_64-cc ; \
-	  else
+	  else \
 	  ./config --prefix=$$MYPATH/libs --openssldir=$$MYPATH/libs/openssl \
 	  no-threads no-shared no-sse2 zlib ; \
 	  fi ; \
