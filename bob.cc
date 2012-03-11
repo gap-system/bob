@@ -14,6 +14,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <curl/curl.h>
+#include <openssl/sha.h>
 
 using namespace std;
 
@@ -251,6 +252,7 @@ void freepreparedenvironment(char **p)
 // Utility functions:
 
 int verbose = 3;
+bool nonetwork = false;
 string boblogfilename;
 string buildlogfilename;
 
@@ -312,7 +314,7 @@ void shutdowncurl()
     }
 }
 
-Status get(string targetdir, string url, string &filename)
+Status get(string targetdir, string url, string &filename, bool alwaysget)
 {
     CURLcode res;
 
@@ -331,7 +333,7 @@ Status get(string targetdir, string url, string &filename)
         return ERROR;
     }
     filename = targetdir+"download/"+url.substr(pos+1);
-    if (access(filename.c_str(),R_OK) == 0) {
+    if (!alwaysget && access(filename.c_str(),R_OK) == 0) {
         out(OK,"Already have "+url);
         return OK;
     }
@@ -364,6 +366,31 @@ Status get(string targetdir, string url, string &filename)
     return OK;
 }
 
+unsigned char *sha1(FILE *f)
+{
+    SHA_CTX c;
+    static unsigned char md[SHA_DIGEST_LENGTH];
+    int i;
+    unsigned char buf[4096];
+
+    SHA1_Init(&c);
+    while (true) {
+        i = fread(buf,1,4096,f);
+        if (i <= 0) break;
+        SHA1_Update(&c,buf,(unsigned long)i);
+    }
+    SHA1_Final(&(md[0]),&c);
+    return md;
+}
+
+static inline int hexdig(char c)
+{
+    if (c >= '0' && c <= '9') return (int) (c-'0');
+    else if (c >= 'a' && c <= 'f') return (int) (c-'a'+10);
+    else if (c >= 'A' && c <= 'F') return (int) (c-'A'+19);
+    return 0;
+}
+
 Status getindirectly(string targetdir, string url, string &archivename)
 {
     string filename;
@@ -371,7 +398,10 @@ Status getindirectly(string targetdir, string url, string &archivename)
     string hash;
     Status res;
 
-    res = get(targetdir, url, filename);
+    if (nonetwork)
+        res = get(targetdir, url, filename, false);
+    else
+        res = get(targetdir, url, filename, true);
     if (res == ERROR) return ERROR;
     fstream file;
     file.exceptions ( ifstream::failbit | ifstream::badbit );
@@ -398,7 +428,26 @@ Status getindirectly(string targetdir, string url, string &archivename)
         out(ERROR,"Could not read link file "+filename+" .");
         return ERROR;
     }
-    return get(targetdir, url2, archivename);
+    res = get(targetdir, url2, archivename, false);
+    if (hash.size() >= 40) {
+        // Now check hash: */
+        FILE *f = fopen(archivename.c_str(),"r");
+        if (f == NULL) {
+            out(ERROR,"Could not read downloaded file "+archivename+" .");
+            return ERROR;
+        }
+        unsigned char *md = sha1(f);
+        int i;
+        fclose(f);
+        for (i = 0;i < 20;i++)
+            if (md[i] != hexdig(hash[2*i])*16+hexdig(hash[2*i+1])) break;
+        if (i < 20) {
+            out(ERROR,"SHA1 checksum of downloaded file "+archivename+
+                      " was wrong!");
+            return ERROR;
+        }
+    }
+    return OK;
 }
 
 static int copy_data(struct archive *ar, struct archive *aw)
@@ -576,7 +625,6 @@ using namespace BOB;
 
 string origdir;
 string targetdir;
-bool nonetwork = false;
 
 int main(int argc, char * const argv[], char *envp[])
 {

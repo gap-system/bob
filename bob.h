@@ -91,7 +91,7 @@ void delenvironment(string key);
 
 void out(Status severity, string msg);
 bool which(string name, string &res);
-Status get(string targetdir, string url, string &filename);
+Status get(string targetdir, string url, string &filename, bool alwaysget);
 Status getindirectly(string targetdir, string url, string &archivename);
 Status unpack(string archivename);
 Status sh(string cmd);
