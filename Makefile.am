@@ -82,7 +82,13 @@ libs/include/openssl/ssl.h:
 	tar xzvf ${OPENSSLARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd openssl-${OPENSSLVERSION} ; \
+	  if test `uname -s` == "Darwin" ; then \
+	  ./Configure --prefix=$$MYPATH/libs \
+	              --openssldir=$$MYPATH/libs/openssl \
+	              no-threads no-shared no-sse2 zlib darwin64-x86_64-cc ; \
+	  else
 	  ./config --prefix=$$MYPATH/libs --openssldir=$$MYPATH/libs/openssl \
-	    no-threads no-shared no-sse2 zlib ; \
+	  no-threads no-shared no-sse2 zlib ; \
+	  fi ; \
 	  make ; make test ; make install )
 
