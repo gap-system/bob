@@ -143,6 +143,19 @@ static int Which_C_Compiler_Test(string &st)
 }
 Test Which_C_Compiler("Which_C_Compiler",1,Which_C_Compiler_Test);
 
+static int C_Compiler_Name_Test(string &st)
+{
+    if (Which_C_Compiler.num != 0) return -1;
+    int pos = Which_C_Compiler.str.rfind('/');
+    if (pos == string::npos)
+        st = Which_C_Compiler.str;
+    else
+        st = Which_C_Compiler.str.substr(pos+1);
+    return 0;
+}
+
+Test C_Compiler_Name("C_Compiler_Name",2,C_Compiler_Name_Test);
+
 static int Which_Architecture_Test(string &st)
 {
 #if SYS_IS_WINDOWS
@@ -166,6 +179,32 @@ static int Which_Architecture_Test(string &st)
 }
 Test Which_Architecture("Which_Architecture",1,Which_Architecture_Test);
 
+static int Which_Wordsize_Test(string &st)
+{
+    if (Which_C_Compiler.num != 0) return 0;
+    fstream testprog("/tmp/wordsize.c",fstream::out | fstream::trunc);
+    testprog << "#include <stdio.h>\n";
+    testprog << "int main(void) {\n";
+    testprog << "  printf(\"%ld\\n\",sizeof(void *));\n";
+    testprog << "  return 0;\n";
+    testprog << "}\n";
+    testprog.close();
+    if (sh(Which_C_Compiler.str+" /tmp/wordsize.c -o /tmp/wordsize"))
+        return 0;
+    FILE *prog = popen("/tmp/wordsize","r");
+    if (prog == NULL) return 0;
+    int size,ret;
+    ret = fscanf(prog,"%d",&size);
+    fclose(prog);
+    unlink("/tmp/wordsize.c");
+    unlink("/tmp/wordsize");
+    size = ret == 1 ? size*8 : 0;
+    stringstream output;
+    output << "Word size is " << size << "bit.";
+    out(OK,output.str());
+    return size;
+}
+Test Which_Wordsize("Which_Wordsize",2,Which_Wordsize_Test);
 
 // Access to the environment:
 

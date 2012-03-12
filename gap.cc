@@ -41,6 +41,8 @@ static Status GAP_getfunc(string targetdir)
         return OK;
 }
 
+vector<string> confignames;
+
 static Status GAP_buildfunc(string targetdir)
 {
     // By convention, we are in the target directory.
@@ -53,8 +55,28 @@ static Status GAP_buildfunc(string targetdir)
         out(ERROR,"Cannot change to GAP's root directory.");
         return ERROR;
     }
+    if (Which_Wordsize.num == 64 && 
+        (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang")) {
+        out(OK,"Compiling for both 32-bit and 64-bit...");
+        out(OK,"Running ./configure ABI=32 for GAP...");
+        if (sh("./configure ABI=32")) {
+            out(ERROR,"Error in configure stage.");
+            return ERROR;
+        }
+        out(OK,"Running make for GAP...");
+        if (sh("make")) {
+            out(ERROR,"Error in compilation stage.");
+            return ERROR;
+        }
+        out(OK,"Running make clean for GAP...");
+        if (sh("make")) {
+            out(ERROR,"Error in compilation stage.");
+            return ERROR;
+        }
+        confignames.push_back("default32");
+    }
     out(OK,"Running ./configure for GAP...");
-    if (sh("./configure --with-gmp=no --with-readline=no")) {
+    if (sh("./configure")) {
         out(ERROR,"Error in configure stage.");
         return ERROR;
     }
@@ -63,6 +85,7 @@ static Status GAP_buildfunc(string targetdir)
         out(ERROR,"Error in compilation stage.");
         return ERROR;
     }
+    confignames.push_back("default32");
     return OK;
 }
 

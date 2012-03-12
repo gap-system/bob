@@ -49,6 +49,8 @@ class Test {
 
 extern Test Have_make;
 extern Test Which_C_Compiler;
+extern Test C_Compiler_Name;
+extern Test Which_Wordsize;
 
 // Build components:
 
