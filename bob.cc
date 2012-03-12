@@ -292,6 +292,8 @@ bool which(string name, string &res)
             posold = pos+1;
             pos = path.find(':',pos+1);
         }
+        res = "";
+        return false;
     } else {   // We are given a pathname
         if (access(name.c_str(),X_OK) == 0) {
             res = name;
@@ -314,7 +316,18 @@ void shutdowncurl()
     }
 }
 
-Status get(string targetdir, string url, string &filename, bool alwaysget)
+Status downloadname(string targetdir, string url, string &localname)
+{
+    size_t pos = url.rfind('/');
+    if (pos == string::npos) {
+        out(ERROR,"Given URL does not contain /.");
+        return ERROR;
+    }
+    localname = targetdir+"download/"+url.substr(pos+1);
+    return OK;
+}
+
+Status download(string url, string localname)
 {
     CURLcode res;
 
@@ -327,20 +340,10 @@ Status get(string targetdir, string url, string &filename, bool alwaysget)
         }
         atexit(shutdowncurl);
     }
-    size_t pos = url.rfind('/');
-    if (pos == string::npos) {
-        out(ERROR,"Given URL does not contain /.");
-        return ERROR;
-    }
-    filename = targetdir+"download/"+url.substr(pos+1);
-    if (!alwaysget && access(filename.c_str(),R_OK) == 0) {
-        out(OK,"Already have "+url);
-        return OK;
-    }
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    FILE *outs = fopen(filename.c_str(),"w");
+    FILE *outs = fopen(localname.c_str(),"w");
     if (outs == NULL) {
-        out(ERROR,"Cannot write to "+filename+" .");
+        out(ERROR,"Cannot write to "+localname+" .");
         return ERROR;
     }
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, fwrite); 
@@ -359,11 +362,23 @@ Status get(string targetdir, string url, string &filename, bool alwaysget)
         return ERROR;
     }
     if (fclose(outs) != 0) {
-        out(ERROR,"Cannot close "+filename+" .");
+        out(ERROR,"Cannot close "+localname+" .");
         return ERROR;
     }
 
     return OK;
+}
+
+Status get(string targetdir, string url, string &filename, bool alwaysget)
+{
+    Status res;
+    if (downloadname(targetdir,url,filename) == ERROR) return ERROR;
+    if (!alwaysget && access(filename.c_str(),R_OK) == 0) {
+        out(OK,"Already have "+url);
+        return OK;
+    }
+    res = download(url,filename);
+    return res;
 }
 
 unsigned char *sha1(FILE *f)
@@ -391,13 +406,28 @@ static inline int hexdig(char c)
     return 0;
 }
 
-Status getindirectly(string targetdir, string url, string &archivename)
+Status checksha1(string filename, string hash)
+{
+    if (hash.size() < 40) return OK;
+    FILE *f = fopen(filename.c_str(),"r");
+    if (f == NULL) return ERROR;
+    unsigned char *md = sha1(f);
+    fclose(f);
+    int i;
+    for (i = 0;i < 20;i++)
+        if (md[i] != hexdig(hash[2*i])*16+hexdig(hash[2*i+1])) 
+            return ERROR;
+    return OK;
+}
+
+Status getind(string targetdir, string url, string &archivename)
 {
     string filename;
     string url2;
     string hash;
     Status res;
 
+    out(OK,"Getting link file...");
     if (nonetwork)
         res = get(targetdir, url, filename, false);
     else
@@ -428,24 +458,29 @@ Status getindirectly(string targetdir, string url, string &archivename)
         out(ERROR,"Could not read link file "+filename+" .");
         return ERROR;
     }
-    res = get(targetdir, url2, archivename, false);
-    if (hash.size() >= 40) {
-        // Now check hash: */
-        FILE *f = fopen(archivename.c_str(),"r");
-        if (f == NULL) {
-            out(ERROR,"Could not read downloaded file "+archivename+" .");
-            return ERROR;
-        }
-        unsigned char *md = sha1(f);
-        int i;
-        fclose(f);
-        for (i = 0;i < 20;i++)
-            if (md[i] != hexdig(hash[2*i])*16+hexdig(hash[2*i+1])) break;
-        if (i < 20) {
-            out(ERROR,"SHA1 checksum of downloaded file "+archivename+
-                      " was wrong!");
-            return ERROR;
-        }
+    // Now check if it is already there:
+    res = downloadname(targetdir,url2,archivename);
+    if (res == ERROR) return res;
+
+    // Is it already there?
+    if (access(archivename.c_str(),R_OK) == 0) {
+        out(OK,"Checking sha1 checksum of file that was found...");
+        res = checksha1(archivename,hash);
+        if (res == OK) return OK;
+        out(OK,"Checksum of archive found is wrong, downloading it again...");
+    }
+
+    // Now get it:
+    res = download(url2,archivename);
+    if (res == ERROR) return ERROR;
+
+    // Now check it (again):
+    out(OK,"Checking sha1 checksum of downloaded file...");
+    res = checksha1(archivename,hash);
+    if (res == ERROR) {
+        out(ERROR,"SHA1 checksum of downloaded file "+archivename+
+                  " was wrong!");
+        return ERROR;
     }
     return OK;
 }
@@ -625,6 +660,7 @@ using namespace BOB;
 
 string origdir;
 string targetdir;
+bool interactive = false;
 
 int main(int argc, char * const argv[], char *envp[])
 {
@@ -640,8 +676,11 @@ int main(int argc, char * const argv[], char *envp[])
     // Initialise our environment business:
     initenvironment(envp);
 
-    while ((opt = getopt(argc, argv, "vqnt:")) != -1) {
+    while ((opt = getopt(argc, argv, "vqnit:")) != -1) {
         switch (opt) {
+          case 'i':
+              interactive = true;
+              break;
           case 'v':
               verbose++;
               break;
@@ -690,6 +729,28 @@ int main(int argc, char * const argv[], char *envp[])
         return 4;
     }
     outs.close();
+
+    // Check whether we are current:
+    if (!nonetwork) {
+        out(OK,"Checking for updates...");
+        int merkverbose = verbose;
+        verbose = 2;
+        string versionfile;
+        string version;
+        if (get(targetdir,"http://www-groups.mcs.st-and.ac.uk/~neunhoef/for/BOB/BOBVERSION",versionfile,true) == ERROR) {
+            out(OK,"Could not get latest version number, does not matter.");
+        } else {
+            fstream file(versionfile.c_str(),fstream::in);
+            getline(file,version);
+            file.close();
+            if (atoi(version.c_str()) > BOBVERSION) {
+                out(WARN,"There is a newer version of bob available.");
+            } else {
+                out(OK,"I am the latest version of myself, good. :-)");
+            }
+        }
+        verbose = merkverbose;
+    }
 
     static vector<Test *> &tests = alltests();
     Test *t;
@@ -797,7 +858,7 @@ int main(int argc, char * const argv[], char *envp[])
         return 1;
     }
     string answer;
-    if (gotwarning) {
+    if (interactive && gotwarning) {
         cout << "There have been warnings, go on regardless? ";
         cout.flush();
         cin >> answer;

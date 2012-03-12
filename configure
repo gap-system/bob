@@ -3477,7 +3477,7 @@ $as_echo "#define SYS_IS_OSX 1" >>confdefs.h
 
 $as_echo "#define SYS_IS_LINUX 1" >>confdefs.h
 
-      FORLDADD="-lrt"
+      FORLDADD="-Wl,-Bstatic -lrt -static-libgcc -static-libstdc++ -Wl,-Bdynamic"
       FORLDFLAGS=""
       ;;
     *bsd*)

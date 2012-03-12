@@ -1,5 +1,7 @@
 // bob.h - Copyright 2012 by Max Neunhoeffer
 
+#define BOBVERSION 1
+
 #include <unistd.h>
 #include <string.h>
 #include <string>
@@ -91,8 +93,11 @@ void delenvironment(string key);
 
 void out(Status severity, string msg);
 bool which(string name, string &res);
+Status downloadname(string targetname, string url, string &localname);
+Status download(string url, string localname);
+Status checksha1(string filename, string hash);
 Status get(string targetdir, string url, string &filename, bool alwaysget);
-Status getindirectly(string targetdir, string url, string &archivename);
+Status getind(string targetdir, string url, string &archivename);
 Status unpack(string archivename);
 Status sh(string cmd);
 

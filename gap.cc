@@ -9,6 +9,10 @@ static Status GAP_prerequisites(string targetdir, Status depsresult)
 {
     Status res = OK;
     string path;
+    if (!which("/bin/sh",path)) {
+        out(ERROR,"Need a (bash-like) shell in /bin/sh, please install one.");
+        res = ERROR;
+    }
     if (Which_C_Compiler.num != 0) {
         out(ERROR,"Need a C-compiler, preferably gcc, please install one.");
         res = ERROR;
@@ -28,7 +32,7 @@ static string GAP_archivename;
 
 static Status GAP_getfunc(string targetdir)
 {
-    if (getindirectly(targetdir,
+    if (getind(targetdir,
            "http://www-groups.mcs.st-and.ac.uk/~neunhoef/for/BOB/GAP.link",
            GAP_archivename)) {
         out(ERROR,"Could not download GAP archive.");
