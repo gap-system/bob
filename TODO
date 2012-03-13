@@ -28,9 +28,10 @@
 > Test for bash?
 > test for updates/version number
 > Recognition for 64-bit/32-bit
-Actually implement proper GAP compiling
-
-Say which archive we got.
+> Actually implement proper GAP compiling --> Need to do packages 64/32
+> Say which archive we got.
+> Put entry into build.log as to what component is being done
+> Write a help page as manual
 Output a final report about what worked and what not
 test in chroot prison
 

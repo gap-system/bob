@@ -465,6 +465,7 @@ Status getind(string targetdir, string url, string &archivename)
     string url2;
     string hash;
     Status res;
+    int pos;
 
     out(OK,"Getting link file...");
     if (nonetwork)
@@ -500,6 +501,8 @@ Status getind(string targetdir, string url, string &archivename)
     // Now check if it is already there:
     res = downloadname(targetdir,url2,archivename);
     if (res == ERROR) return res;
+    pos = archivename.rfind('/');
+    out(OK,string("Archive name: ")+archivename.substr(pos+1));
 
     // Is it already there?
     if (access(archivename.c_str(),R_OK) == 0) {
@@ -701,6 +704,38 @@ string origdir;
 string targetdir;
 bool interactive = false;
 
+void usage()
+{
+    cout << "============\n";
+    cout << " Bob-Manual \n";
+    cout << "============\n\n";
+    cout << "This program will download and compile GAP on your machine.\n";
+    cout << "It needs a working C-Compiler and some other utilities.\n";
+    cout << "It will first check whether everything that is needed is there.\n";
+    cout << "and alert you about missing tools.\n\n";
+    cout << "Usage: bob [-h] [-i] [-v] [-q] [-t TARGETDIR]\n";
+    cout << "    -h : Show this help\n";
+    cout << "    -v : Increase verbosity by 1, default is 3\n";
+    cout << "    -q : Decrease verbosity by 1\n";
+    cout << "         Verbosity levels:\n";
+    cout << "           0 : do not show anything, completely quiet\n";
+    cout << "           1 : only show errors\n";
+    cout << "           2 : show errors and warnings\n";
+    cout << "           3 : show errors, warnings and what is going on\n";
+    cout << "           4 : show additionally output of building process\n";
+    cout << "    -i : Run interactively, that is, ask if warnings are found\n";
+    cout << "         (without this options, the program runs despite\n";
+    cout << "          warnings but stops when errors are found)\n";
+    cout << "    -n : Do not use network access\n";
+    cout << "         (This means that all link and archive files must\n";
+    cout << "          already be present and that Bob does not check for\n";
+    cout << "          updates.)\n";
+    cout << "    -t : Specify a different target directory than the current\n";
+    cout << "         directory. Bob needs write access to that directory.\n";
+    cout << "For any questions or complaints please contact:\n";
+    cout << "  Max Neunhoeffer <neunhoef@mcs.st-and.ac.uk>\n\n";
+}
+
 int main(int argc, char * const argv[], char *envp[])
 {
     int opt;
@@ -715,8 +750,11 @@ int main(int argc, char * const argv[], char *envp[])
     // Initialise our environment business:
     initenvironment(envp);
 
-    while ((opt = getopt(argc, argv, "vqnit:")) != -1) {
+    while ((opt = getopt(argc, argv, "hvqnit:")) != -1) {
         switch (opt) {
+          case 'h':
+              usage();
+              return 0;
           case 'i':
               interactive = true;
               break;
@@ -791,6 +829,7 @@ int main(int argc, char * const argv[], char *envp[])
         verbose = merkverbose;
     }
 
+    out(OK,"Performing tests...");
     static vector<Test *> &tests = alltests();
     Test *t;
     int p,i;
@@ -864,6 +903,7 @@ int main(int argc, char * const argv[], char *envp[])
     bool gotwarning;
 
     // Now check all the prerequisites:
+    out(OK,"Checking prerequisites...");
     goterror = false;
     gotwarning = false;
     Status res;
@@ -932,6 +972,11 @@ int main(int argc, char * const argv[], char *envp[])
                 return 8;
             }
             out(OK,"Building component "+c->name);
+            outs.open(buildlogfilename.c_str(),fstream::out | fstream::app);
+            if (!outs.fail()) {
+                outs << "BOB: Building component " << c->name << "...\n";
+                outs.close();
+            }
             res = c->build(targetdir);
         }
         if (res == ERROR) goterror = true;
