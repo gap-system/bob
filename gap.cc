@@ -59,7 +59,7 @@ static Status GAP_buildfunc(string targetdir)
         (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang")) {
         out(OK,"Compiling for both 32-bit and 64-bit...");
         out(OK,"Running ./configure ABI=32 for GAP...");
-        if (sh("./configure ABI=32 --with-gmp=no")) {
+        if (sh("./configure ABI=32")) {
             out(ERROR,"Error in configure stage.");
             return ERROR;
         }
@@ -76,7 +76,7 @@ static Status GAP_buildfunc(string targetdir)
         confignames.push_back("default32");
     }
     out(OK,"Running ./configure for GAP...");
-    if (sh("./configure --with-gmp=no")) {
+    if (sh("./configure")) {
         out(ERROR,"Error in configure stage.");
         return ERROR;
     }

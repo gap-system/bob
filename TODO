@@ -32,9 +32,9 @@
 > Say which archive we got.
 > Put entry into build.log as to what component is being done
 > Write a help page as manual
-Add gmp again
-Allow for 32-bit compile of bzip2-lib, we need to patch it
-Create download dir for BOBVERSION
+> Add gmp again
+> Allow for 32-bit compile of bzip2-lib, we need to patch it
+> Create download dir for BOBVERSION
 Run make clean before first build or delete gap4r5???
   --> need recursive delete
 Future:

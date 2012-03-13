@@ -808,6 +808,25 @@ int main(int argc, char * const argv[], char *envp[])
     }
     outs.close();
 
+    // Change to target directory:
+    if (chdir(targetdir.c_str()) != 0) {
+        // has worked before, we assume it does again
+        cerr << "Cannot chdir to target dir. Stopping.\n";
+        return 15;
+    }
+    struct stat statbuf;
+    if (stat("download",&statbuf) == -1) {
+        if (mkdir("download",S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH) != 0 &&
+            errno != EEXIST) {
+            out(ERROR,"Cannot create \"download\" directory in "+
+                      targetdir+" .");
+            return 7;
+        }
+    } else if (!S_ISDIR(statbuf.st_mode)) {
+        out(ERROR,"Cannot create \"download\" directory in "+targetdir+" .");
+        return ERROR;
+    }
+
     // Check whether we are current:
     if (!nonetwork) {
         out(OK,"Checking for updates...");
@@ -841,25 +860,6 @@ int main(int argc, char * const argv[], char *envp[])
                 t->run();
             }
         }
-    }
-
-    // Change to target directory:
-    if (chdir(targetdir.c_str()) != 0) {
-        // has worked before, we assume it does again
-        cerr << "Cannot chdir to target dir. Stopping.\n";
-        return 15;
-    }
-    struct stat statbuf;
-    if (stat("download",&statbuf) == -1) {
-        if (mkdir("download",S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH) != 0 &&
-            errno != EEXIST) {
-            out(ERROR,"Cannot create \"download\" directory in "+
-                      targetdir+" .");
-            return 7;
-        }
-    } else if (!S_ISDIR(statbuf.st_mode)) {
-        out(ERROR,"Cannot create \"download\" directory in "+targetdir+" .");
-        return ERROR;
     }
 
     static vector<Component *> &comps = allcomps();

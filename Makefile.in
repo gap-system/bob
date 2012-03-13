@@ -718,7 +718,7 @@ libs/include/zlib.h:
 	  ./configure --prefix=$$MYPATH/libs --static ; \
 	  make ; make install )
 
-zlib_m32:
+bz2lib_m32:
 	( if [ ! -e ${BZ2LIBARCH} ] ; then \
 	     curl http://bzip.org/${BZ2LIBVERSION}/${BZ2LIBARCH} \
 	     -o ${BZ2LIBARCH} ; fi )

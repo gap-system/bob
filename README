@@ -1,0 +1,16 @@
+To compile, just do
+
+  make distclean
+  ./configure ; make
+
+on a 64-bit machine.
+
+On 32-bit, do
+
+  export CFLAGS=-m32
+  export CXXFLAGS=-m32
+  make distclean
+  ./configure
+  make bz2lib_m32
+  make
+
