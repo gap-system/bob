@@ -32,6 +32,8 @@
 > Say which archive we got.
 > Put entry into build.log as to what component is being done
 > Write a help page as manual
+Add gmp again
+Create download dir for BOBVERSION
 Output a final report about what worked and what not
 test in chroot prison
 
