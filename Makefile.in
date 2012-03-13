@@ -52,12 +52,12 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_bob_OBJECTS = bob-bob.$(OBJEXT) bob-gap.$(OBJEXT)
+am_bob_OBJECTS = bob-bob.$(OBJEXT) bob-gap.$(OBJEXT) \
+	bob-hl_sha1.$(OBJEXT)
 bob_OBJECTS = $(am_bob_OBJECTS)
 am__DEPENDENCIES_1 =
 bob_DEPENDENCIES = libs/lib/libcurl.a libs/lib/libarchive.a \
-	libs/lib/libz.a libs/lib/libbz2.a libs/lib/libcrypto.a \
-	$(am__DEPENDENCIES_1)
+	libs/lib/libz.a libs/lib/libbz2.a $(am__DEPENDENCIES_1)
 bob_LINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(bob_LDFLAGS) \
 	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -187,13 +187,12 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-bob_SOURCES = bob.cc gap.cc
+bob_SOURCES = bob.cc gap.cc hl_sha1.cc
 bob_CPPFLAGS = `libs/bin/curl-config --cflags`
-bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a libs/lib/libbz2.a libs/lib/libcrypto.a ${FORLDADD}
+bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a libs/lib/libbz2.a ${FORLDADD}
 bob_LDFLAGS = ${FORLDFLAGS}
 BUILT_SOURCES = libs/include/zlib.h libs/include/bzlib.h \
-		libs/include/archive.h libs/include/curl/curl.h \
-		libs/include/openssl/ssl.h
+		libs/include/archive.h libs/include/curl/curl.h
 
 ZLIBVERSION = 1.2.6
 BZ2LIBVERSION = 1.0.6
@@ -308,6 +307,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bob-bob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bob-gap.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bob-hl_sha1.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -350,6 +350,20 @@ bob-gap.obj: gap.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='gap.cc' object='bob-gap.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bob-gap.obj `if test -f 'gap.cc'; then $(CYGPATH_W) 'gap.cc'; else $(CYGPATH_W) '$(srcdir)/gap.cc'; fi`
+
+bob-hl_sha1.o: hl_sha1.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bob-hl_sha1.o -MD -MP -MF $(DEPDIR)/bob-hl_sha1.Tpo -c -o bob-hl_sha1.o `test -f 'hl_sha1.cc' || echo '$(srcdir)/'`hl_sha1.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bob-hl_sha1.Tpo $(DEPDIR)/bob-hl_sha1.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='hl_sha1.cc' object='bob-hl_sha1.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bob-hl_sha1.o `test -f 'hl_sha1.cc' || echo '$(srcdir)/'`hl_sha1.cc
+
+bob-hl_sha1.obj: hl_sha1.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bob-hl_sha1.obj -MD -MP -MF $(DEPDIR)/bob-hl_sha1.Tpo -c -o bob-hl_sha1.obj `if test -f 'hl_sha1.cc'; then $(CYGPATH_W) 'hl_sha1.cc'; else $(CYGPATH_W) '$(srcdir)/hl_sha1.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bob-hl_sha1.Tpo $(DEPDIR)/bob-hl_sha1.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='hl_sha1.cc' object='bob-hl_sha1.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(bob_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bob-hl_sha1.obj `if test -f 'hl_sha1.cc'; then $(CYGPATH_W) 'hl_sha1.cc'; else $(CYGPATH_W) '$(srcdir)/hl_sha1.cc'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -691,11 +705,13 @@ uninstall-am: uninstall-binPROGRAMS
 
 
 distclean-local:
-	rm -rf libs
+	rm -rf libs zlib-${ZLIBVERSION} bzip2-${BZ2LIBVERSION} \
+	       curl-${CURLVERSION} openssl-${OPENSSLVERSION}
 
 libs/include/zlib.h:
 	( if [ ! -e ${ZLIBARCH} ] ; then \
 	     curl http://zlib.net/${ZLIBARCH} -o ${ZLIBARCH} ; fi )
+	rm -rf zlib-${ZLIBVERSION}
 	tar xzvf ${ZLIBARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd zlib-${ZLIBVERSION} ; \
@@ -706,6 +722,7 @@ libs/include/bzlib.h:
 	( if [ ! -e ${BZ2LIBARCH} ] ; then \
 	     curl http://bzip.org/${BZ2LIBVERSION}/${BZ2LIBARCH} \
 	     -o ${BZ2LIBARCH} ; fi )
+	rm -rf bzip2-${BZ2LIBVERSION}
 	tar xzvf ${BZ2LIBARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd bzip2-${BZ2LIBVERSION} ; \
@@ -715,6 +732,7 @@ libs/include/curl/curl.h:
 	( if [ ! -e ${CURLARCH} ] ; then \
 	     curl http://curl.haxx.se/download/${CURLARCH} \
 	     -o ${CURLARCH} ; fi )
+	rm -rf curl-${CURLVERSION}
 	tar xzvf ${CURLARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd curl-${CURLVERSION} ; \
@@ -732,6 +750,7 @@ libs/include/archive.h:
 	( if [ ! -e ${LIBARCHIVEARCH} ] ; then \
 	     curl http://libarchive.googlecode.com/files/${LIBARCHIVEARCH} \
 	     -o ${LIBARCHIVEARCH} ; fi )
+	rm -rf libarchive-${LIBARCHIVEVERSION}
 	tar xzvf ${LIBARCHIVEARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd libarchive-${LIBARCHIVEVERSION} ; \
@@ -747,6 +766,7 @@ libs/include/openssl/ssl.h:
 	( if [ ! -e ${OPENSSLARCH} ] ; then \
 	    curl http://www.openssl.org/source/${OPENSSLARCH} \
 	     -o ${OPENSSLARCH} ; fi )
+	rm -rf openssl-${OPENSSLVERSION}
 	tar xzvf ${OPENSSLARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd openssl-${OPENSSLVERSION} ; \
@@ -758,7 +778,7 @@ libs/include/openssl/ssl.h:
 	  ./config --prefix=$$MYPATH/libs --openssldir=$$MYPATH/libs/openssl \
 	  no-threads no-shared no-sse2 zlib ; \
 	  fi ; \
-	  make ; make test ; make install )
+	  make ; make install )
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -1,14 +1,13 @@
 FORLDADD=@FORLDADD@
 FORLDFLAGS=@FORLDFLAGS@
 bin_PROGRAMS = bob
-bob_SOURCES = bob.cc gap.cc
+bob_SOURCES = bob.cc gap.cc hl_sha1.cc
 bob_CPPFLAGS = `libs/bin/curl-config --cflags`
-bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a libs/lib/libbz2.a libs/lib/libcrypto.a ${FORLDADD}
+bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a libs/lib/libbz2.a ${FORLDADD}
 bob_LDFLAGS = ${FORLDFLAGS}
 
 BUILT_SOURCES = libs/include/zlib.h libs/include/bzlib.h \
-		libs/include/archive.h libs/include/curl/curl.h \
-		libs/include/openssl/ssl.h
+		libs/include/archive.h libs/include/curl/curl.h
 
 ZLIBVERSION = 1.2.6
 BZ2LIBVERSION = 1.0.6
@@ -17,7 +16,8 @@ CURLVERSION = 7.24.0
 OPENSSLVERSION = 1.0.0g
 
 distclean-local:
-	rm -rf libs
+	rm -rf libs zlib-${ZLIBVERSION} bzip2-${BZ2LIBVERSION} \
+	       curl-${CURLVERSION} openssl-${OPENSSLVERSION}
 
 CURLARCH = curl-${CURLVERSION}.tar.gz
 LIBARCHIVEARCH = libarchive-${LIBARCHIVEVERSION}.tar.gz
@@ -28,6 +28,7 @@ OPENSSLARCH = openssl-${OPENSSLVERSION}.tar.gz
 libs/include/zlib.h:
 	( if [ ! -e ${ZLIBARCH} ] ; then \
 	     curl http://zlib.net/${ZLIBARCH} -o ${ZLIBARCH} ; fi )
+	rm -rf zlib-${ZLIBVERSION}
 	tar xzvf ${ZLIBARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd zlib-${ZLIBVERSION} ; \
@@ -38,6 +39,7 @@ libs/include/bzlib.h:
 	( if [ ! -e ${BZ2LIBARCH} ] ; then \
 	     curl http://bzip.org/${BZ2LIBVERSION}/${BZ2LIBARCH} \
 	     -o ${BZ2LIBARCH} ; fi )
+	rm -rf bzip2-${BZ2LIBVERSION}
 	tar xzvf ${BZ2LIBARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd bzip2-${BZ2LIBVERSION} ; \
@@ -47,6 +49,7 @@ libs/include/curl/curl.h:
 	( if [ ! -e ${CURLARCH} ] ; then \
 	     curl http://curl.haxx.se/download/${CURLARCH} \
 	     -o ${CURLARCH} ; fi )
+	rm -rf curl-${CURLVERSION}
 	tar xzvf ${CURLARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd curl-${CURLVERSION} ; \
@@ -64,6 +67,7 @@ libs/include/archive.h:
 	( if [ ! -e ${LIBARCHIVEARCH} ] ; then \
 	     curl http://libarchive.googlecode.com/files/${LIBARCHIVEARCH} \
 	     -o ${LIBARCHIVEARCH} ; fi )
+	rm -rf libarchive-${LIBARCHIVEVERSION}
 	tar xzvf ${LIBARCHIVEARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd libarchive-${LIBARCHIVEVERSION} ; \
@@ -79,6 +83,7 @@ libs/include/openssl/ssl.h:
 	( if [ ! -e ${OPENSSLARCH} ] ; then \
 	    curl http://www.openssl.org/source/${OPENSSLARCH} \
 	     -o ${OPENSSLARCH} ; fi )
+	rm -rf openssl-${OPENSSLVERSION}
 	tar xzvf ${OPENSSLARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd openssl-${OPENSSLVERSION} ; \
@@ -90,5 +95,5 @@ libs/include/openssl/ssl.h:
 	  ./config --prefix=$$MYPATH/libs --openssldir=$$MYPATH/libs/openssl \
 	  no-threads no-shared no-sse2 zlib ; \
 	  fi ; \
-	  make ; make test ; make install )
+	  make ; make install )
 

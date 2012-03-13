@@ -14,7 +14,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <curl/curl.h>
-#include <openssl/sha.h>
+#include "hl_sha1.h"
 
 using namespace std;
 
@@ -422,19 +422,20 @@ Status get(string targetdir, string url, string &filename, bool alwaysget)
 
 unsigned char *sha1(FILE *f)
 {
-    SHA_CTX c;
-    static unsigned char md[SHA_DIGEST_LENGTH];
+    HL_SHA1_CTX c;
+    SHA1 sha;
+    static hl_uint8 md[SHA1HashSize];
     int i;
     unsigned char buf[4096];
 
-    SHA1_Init(&c);
+    sha.SHA1Reset(&c);
     while (true) {
         i = fread(buf,1,4096,f);
         if (i <= 0) break;
-        SHA1_Update(&c,buf,(unsigned long)i);
+        sha.SHA1Input(&c,(const hl_uint8 *) buf,(unsigned int)i);
     }
-    SHA1_Final(&(md[0]),&c);
-    return md;
+    sha.SHA1Result(&c,md);
+    return (unsigned char *)md;
 }
 
 static inline int hexdig(char c)

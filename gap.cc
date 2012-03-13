@@ -93,87 +93,86 @@ Component GAP("GAP",GAP_dependencies,GAP_prerequisites,
                     GAP_getfunc,GAP_buildfunc);
 
 
-static const char *dependencies_onlyGAP[]
+static Status BuildGAPPackage(string targetdir, string pkgname, bool withm32)
+{
+    string msg;
+    string pkgdir = string("gap4r5/pkg/")+pkgname;
+    string cmd;
+    if (chdir(pkgdir.c_str())) {
+        msg = string("Cannot change to the ")+pkgname+" package's directory.";
+        out(ERROR,msg);
+        return ERROR;
+    }
+    if (Which_Wordsize.num == 64 && 
+        (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang")) {
+        msg = string("Running ./configure CONFIGNAME=default32 for ")+
+                     pkgname+" package...";
+        out(OK,msg);
+        cmd = string("./configure CONFIGNAME=default32");
+        if (withm32) cmd += " CFLAGS=-m32";
+        if (sh(cmd)) {
+            out(ERROR,"Error in configure stage.");
+            return ERROR;
+        }
+        msg = string("Running make for ")+pkgname+" package...";
+        out(OK,msg);
+        if (sh("make")) {
+            out(ERROR,"Error in compilation stage.");
+            return ERROR;
+        }
+        msg = string("Running ./configure CONFIGNAME=default64 for ")+pkgname+
+                     " package...";
+        out(OK,msg);
+        if (sh("./configure CONFIGNAME=default64")) {
+            out(ERROR,"Error in configure stage.");
+            return ERROR;
+        }
+        msg = string("Running make for ")+pkgname+" package...";
+        out(OK,msg);
+        if (sh("make")) {
+            out(ERROR,"Error in compilation stage.");
+            return ERROR;
+        }
+    } else {
+        msg = string("Running ./configure for ")+pkgname+ " package...";
+        out(OK,msg);
+        if (sh("./configure")) {
+            out(ERROR,"Error in configure stage.");
+            return ERROR;
+        }
+        msg = string("Running make for ")+pkgname+" package...";
+        out(OK,msg);
+        if (sh("make")) {
+            out(ERROR,"Error in compilation stage.");
+            return ERROR;
+        }
+    }
+}
+
+static const char *deps_onlyGAP[]
   = { "GAP", NULL };
 
-static const char *stdpackages[]
-  = { "io", "orb", "cvec", "edim", "Browse", NULL };
+static Status io_buildfunc(string targetdir)
+{ return BuildGAPPackage(targetdir, "io", true); }
+Component io_Pkg("io_PKG",deps_onlyGAP,NULL,NULL,io_buildfunc);
 
-static const int cflagslimit = 3;
+static Status orb_buildfunc(string targetdir)
+{ return BuildGAPPackage(targetdir, "orb", true); }
+Component orb_Pkg("orb_PKG",deps_onlyGAP,NULL,NULL,orb_buildfunc);
 
-static Status StdPkgs_buildfunc(string targetdir)
-{
-    const char *name;
-    int i;
-    string pkgdir;
-    string msg;
-    string cmd;
+static Status cvec_buildfunc(string targetdir)
+{ return BuildGAPPackage(targetdir, "cvec", true); }
+Component cvec_Pkg("cvec_PKG",deps_onlyGAP,NULL,NULL,cvec_buildfunc);
 
-    i = 0;
-    while (true) {   // will be left by break
-        name = stdpackages[i];
-        if (name == NULL) break;
+static Status edim_buildfunc(string targetdir)
+{ return BuildGAPPackage(targetdir, "edim", false); }
+Component edim_Pkg("edim_PKG",deps_onlyGAP,NULL,NULL,edim_buildfunc);
 
-        if (chdir(targetdir.c_str()) != 0) {
-            out(ERROR,"Cannot change to target directory.");
-            return ERROR;
-        }
- 
-        msg = string("Compiling ")+name+" package...";
-        out(OK,msg);
-        pkgdir = string("gap4r5/pkg/")+name;
-        if (chdir(pkgdir.c_str())) {
-            msg = string("Cannot change to the ")+name+" package's directory.";
-            out(ERROR,msg);
-            return ERROR;
-        }
-        if (Which_Wordsize.num == 64 && 
-            (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang")) {
-            msg = string("Running ./configure CONFIGNAME=default32 for ")+
-                         name+" package...";
-            out(OK,msg);
-            cmd = string("./configure CONFIGNAME=default32");
-            if (i < cflagslimit) cmd += " CFLAGS=-m32";
-            if (sh(cmd)) {
-                out(ERROR,"Error in configure stage.");
-                return ERROR;
-            }
-            msg = string("Running make for ")+name+" package...";
-            out(OK,msg);
-            if (sh("make")) {
-                out(ERROR,"Error in compilation stage.");
-                return ERROR;
-            }
-            msg = string("Running ./configure CONFIGNAME=default64 for ")+name+
-                         " package...";
-            out(OK,msg);
-            if (sh("./configure CONFIGNAME=default64")) {
-                out(ERROR,"Error in configure stage.");
-                return ERROR;
-            }
-            msg = string("Running make for ")+name+" package...";
-            out(OK,msg);
-            if (sh("make")) {
-                out(ERROR,"Error in compilation stage.");
-                return ERROR;
-            }
-        } else {
-            msg = string("Running ./configure for ")+name+ " package...";
-            out(OK,msg);
-            if (sh("./configure")) {
-                out(ERROR,"Error in configure stage.");
-                return ERROR;
-            }
-            msg = string("Running make for ")+name+" package...";
-            out(OK,msg);
-            if (sh("make")) {
-                out(ERROR,"Error in compilation stage.");
-                return ERROR;
-            }
-        }
-        i++;
-    }
-    return OK;
-}
-Component StdPkgs("StdPkgs",dependencies_onlyGAP,NULL,NULL,StdPkgs_buildfunc);
+static Status Browse_buildfunc(string targetdir)
+{ return BuildGAPPackage(targetdir, "Browse", false); }
+Component Browse_Pkg("Browse_PKG",deps_onlyGAP,NULL,NULL,Browse_buildfunc);
+
+static Status nq_buildfunc(string targetdir)
+{ return BuildGAPPackage(targetdir, "nq-2.4", false); }
+Component nq_Pkg("nq_PKG",deps_onlyGAP,NULL,NULL,nq_buildfunc);
 
