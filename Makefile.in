@@ -718,6 +718,17 @@ libs/include/zlib.h:
 	  ./configure --prefix=$$MYPATH/libs --static ; \
 	  make ; make install )
 
+zlib_m32:
+	( if [ ! -e ${BZ2LIBARCH} ] ; then \
+	     curl http://bzip.org/${BZ2LIBVERSION}/${BZ2LIBARCH} \
+	     -o ${BZ2LIBARCH} ; fi )
+	rm -rf bzip2-${BZ2LIBVERSION}
+	tar xzvf ${BZ2LIBARCH}
+	if [ ! -e libs ] ; then mkdir libs ; fi
+	( export MYPATH=`pwd` ; cd bzip2-${BZ2LIBVERSION} ; \
+	  make CFLAGS="-m32 -Wall -Winline -O2 -g -D_FILE_OFFSET_BITS=64" ; \
+	  make install PREFIX=$$MYPATH/libs )
+
 libs/include/bzlib.h:
 	( if [ ! -e ${BZ2LIBARCH} ] ; then \
 	     curl http://bzip.org/${BZ2LIBVERSION}/${BZ2LIBARCH} \
