@@ -172,7 +172,10 @@ static Status Browse_buildfunc(string targetdir)
 { return BuildGAPPackage(targetdir, "Browse", false); }
 Component Browse_Pkg("Browse_PKG",deps_onlyGAP,NULL,NULL,Browse_buildfunc);
 
+#if 0
+// Need check for gmp before we can proceed with this!
 static Status nq_buildfunc(string targetdir)
 { return BuildGAPPackage(targetdir, "nq-2.4", false); }
 Component nq_Pkg("nq_PKG",deps_onlyGAP,NULL,NULL,nq_buildfunc);
+#endif
 

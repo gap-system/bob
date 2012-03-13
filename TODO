@@ -32,14 +32,15 @@
 > Say which archive we got.
 > Put entry into build.log as to what component is being done
 > Write a help page as manual
-Run make clean before first build or delete gap4r5???
 Add gmp again
+Allow for 32-bit compile of bzip2-lib, we need to patch it
 Create download dir for BOBVERSION
-Output a final report about what worked and what not
-test in chroot prison
-
+Run make clean before first build or delete gap4r5???
+  --> need recursive delete
 Future:
 
+Output a final report about what worked and what not
+test in chroot prison
 selfupdate
 How about -static warnings???
 Implement test for C++ compiler
