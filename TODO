@@ -32,6 +32,7 @@
 > Say which archive we got.
 > Put entry into build.log as to what component is being done
 > Write a help page as manual
+Run make clean before first build or delete gap4r5???
 Add gmp again
 Create download dir for BOBVERSION
 Output a final report about what worked and what not
