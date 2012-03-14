@@ -93,15 +93,16 @@ Component GAP("GAP",GAP_dependencies,GAP_prerequisites,
                     GAP_getfunc,GAP_buildfunc);
 
 
-static Status BuildGAPPackage(string targetdir, string pkgname, bool withm32)
+static Status BuildGAPPackage(string targetdir, string pkgname, bool withm32,
+                              Status err)
 {
     string msg;
     string pkgdir = string("gap4r5/pkg/")+pkgname;
     string cmd;
     if (chdir(pkgdir.c_str())) {
         msg = string("Cannot change to the ")+pkgname+" package's directory.";
-        out(ERROR,msg);
-        return ERROR;
+        out(err,msg);
+        return err;
     }
     if (Which_Wordsize.num == 64 && 
         (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang")) {
@@ -111,40 +112,40 @@ static Status BuildGAPPackage(string targetdir, string pkgname, bool withm32)
         cmd = string("./configure CONFIGNAME=default32");
         if (withm32) cmd += " CFLAGS=-m32";
         if (sh(cmd)) {
-            out(ERROR,"Error in configure stage.");
-            return ERROR;
+            out(err,"Error in configure stage.");
+            return err;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
         if (sh("make")) {
-            out(ERROR,"Error in compilation stage.");
-            return ERROR;
+            out(err,"Error in compilation stage.");
+            return err;
         }
         msg = string("Running ./configure CONFIGNAME=default64 for ")+pkgname+
                      " package...";
         out(OK,msg);
         if (sh("./configure CONFIGNAME=default64")) {
-            out(ERROR,"Error in configure stage.");
-            return ERROR;
+            out(err,"Error in configure stage.");
+            return err;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
         if (sh("make")) {
-            out(ERROR,"Error in compilation stage.");
-            return ERROR;
+            out(err,"Error in compilation stage.");
+            return err;
         }
     } else {
         msg = string("Running ./configure for ")+pkgname+ " package...";
         out(OK,msg);
         if (sh("./configure")) {
-            out(ERROR,"Error in configure stage.");
-            return ERROR;
+            out(err,"Error in configure stage.");
+            return err;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
         if (sh("make")) {
-            out(ERROR,"Error in compilation stage.");
-            return ERROR;
+            out(err,"Error in compilation stage.");
+            return err;
         }
     }
 }
@@ -153,29 +154,41 @@ static const char *deps_onlyGAP[]
   = { "GAP", NULL };
 
 static Status io_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "io", true); }
+{ return BuildGAPPackage(targetdir, "io", true, ERROR); }
 Component io_Pkg("io_PKG",deps_onlyGAP,NULL,NULL,io_buildfunc);
 
 static Status orb_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "orb", true); }
+{ return BuildGAPPackage(targetdir, "orb", true, WARN); }
 Component orb_Pkg("orb_PKG",deps_onlyGAP,NULL,NULL,orb_buildfunc);
 
 static Status cvec_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "cvec", true); }
+{ return BuildGAPPackage(targetdir, "cvec", true, WARN); }
 Component cvec_Pkg("cvec_PKG",deps_onlyGAP,NULL,NULL,cvec_buildfunc);
 
 static Status edim_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "edim", false); }
+{ return BuildGAPPackage(targetdir, "edim", false, WARN); }
 Component edim_Pkg("edim_PKG",deps_onlyGAP,NULL,NULL,edim_buildfunc);
 
 static Status Browse_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "Browse", false); }
+{ return BuildGAPPackage(targetdir, "Browse", false, WARN); }
 Component Browse_Pkg("Browse_PKG",deps_onlyGAP,NULL,NULL,Browse_buildfunc);
 
-#if 0
-// Need check for gmp before we can proceed with this!
+static Status nq_prerequisites(string targetdir, Status depsresult)
+{
+    string path;
+    if (depsresult != OK) return depsresult;
+    if (!(which("gawk",path) || which("mawk",path) || which("nawk",path) ||
+          which("awk",path))) {
+        out(WARN,"Need awk for component nq-Pkg.");
+        return WARN;
+    }
+    if (access("/usr/include/gmp.h",R_OK) != 0) {
+        out(WARN,"Need gmp installed for component nq-Pkg.");
+        return WARN;
+    }
+}
+
 static Status nq_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "nq-2.4", false); }
-Component nq_Pkg("nq_PKG",deps_onlyGAP,NULL,NULL,nq_buildfunc);
-#endif
+{ return BuildGAPPackage(targetdir, "nq-2.4", true, WARN); }
+Component nq_Pkg("nq_PKG",deps_onlyGAP,nq_prerequisites,NULL,nq_buildfunc);
 
