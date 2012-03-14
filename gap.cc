@@ -109,7 +109,7 @@ static Status BuildGAPPackage(string targetdir, string pkgname, bool withm32,
         msg = string("Running ./configure CONFIGNAME=default32 for ")+
                      pkgname+" package...";
         out(OK,msg);
-        cmd = string("./configure CONFIGNAME=default32");
+        cmd = string("./configure CONFIGNAME=default32 ABI=32");
         if (withm32) cmd += " CFLAGS=-m32";
         if (sh(cmd)) {
             out(err,"Error in configure stage.");
@@ -124,7 +124,7 @@ static Status BuildGAPPackage(string targetdir, string pkgname, bool withm32,
         msg = string("Running ./configure CONFIGNAME=default64 for ")+pkgname+
                      " package...";
         out(OK,msg);
-        if (sh("./configure CONFIGNAME=default64")) {
+        if (sh("./configure CONFIGNAME=default64 ABI=64")) {
             out(err,"Error in configure stage.");
             return err;
         }

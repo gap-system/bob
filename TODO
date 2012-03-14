@@ -35,14 +35,14 @@
 > Add gmp again
 > Allow for 32-bit compile of bzip2-lib, we need to patch it
 > Create download dir for BOBVERSION
-Run make clean before first build or delete gap4r5???
-  --> need recursive delete
+Output a final report about what worked and what not
+
 Future:
 
-Output a final report about what worked and what not
+Run make clean before first build or delete gap4r5???
+  --> need recursive delete
 test in chroot prison
 selfupdate
-How about -static warnings???
+How about -static warnings??? Is -static better???
 Implement test for C++ compiler
 More tests?
-Windows???

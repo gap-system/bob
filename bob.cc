@@ -950,10 +950,10 @@ int main(int argc, char * const argv[], char *envp[])
     }
 
     // Now do the actual work of getting and building:
-    goterror = false;
-    gotwarning = false;
+    int nrerrors = 0;
+    int nrwarnings = 0;
     for (i = 0;i < deporder.size();i++) {
-        if (goterror) {
+        if (nrerrors > 0) {
             out(ERROR,"Stopping.");
             return 6;
         }
@@ -967,6 +967,7 @@ int main(int argc, char * const argv[], char *envp[])
             out(OK,"Getting component "+c->name);
             res = c->get(targetdir);
         }
+        c->getres = res;
         if (res == OK) {
             if (chdir(targetdir.c_str()) != 0) {
                 out(ERROR,"Cannot chdir to target directory. Stopping.");
@@ -980,13 +981,31 @@ int main(int argc, char * const argv[], char *envp[])
             }
             res = c->build(targetdir);
         }
-        if (res == ERROR) goterror = true;
-        else if (res == WARN) gotwarning = true;
+        if (res == ERROR) nrerrors++;
+        else if (res == WARN) nrwarnings++;
         else {
             out(OK,"Successfully built component "+c->name);
         }
+        c->buildres = res;
     }
 
+    out(OK,"Summary:");
+    if (nrerrors > 0) {
+        out(OK,"");
+        out(OK,"Components with errors:");
+        for (i = 0; i < deporder.size();i++) {
+            if (c->buildres == ERROR) out(OK,string("  ")+c->name);
+        }
+    }
+    if (nrwarnings > 0) {
+        out(OK,"");
+        out(OK,"Components with warnings:");
+        for (i = 0; i < deporder.size();i++) {
+            if (c->buildres == WARN) out(OK,string("  ")+c->name);
+        }
+    }
+    if (nrerrors == 0 && nrwarnings == 0) 
+        out(OK,"All went smoothly.");
     return 0;
 }
 
