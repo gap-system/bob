@@ -51,6 +51,7 @@ extern Test Have_make;
 extern Test Which_C_Compiler;
 extern Test C_Compiler_Name;
 extern Test Which_Wordsize;
+extern Test Double_Compile;
 
 // Build components:
 

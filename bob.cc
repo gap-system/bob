@@ -206,6 +206,25 @@ static int Which_Wordsize_Test(string &st)
 }
 Test Which_Wordsize("Which_Wordsize",2,Which_Wordsize_Test);
 
+static int Double_Compile_Test(string &st)
+{
+    if (Which_Wordsize.num == 64 && 
+        (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang") &&
+        getenvironment("CFLAGS") == "" &&
+        getenvironment("CXXFLAGS") == "" &&
+        getenvironment("LDFLAGS") == "" &&
+        getenvironment("CPPFLAGS") == "") {
+        out(OK,"Performing 64-bit and 32-bit compilation.");
+        st = "DoubleCompile";
+        return 1;
+    } else {
+        st = "SingleCompile";
+        out(OK,"Performing single compilation.");
+        return 0;
+    }
+}
+Test Double_Compile("Double_Compile",3,Double_Compile_Test);
+
 // Access to the environment:
 
 vector<string> envkeys;
@@ -849,6 +868,11 @@ int main(int argc, char * const argv[], char *envp[])
         verbose = merkverbose;
     }
 
+    // We intentionally leave CC as it is to allow for a switch
+    delenvironment("CFLAGS");
+    delenvironment("CXXFLAGS");
+    delenvironment("LDFLAGS");
+
     out(OK,"Performing tests...");
     static vector<Test *> &tests = alltests();
     Test *t;
@@ -955,12 +979,13 @@ int main(int argc, char * const argv[], char *envp[])
     for (i = 0;i < deporder.size();i++) {
         if (nrerrors > 0) {
             out(ERROR,"Stopping.");
-            return 6;
+            break;
         }
         c = deporder[i];
         if (chdir(targetdir.c_str()) != 0) {
             out(ERROR,"Cannot chdir to target directory. Stopping.");
-            return 7;
+            nrerrors++;
+            break;
         }
         res = OK;
         if (c->get != NULL) {
@@ -971,7 +996,8 @@ int main(int argc, char * const argv[], char *envp[])
         if (res == OK) {
             if (chdir(targetdir.c_str()) != 0) {
                 out(ERROR,"Cannot chdir to target directory. Stopping.");
-                return 8;
+                nrerrors++;
+                break;
             }
             out(OK,"Building component "+c->name);
             outs.open(buildlogfilename.c_str(),fstream::out | fstream::app);

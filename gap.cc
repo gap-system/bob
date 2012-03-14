@@ -55,8 +55,7 @@ static Status GAP_buildfunc(string targetdir)
         out(ERROR,"Cannot change to GAP's root directory.");
         return ERROR;
     }
-    if (Which_Wordsize.num == 64 && 
-        (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang")) {
+    if (Double_Compile.num == 1) {
         out(OK,"Compiling for both 32-bit and 64-bit...");
         out(OK,"Running ./configure ABI=32 for GAP...");
         if (sh("./configure ABI=32")) {
@@ -104,8 +103,7 @@ static Status BuildGAPPackage(string targetdir, string pkgname, bool withm32,
         out(err,msg);
         return err;
     }
-    if (Which_Wordsize.num == 64 && 
-        (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang")) {
+    if (Double_Compile.num == 1) {
         msg = string("Running ./configure CONFIGNAME=default32 for ")+
                      pkgname+" package...";
         out(OK,msg);
