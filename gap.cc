@@ -109,7 +109,7 @@ static Status BuildGAPPackage(string targetdir, string pkgname, bool withm32,
         msg = string("Running ./configure CONFIGNAME=default32 for ")+
                      pkgname+" package...";
         out(OK,msg);
-        cmd = string("./configure CONFIGNAME=default32 ABI=32");
+        cmd = string("./configure CONFIGNAME=default32");
         if (withm32) cmd += " CFLAGS=-m32";
         if (sh(cmd)) {
             out(err,"Error in configure stage.");
@@ -124,7 +124,7 @@ static Status BuildGAPPackage(string targetdir, string pkgname, bool withm32,
         msg = string("Running ./configure CONFIGNAME=default64 for ")+pkgname+
                      " package...";
         out(OK,msg);
-        if (sh("./configure CONFIGNAME=default64 ABI=64")) {
+        if (sh("./configure CONFIGNAME=default64")) {
             out(err,"Error in configure stage.");
             return err;
         }
@@ -190,5 +190,5 @@ static Status nq_prerequisites(string targetdir, Status depsresult)
 
 static Status nq_buildfunc(string targetdir)
 { return BuildGAPPackage(targetdir, "nq-2.4", true, WARN); }
-Component nq_Pkg("nq_PKG",deps_onlyGAP,nq_prerequisites,NULL,nq_buildfunc);
+// Component nq_Pkg("nq_PKG",deps_onlyGAP,nq_prerequisites,NULL,nq_buildfunc);
 

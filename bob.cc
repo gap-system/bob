@@ -303,7 +303,7 @@ void out(Status severity, string msg)
     if (verbose >= 3 || 
         (verbose >= 2 && severity == WARN) ||
         (verbose >= 1 && severity == ERROR)) {
-        cout << "BOB:";
+        if (verbose >= 4) cout << "BOB:";
         if (severity == WARN) cout << "Warning:";
         else if (severity == ERROR) cout << "Error:";
         cout << msg << "\n";
