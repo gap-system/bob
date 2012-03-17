@@ -53,9 +53,11 @@ vector<string> confignames;
 static Status GAP_buildfunc(string)
 {
     // By convention, we are in the target directory.
-    out(OK,"Removing old installation...");
-    if (rmrf("gap4r5") == ERROR) 
-        out(WARN,"Could not remove directory \"gap4r5\" recursively!");
+    if (access("gap4r5",F_OK) == 0) {
+        out(OK,"Removing old installation...");
+        if (rmrf("gap4r5") == ERROR) 
+            out(WARN,"Could not remove directory \"gap4r5\" recursively!");
+    }
     out(OK,"Unpacking GAP archive...");
     if (unpack(GAP_archivename)) {
         out(ERROR,"A problem occurred when extracting the archive.");
