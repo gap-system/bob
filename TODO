@@ -35,13 +35,17 @@
 > Add gmp again
 > Allow for 32-bit compile of bzip2-lib, we need to patch it
 > Create download dir for BOBVERSION
-Output a final report about what worked and what not
+> Output a final report about what worked and what not
+> Compile packages which need sysinfo.gap link changed
+> Copy startup scripts to targetdir
+> Add make workspace: need better sh?
+Add more packages
+test in chroot prison
+
 
 Future:
 
-Run make clean before first build or delete gap4r5???
-  --> need recursive delete
-test in chroot prison
+exclude some components   -x
 selfupdate
 How about -static warnings??? Is -static better???
 Implement test for C++ compiler

@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -146,7 +147,7 @@ Test Which_C_Compiler("Which_C_Compiler",1,Which_C_Compiler_Test);
 static int C_Compiler_Name_Test(string &st)
 {
     if (Which_C_Compiler.num != 0) return -1;
-    int pos = Which_C_Compiler.str.rfind('/');
+    size_t pos = Which_C_Compiler.str.rfind('/');
     if (pos == string::npos)
         st = Which_C_Compiler.str;
     else
@@ -202,6 +203,7 @@ static int Which_Wordsize_Test(string &st)
     stringstream output;
     output << "Word size is " << size << "bit.";
     out(OK,output.str());
+    st = output.str();
     return size;
 }
 Test Which_Wordsize("Which_Wordsize",2,Which_Wordsize_Test);
@@ -283,7 +285,7 @@ char **prepareenvironment()
     char **p = new char * [envkeys.size()+1];
     char **pp = p;
     char *q;
-    int i;
+    unsigned int i;
     for (i = 0;i < envkeys.size();i++) {
         q = (char *) malloc(envkeys[i].size()+2+envvals[i].size());
         strcpy(q,envkeys[i].c_str());
@@ -485,7 +487,7 @@ Status getind(string targetdir, string url, string &archivename)
     string url2;
     string hash;
     Status res;
-    int pos;
+    size_t pos;
 
     out(OK,"Getting link file...");
     if (nonetwork)
@@ -522,7 +524,8 @@ Status getind(string targetdir, string url, string &archivename)
     res = downloadname(targetdir,url2,archivename);
     if (res == ERROR) return res;
     pos = archivename.rfind('/');
-    out(OK,string("Archive name: ")+archivename.substr(pos+1));
+    if (pos != string::npos)
+        out(OK,string("Archive name: ")+archivename.substr(pos+1));
 
     // Is it already there?
     if (access(archivename.c_str(),R_OK) == 0) {
@@ -625,15 +628,15 @@ Status unpack(string archivename)
     return res;
 }
 
-Status sh(string cmd)
+Status sh(string cmd, int stdinfd)
 {
     string prog;
     string path;
     vector<string> args;
     vector<char const *> argv;
     char **envp;
-    int i;
-    int pos,oldpos;
+    unsigned int i;
+    size_t pos,oldpos;
     pid_t pid;
 
     // Split string into command and arguments:
@@ -672,8 +675,7 @@ Status sh(string cmd)
     if (pid == 0) {   // the child
         // Open file build.log, dup to stdout and stderr
         // Close all other file descriptors
-        close(1);
-        close(2);
+        if (stdinfd != 0) dup2(stdinfd,0);
         dup2(fds[1],1);
         dup2(fds[1],2);
         for (int fd = 3;fd < 64;fd++) close(fd);
@@ -709,6 +711,118 @@ Status sh(string cmd)
     waitpid(pid,&status,0);
     if (WEXITSTATUS(status) != 0) {
         out(ERROR,"Subprocess "+cmd+" returned with an error.");
+        return ERROR;
+    }
+    return OK;
+}
+
+int shbg(string cmd, int stdinfd)
+{
+    string prog;
+    string path;
+    vector<string> args;
+    vector<char const *> argv;
+    char **envp;
+    unsigned int i;
+    size_t pos,oldpos;
+    pid_t pid;
+
+    // Split string into command and arguments:
+    pos = cmd.find(' ');
+    if (pos != string::npos) {
+        prog = cmd.substr(0,pos);
+        while (true) {
+            oldpos = pos+1;
+            pos = cmd.find(' ',oldpos);
+            if (pos == string::npos) {
+                if (oldpos < cmd.size()-1)
+                    args.push_back(cmd.substr(oldpos));
+                break;
+            }
+            if (pos > oldpos) args.push_back(cmd.substr(oldpos,pos-oldpos));
+        }
+    } else prog = cmd;
+    argv.push_back(prog.c_str());   // Give the prog as 0-th argument
+    for (i = 0;i < args.size();i++)
+        argv.push_back(args[i].c_str());
+    argv.push_back(NULL);
+
+    if (!which(prog,path)) {
+        out(ERROR,"Could not execute command:\n  "+cmd);
+        return -1;
+    }
+
+    pid = fork();
+
+    if (pid == 0) {   // the child
+        // Open file build.log, dup to stdout and stderr
+        if (stdinfd != 0) dup2(stdinfd,0);
+        int logfile = open(buildlogfilename.c_str(),O_WRONLY | O_APPEND);
+        dup2(logfile,1);
+        dup2(logfile,2);
+        // Close all other file descriptors
+        for (int fd = 3;fd < 64;fd++) close(fd);
+
+        envp = prepareenvironment();
+        if (execve(path.c_str(), (char *const *) &(argv[0]),envp) == -1) {
+            freepreparedenvironment(envp);
+            cerr << "Errno: " << errno << "\n";
+            out(ERROR,"Cannot execve.");
+            exit(17);
+        }
+    }
+
+    return pid;
+}
+
+Status rmrf(string dirname)
+{
+  DIR *dp;
+  struct dirent *ep;
+  string abs_filename;
+  struct stat stFileInfo;
+
+  dp = opendir (dirname.c_str());
+  if (dp != NULL) {
+      while ((ep = readdir(dp)) != NULL) {
+          if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) {
+              abs_filename = dirname + "/" + ep->d_name;
+              if (lstat(abs_filename.c_str(), &stFileInfo) == 0) {
+                  if(S_ISDIR(stFileInfo.st_mode))
+                      rmrf(abs_filename);
+                  else
+                      unlink(abs_filename.c_str());
+              }
+          }
+      }
+      (void) closedir (dp);
+  }
+
+  if (rmdir(dirname.c_str()) == 0) return OK;
+  else return ERROR;
+}
+
+Status cp(string from, string to)
+{
+    fstream fin,fout;
+    char buf[1024];
+    size_t len;
+
+    fin.exceptions(ifstream::badbit);
+    fout.exceptions(ofstream::badbit);
+    try {
+        fin.open(from.c_str(),fstream::in);
+        fout.open(to.c_str(),fstream::out | fstream::trunc);
+        while (!fin.eof()) {
+            fin.read(buf,1024);
+            len = fin.gcount();
+            if (len > 0) fout.write(buf,len);
+        }
+        fout.close();
+        fin.close();
+    }
+    catch (ifstream::failure e) {
+        out(ERROR,"I/O error copying "+from+" to "+to);
         return ERROR;
     }
     return OK;
@@ -759,6 +873,7 @@ void usage()
 int main(int argc, char * const argv[], char *envp[])
 {
     int opt;
+    string onlycomp;
 
     // Initialise targetdir with the realpath of the current dir:
     char *cwd = getcwd(NULL,1024);
@@ -770,7 +885,7 @@ int main(int argc, char * const argv[], char *envp[])
     // Initialise our environment business:
     initenvironment(envp);
 
-    while ((opt = getopt(argc, argv, "hvqnit:")) != -1) {
+    while ((opt = getopt(argc, argv, "hvqnit:c:")) != -1) {
         switch (opt) {
           case 'h':
               usage();
@@ -795,6 +910,9 @@ int main(int argc, char * const argv[], char *envp[])
                   if (targetdir[targetdir.size()-1] != '/')
                       targetdir.push_back('/');
               }
+              break;
+          case 'c':
+              onlycomp = optarg;
               break;
           case 'n':
               nonetwork = true;
@@ -868,15 +986,11 @@ int main(int argc, char * const argv[], char *envp[])
         verbose = merkverbose;
     }
 
-    // We intentionally leave CC as it is to allow for a switch
-    delenvironment("CFLAGS");
-    delenvironment("CXXFLAGS");
-    delenvironment("LDFLAGS");
-
     out(OK,"Performing tests...");
     static vector<Test *> &tests = alltests();
     Test *t;
-    int p,i;
+    int p;
+    unsigned int i;
     for (p = 1;p < 9;p++) {
         for (i = 0;i < tests.size();i++) {
             t = tests[i];
@@ -884,6 +998,18 @@ int main(int argc, char * const argv[], char *envp[])
                 t->run();
             }
         }
+    }
+
+    if (onlycomp != "") {
+        Component *oc = Component::find(onlycomp);
+        if (oc == NULL) {
+            out(ERROR,"Did not find component "+onlycomp+" ...");
+            return 8;
+        }
+        out(OK,"Building only component "+onlycomp+" ...");
+        oc->build(targetdir);
+        out(OK,"Done.");
+        return 0;
     }
 
     static vector<Component *> &comps = allcomps();
@@ -895,7 +1021,8 @@ int main(int argc, char * const argv[], char *envp[])
     vector<bool> done(comps.size(),false);
 
     bool somenew,cando;
-    int j,pos;
+    size_t j;
+    int pos;
 
     somenew = true;
     while (deporder.size() < comps.size()) {

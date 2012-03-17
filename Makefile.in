@@ -36,7 +36,7 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = bob$(EXEEXT)
 subdir = .
-DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
+DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/configure TODO cnf/config.guess cnf/config.sub \
 	cnf/depcomp cnf/install-sh cnf/missing
@@ -188,7 +188,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 bob_SOURCES = bob.cc gap.cc hl_sha1.cc
-bob_CPPFLAGS = `libs/bin/curl-config --cflags`
+bob_CPPFLAGS = `libs/bin/curl-config --cflags` -Wall -Wextra
 bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a libs/lib/libbz2.a ${FORLDADD}
 bob_LDFLAGS = ${FORLDFLAGS}
 BUILT_SOURCES = libs/include/zlib.h libs/include/bzlib.h \

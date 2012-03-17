@@ -102,7 +102,10 @@ Status checksha1(string filename, string hash);
 Status get(string targetdir, string url, string &filename, bool alwaysget);
 Status getind(string targetdir, string url, string &archivename);
 Status unpack(string archivename);
-Status sh(string cmd);
+Status sh(string cmd, int stdinfd = 0);
+int shbg(string cmd, int stdinfd = 0);
+Status rmrf(string dirname);
+Status cp(string from, string to);
 
 }  // namespace BOB
 

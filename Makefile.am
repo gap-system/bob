@@ -2,7 +2,7 @@ FORLDADD=@FORLDADD@
 FORLDFLAGS=@FORLDFLAGS@
 bin_PROGRAMS = bob
 bob_SOURCES = bob.cc gap.cc hl_sha1.cc
-bob_CPPFLAGS = `libs/bin/curl-config --cflags`
+bob_CPPFLAGS = `libs/bin/curl-config --cflags` -Wall -Wextra
 bob_LDADD = libs/lib/libcurl.a libs/lib/libarchive.a libs/lib/libz.a libs/lib/libbz2.a ${FORLDADD}
 bob_LDFLAGS = ${FORLDFLAGS}
 
