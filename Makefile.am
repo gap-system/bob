@@ -108,3 +108,19 @@ libs/include/openssl/ssl.h:
 	  fi ; \
 	  make ; make install )
 
+tolinux64: bob
+	strip bob
+	cp -a bob /scratch/neunhoef/mywebpage.pub/for/BOB/bob-linux-64bit
+
+tolinux32: bob
+	strip bob
+	cp -a bob /scratch/neunhoef/mywebpage.pub/for/BOB/bob-linux-32bit
+
+toosx64: bob
+	strip bob
+	scp bob neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/for/BOB/bob-osx-64bit
+
+toosx32: bob
+	strip bob
+	scp bob neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/for/BOB/bob-osx-32bit
+

@@ -281,7 +281,10 @@ Component example("example",deps_onlyGAP,NULL,NULL,example_buildfunc);
 
 // Finishing off the installation:
 
-static Status GAP_ZZZ_cp_scripts_func(string targetdir)
+const char *AllPkgs[] =
+  { "io", "orb", "edim", "example", "Browse", "cvec", NULL };
+
+static Status GAP_cp_scripts_func(string targetdir)
 {
     if (Double_Compile.num == 1) {
         if (cp(targetdir+"gap4r5/bin/gap-default64.sh",targetdir+"gap64") 
@@ -305,13 +308,13 @@ static Status GAP_ZZZ_cp_scripts_func(string targetdir)
         return OK;
     }
 }
-Component ZZZ_cp_scripts("ZZZ_cp_scripts",GAP_dependencies,NULL,NULL,
-                         GAP_ZZZ_cp_scripts_func);
+Component GAP_cp_scripts("GAP_cp_scripts",AllPkgs,NULL,NULL,
+                         GAP_cp_scripts_func);
 
 // Create a saved workspace:
 
 static const char *GAP_workspace_deps[]
-  = { "ZZZ_cp_scripts", NULL };
+  = { "GAP_cp_scripts", NULL };
 
 static Status GAP_workspace_func(string targetdir)
 {
