@@ -706,7 +706,7 @@ uninstall-am: uninstall-binPROGRAMS
 
 distclean-local:
 	rm -rf libs zlib-${ZLIBVERSION} bzip2-${BZ2LIBVERSION} \
-	       curl-${CURLVERSION} openssl-${OPENSSLVERSION}
+	       curl-${CURLVERSION} libarchive-${LIBARCHIVEVERSION}
 
 libs/include/zlib.h:
 	( if [ ! -e ${ZLIBARCH} ] ; then \

@@ -15,15 +15,15 @@ LIBARCHIVEVERSION = 3.0.3
 CURLVERSION = 7.24.0
 OPENSSLVERSION = 1.0.0g
 
-distclean-local:
-	rm -rf libs zlib-${ZLIBVERSION} bzip2-${BZ2LIBVERSION} \
-	       curl-${CURLVERSION} openssl-${OPENSSLVERSION}
-
 CURLARCH = curl-${CURLVERSION}.tar.gz
 LIBARCHIVEARCH = libarchive-${LIBARCHIVEVERSION}.tar.gz
 ZLIBARCH = zlib-${ZLIBVERSION}.tar.gz
 BZ2LIBARCH = bzip2-${BZ2LIBVERSION}.tar.gz
 OPENSSLARCH = openssl-${OPENSSLVERSION}.tar.gz
+
+distclean-local:
+	rm -rf libs zlib-${ZLIBVERSION} bzip2-${BZ2LIBVERSION} \
+	       curl-${CURLVERSION} libarchive-${LIBARCHIVEVERSION}
 
 libs/include/zlib.h:
 	( if [ ! -e ${ZLIBARCH} ] ; then \
