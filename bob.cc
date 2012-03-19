@@ -866,6 +866,8 @@ void usage()
     cout << "          updates.)\n";
     cout << "    -t : Specify a different target directory than the current\n";
     cout << "         directory. Bob needs write access to that directory.\n";
+    cout << "    -c : Specify one component name and only the build routine\n";
+    cout << "         for that component is run without any dependencies.\n";
     cout << "For any questions or complaints please contact:\n";
     cout << "  Max Neunhoeffer <neunhoef@mcs.st-and.ac.uk>\n\n";
 }
@@ -951,6 +953,9 @@ int main(int argc, char * const argv[], char *envp[])
         cerr << "Cannot chdir to target dir. Stopping.\n";
         return 15;
     }
+    stringstream msg;
+    msg << "This is BOB version " << BOBVERSION << ".\n";
+    out(OK,msg.str());
     struct stat statbuf;
     if (stat("download",&statbuf) == -1) {
         if (mkdir("download",S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH) != 0 &&
@@ -1109,6 +1114,8 @@ int main(int argc, char * const argv[], char *envp[])
             break;
         }
         c = deporder[i];
+        out(OK,"");
+        out(OK,string("Working on component ")+c->name+" ...");
         if (chdir(targetdir.c_str()) != 0) {
             out(ERROR,"Cannot chdir to target directory. Stopping.");
             nrerrors++;
@@ -1129,7 +1136,7 @@ int main(int argc, char * const argv[], char *envp[])
             out(OK,"Building component "+c->name);
             outs.open(buildlogfilename.c_str(),fstream::out | fstream::app);
             if (!outs.fail()) {
-                outs << "BOB: Building component " << c->name << "...\n";
+                outs << "\nBOB: Building component " << c->name << "...\n\n";
                 outs.close();
             }
             res = c->build(targetdir);
@@ -1147,6 +1154,7 @@ int main(int argc, char * const argv[], char *envp[])
         out(OK,"");
         out(OK,"Components with errors:");
         for (i = 0; i < deporder.size();i++) {
+            c = comps[i];
             if (c->buildres == ERROR) out(OK,string("  ")+c->name);
         }
     }
@@ -1154,6 +1162,7 @@ int main(int argc, char * const argv[], char *envp[])
         out(OK,"");
         out(OK,"Components with warnings:");
         for (i = 0; i < deporder.size();i++) {
+            c = comps[i];
             if (c->buildres == WARN) out(OK,string("  ")+c->name);
         }
     }

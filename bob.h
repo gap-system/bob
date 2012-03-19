@@ -1,6 +1,6 @@
 // bob.h - Copyright 2012 by Max Neunhoeffer
 
-#define BOBVERSION 1
+#define BOBVERSION 2
 
 #include <unistd.h>
 #include <string.h>
