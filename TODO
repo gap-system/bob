@@ -40,13 +40,19 @@
 > Copy startup scripts to targetdir
 > Add make workspace: need better sh?
 Add more packages
-test in chroot prison
+Check failure in Browse package --> need to detect
+Check for readline-dev for Browse
+In general: How to check for libraries and dev files???
+Test old bob on minimal 64-bit machine
+Install old debian64 to compile a 64-bit old bob
+Create web page
+test in chroot prison?
+
 
 
 Future:
 
 exclude some components   -x
 selfupdate
-How about -static warnings??? Is -static better???
 Implement test for C++ compiler
 More tests?
