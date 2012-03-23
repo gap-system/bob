@@ -208,14 +208,45 @@ static int Which_Wordsize_Test(string &st)
 }
 Test Which_Wordsize("Which_Wordsize",2,Which_Wordsize_Test);
 
+Status Have_C_Header(string headername)
+{
+    if (Which_C_Compiler.num != 0) return ERROR;
+    fstream testprog("/tmp/headertest.c",fstream::out | fstream::trunc);
+    testprog << "#include <" << headername << ">\n";
+    testprog << "int main(void) {\n";
+    testprog << "  return 0;\n";
+    testprog << "}\n";
+    testprog.close();
+    if (sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
+           getenvironment("CFLAGS")+
+           " -E /tmp/headertest.c -o /tmp/headertest"))
+        return ERROR;
+    unlink("/tmp/headertest.c");
+    unlink("/tmp/headertest");
+    return OK;
+}
+
+Status Have_C_Library(string lib)
+{
+    if (Which_C_Compiler.num != 0) return ERROR;
+    fstream testprog("/tmp/libtest.c",fstream::out | fstream::trunc);
+    testprog << "int main(void) {\n";
+    testprog << "  return 0;\n";
+    testprog << "}\n";
+    testprog.close();
+    if (sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
+           getenvironment("CFLAGS")+" /tmp/libtest.c -o /tmp/libtest "+
+           getenvironment("LDFLAGS")+" "+lib))
+        return ERROR;
+    unlink("/tmp/libtest.c");
+    unlink("/tmp/libtest");
+    return OK;
+}
+
 static int Double_Compile_Test(string &st)
 {
     if (Which_Wordsize.num == 64 && 
-        (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang") &&
-        getenvironment("CFLAGS") == "" &&
-        getenvironment("CXXFLAGS") == "" &&
-        getenvironment("LDFLAGS") == "" &&
-        getenvironment("CPPFLAGS") == "") {
+        (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang")) {
         out(OK,"Performing 64-bit and 32-bit compilation.");
         st = "DoubleCompile";
         return 1;
@@ -1011,8 +1042,32 @@ int main(int argc, char * const argv[], char *envp[])
             out(ERROR,"Did not find component "+onlycomp+" ...");
             return 8;
         }
-        out(OK,"Building only component "+onlycomp+" ...");
-        oc->build(targetdir);
+        if (oc->prereq != NULL) {
+            out(OK,"Checking prerequisites for component "+onlycomp+" ...");
+            oc->prereqres = oc->prereq(targetdir,OK);
+            if (oc->prereqres != OK) {
+                out(ERROR,"Prerequisites not fulfilled, stopping.");
+                return 9;
+            }
+        }
+        if (chdir(targetdir.c_str()) != 0) {
+            out(ERROR,"Cannot chdir to target directory. Stopping.");
+            return 10;
+        }
+        if (oc->get != NULL) {
+            out(OK,"Getting component "+onlycomp+" ...");
+            oc->getres = oc->get(targetdir);
+            if (oc->getres != OK) return 11;
+        }
+        if (chdir(targetdir.c_str()) != 0) {
+            out(ERROR,"Cannot chdir to target directory. Stopping.");
+            return 12;
+        }
+        out(OK,"Building component "+onlycomp+" ...");
+        if (oc->build(targetdir) != OK) {
+            out(ERROR,"Building did not work.");
+            return 13;
+        }
         out(OK,"Done.");
         return 0;
     }
@@ -1114,6 +1169,14 @@ int main(int argc, char * const argv[], char *envp[])
             break;
         }
         c = deporder[i];
+        if (c->prereqres != OK) {
+            out(OK,"");
+            out(OK,string("Not working on component ")+c->name+" due to"+
+                   " failed prerequisites check.");
+            c->getres = WARN;
+            c->buildres = WARN;
+            break;
+        }
         out(OK,"");
         out(OK,string("Working on component ")+c->name+" ...");
         if (chdir(targetdir.c_str()) != 0) {

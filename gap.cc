@@ -180,12 +180,29 @@ static Status edim_buildfunc(string targetdir)
 { return BuildGAPPackage(targetdir, "edim", false, WARN); }
 Component edim("edim",deps_onlyGAP,NULL,NULL,edim_buildfunc);
 
+static Status Browse_prerequisites(string, Status depsresult)
+{
+    string path;
+    if (depsresult != OK) return depsresult;
+    if (Have_C_Library("-lncurses") != OK ||
+        Have_C_Header("ncurses.h") != OK) {
+        out(WARN,"Need ncurses library installed for component Browse.");
+        return WARN;
+    }
+    if (Have_C_Library("-lpanel") != OK ||
+        Have_C_Header("panel.h") != OK) {
+        out(WARN,"Need panel library installed for component Browse.");
+        return WARN;
+    }
+    return OK;
+}
+
 static Status Browse_buildfunc(string targetdir)
 { return BuildGAPPackage(targetdir, "Browse", false, WARN); }
-Component Browse("Browse",deps_onlyGAP,NULL,NULL,Browse_buildfunc);
+Component Browse("Browse",deps_onlyGAP,Browse_prerequisites,NULL,
+                 Browse_buildfunc);
 
-#if 0
-static Status nq_prerequisites(string targetdir, Status depsresult)
+static Status nq_prerequisites(string, Status depsresult)
 {
     string path;
     if (depsresult != OK) return depsresult;
@@ -194,16 +211,17 @@ static Status nq_prerequisites(string targetdir, Status depsresult)
         out(WARN,"Need awk for component nq-Pkg.");
         return WARN;
     }
-    if (access("/usr/include/gmp.h",R_OK) != 0) {
-        out(WARN,"Need gmp installed for component nq-Pkg.");
+    if (Have_C_Library("-lgmp") != OK ||
+        Have_C_Header("gmp.h") != OK) {
+        out(WARN,"Need gmp installed for component nq.");
         return WARN;
     }
+    return OK;
 }
 
 static Status nq_buildfunc(string targetdir)
 { return BuildGAPPackage(targetdir, "nq-2.4", true, WARN); }
 Component nq("nq",deps_onlyGAP,nq_prerequisites,NULL,nq_buildfunc);
-#endif
 
 
 static Status switch_sysinfo_link(string targetdir, int towhat)

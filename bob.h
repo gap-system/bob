@@ -53,6 +53,9 @@ extern Test C_Compiler_Name;
 extern Test Which_Wordsize;
 extern Test Double_Compile;
 
+Status Have_C_Header(string headername);
+Status Have_C_Library(string lib);
+
 // Build components:
 
 class Component;
