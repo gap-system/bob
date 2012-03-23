@@ -20,7 +20,8 @@ case "$host_os" in
       ;;
     *linux*)
       AC_DEFINE([SYS_IS_LINUX],[1],[Set to 1 if on Linux])
-      FORLDADD="-Wl,-Bstatic -lrt -static-libgcc -static-libstdc++ -Wl,-Bdynamic"
+      #FORLDADD="-Wl,-Bstatic -lrt -static-libgcc -static-libstdc++ -Wl,-Bdynamic"
+      FORLDADD="-lrt -static-libgcc -static-libstdc++"
       FORLDFLAGS=""
       ;;
     *bsd*)
