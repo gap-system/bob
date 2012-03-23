@@ -5,4 +5,4 @@ unset CXXFLAGS
 ./configure
 make
 strip bob
-scp bob neunhoef@schur.mcs.st-and.ac.uk/mywebpage.pub/for/BOB/bob-linux-64bit
+scp bob neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/for/BOB/bob-linux-64bit
