@@ -296,6 +296,9 @@ static Status example_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"example", WARN); }
 Component example("example",deps_onlyGAP,NULL,NULL,example_buildfunc);
 
+static Status ace_buildfunc(string targetdir)
+{ return BuildOldGAPPackage(targetdir,"ace", WARN); }
+Component ace("ace",deps_onlyGAP,NULL,NULL,ace_buildfunc);
 
 // Finishing off the installation:
 
