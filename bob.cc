@@ -1008,8 +1008,10 @@ int main(int argc, char * const argv[], char *envp[])
         string versionfile;
         string version;
         if (get(targetdir,"http://www-groups.mcs.st-and.ac.uk/~neunhoef/for/BOB/BOBVERSION",versionfile,true) == ERROR) {
+            verbose = merkverbose;
             out(OK,"Could not get latest version number, does not matter.");
         } else {
+            verbose = merkverbose;
             fstream file(versionfile.c_str(),fstream::in);
             getline(file,version);
             file.close();
@@ -1019,7 +1021,6 @@ int main(int argc, char * const argv[], char *envp[])
                 out(OK,"I am the latest version of myself, good. :-)");
             }
         }
-        verbose = merkverbose;
     }
 
     out(OK,"Performing tests...");
