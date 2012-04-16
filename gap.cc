@@ -300,10 +300,105 @@ static Status ace_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"ace", WARN); }
 Component ace("ace",deps_onlyGAP,NULL,NULL,ace_buildfunc);
 
+static Status atlasrep_buildfunc(string)
+{
+    if (chdir("gap4r5/pkg/atlasrep") < 0) {
+        out(WARN,"Cannot change directory to \"gap4r5/pkg/atlasrep\".");
+        return WARN;
+    }
+    if (chmod("datagens",01777) < 0 ||
+        chmod("dataword",01777) < 0) {
+        out(WARN,"Cannot set permissions for \"datagens\" and \"dataword\"."); 
+        return WARN;
+    }
+    return OK;
+}
+Component atlasrep("atlasrep",deps_onlyGAP,NULL,NULL,atlasrep_buildfunc);
+
+static Status cohomolo_buildfunc(string targetdir)
+{ return BuildOldGAPPackage(targetdir,"cohomolo", WARN); }
+Component cohomolo("cohomolo",deps_onlyGAP,NULL,NULL,cohomolo_buildfunc);
+
+static Status fplsa_buildfunc(string targetdir)
+{ return BuildOldGAPPackage(targetdir,"fplsa", WARN); }
+Component fplsa("fplsa",deps_onlyGAP,NULL,NULL,fplsa_buildfunc);
+
+static Status fr_prerequisites(string, Status depsresult)
+{
+    string path;
+    if (depsresult != OK) return depsresult;
+    if (Have_C_Header("gsl/gsl_vector.h") != OK) {
+        out(WARN,"Need gsl library installed for component fr.");
+        return WARN;
+    }
+    if (!which("appletviewer",path) ||
+        !which("javac",path)) {
+        out(WARN,"Need appletviewer and java compiler for component fr.");
+        return WARN;
+    }
+    return OK;
+}
+static Status fr_buildfunc(string targetdir)
+{ return BuildGAPPackage(targetdir,"fr",true,WARN); }
+Component fr("fr",deps_onlyGAP,fr_prerequisites,NULL,fr_buildfunc);
+
+static Status grape_buildfunc(string targetdir)
+{ return BuildOldGAPPackage(targetdir,"grape", WARN); }
+Component grape("grape",deps_onlyGAP,NULL,NULL,grape_buildfunc);
+
+static Status guava_buildfunc(string targetdir)
+{ 
+    string msg;
+    string pkgname = "guava3.11";
+    int i;
+    Status ret = OK;
+    for (i = 0;i <= Double_Compile.num;i++) {
+        if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
+        string pkgdir = string("gap4r5/pkg/")+pkgname;
+        string cmd;
+        if (chdir(pkgdir.c_str())) {
+            msg = string("Cannot change to the ")+pkgname+
+                         " package's directory.";
+            out(WARN,msg);
+            ret = WARN;
+            break;
+        }
+        msg = string("Running ./configure ../.. for ")+pkgname+" package...";
+        out(OK,msg);
+        if (sh("./configure ../..")) {
+            out(WARN,"Error in configure stage.");
+            ret = WARN;
+            break;
+        }
+        msg = string("Running make for ")+pkgname+" package...";
+        out(OK,msg);
+        if (sh("make")) {
+            out(WARN,"Error in compilation stage.");
+            ret = WARN;
+            break;
+        }
+        msg = string("Running make install for ")+pkgname+" package...";
+        out(OK,msg);
+        if (sh("make install")) {
+            out(WARN,"Error in installation stage.");
+            ret = WARN;
+            break;
+        }
+    }
+    if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
+    return ret;
+}
+Component guava("guava",deps_onlyGAP,NULL,NULL,guava_buildfunc);
+
+static Status kbmag_buildfunc(string targetdir)
+{ return BuildOldGAPPackage(targetdir,"kbmag", WARN); }
+Component kbmag("kbmag",deps_onlyGAP,NULL,NULL,kbmag_buildfunc);
+
 // Finishing off the installation:
 
 const char *AllPkgs[] =
-  { "io", "orb", "edim", "example", "Browse", "cvec", NULL };
+  { "io", "orb", "edim", "example", "Browse", "cvec", "ace", "atlasrep",
+    "cohomolo", "fplsa", "fr", "grape", "guava", "kbmag",NULL };
 
 static Status GAP_cp_scripts_func(string targetdir)
 {

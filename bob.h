@@ -1,6 +1,6 @@
 // bob.h - Copyright 2012 by Max Neunhoeffer
 
-#define BOBVERSION 2
+#define BOBVERSION 3
 
 #include <unistd.h>
 #include <string.h>
@@ -105,8 +105,8 @@ Status checksha1(string filename, string hash);
 Status get(string targetdir, string url, string &filename, bool alwaysget);
 Status getind(string targetdir, string url, string &archivename);
 Status unpack(string archivename);
-Status sh(string cmd, int stdinfd = 0);
-int shbg(string cmd, int stdinfd = 0);
+Status sh(string cmd, int stdinfd = 0, bool quiet = false);
+int shbg(string cmd, int stdinfd = 0, bool quiet = false);
 Status rmrf(string dirname);
 Status cp(string from, string to);
 

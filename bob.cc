@@ -219,7 +219,7 @@ Status Have_C_Header(string headername)
     testprog.close();
     if (sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
            getenvironment("CFLAGS")+
-           " -E /tmp/headertest.c -o /tmp/headertest"))
+           " -E /tmp/headertest.c -o /tmp/headertest",0,true))
         return ERROR;
     unlink("/tmp/headertest.c");
     unlink("/tmp/headertest");
@@ -236,7 +236,7 @@ Status Have_C_Library(string lib)
     testprog.close();
     if (sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
            getenvironment("CFLAGS")+" /tmp/libtest.c -o /tmp/libtest "+
-           getenvironment("LDFLAGS")+" "+lib))
+           getenvironment("LDFLAGS")+" "+lib,0,true))
         return ERROR;
     unlink("/tmp/libtest.c");
     unlink("/tmp/libtest");
@@ -659,7 +659,7 @@ Status unpack(string archivename)
     return res;
 }
 
-Status sh(string cmd, int stdinfd)
+Status sh(string cmd, int stdinfd, bool quiet)
 {
     string prog;
     string path;
@@ -691,13 +691,13 @@ Status sh(string cmd, int stdinfd)
     argv.push_back(NULL);
 
     if (!which(prog,path)) {
-        out(ERROR,"Could not execute command:\n  "+cmd);
+        if (!quiet) out(ERROR,"Could not execute command:\n  "+cmd);
         return ERROR;
     }
 
     int fds[2];
     if (pipe(fds) != 0) {
-        out(ERROR,"Could not create pipes for:\n  "+cmd);
+        if (!quiet) out(ERROR,"Could not create pipes for:\n  "+cmd);
         return ERROR;
     }
 
@@ -715,7 +715,7 @@ Status sh(string cmd, int stdinfd)
         if (execve(path.c_str(), (char *const *) &(argv[0]),envp) == -1) {
             freepreparedenvironment(envp);
             cerr << "Errno: " << errno << "\n";
-            out(ERROR,"Cannot execve.");
+            if (!quiet) out(ERROR,"Cannot execve.");
             exit(17);
         }
     }
@@ -741,13 +741,13 @@ Status sh(string cmd, int stdinfd)
     int status;
     waitpid(pid,&status,0);
     if (WEXITSTATUS(status) != 0) {
-        out(ERROR,"Subprocess "+cmd+" returned with an error.");
+        if (!quiet) out(ERROR,"Subprocess "+cmd+" returned with an error.");
         return ERROR;
     }
     return OK;
 }
 
-int shbg(string cmd, int stdinfd)
+int shbg(string cmd, int stdinfd, bool quiet)
 {
     string prog;
     string path;
@@ -779,7 +779,7 @@ int shbg(string cmd, int stdinfd)
     argv.push_back(NULL);
 
     if (!which(prog,path)) {
-        out(ERROR,"Could not execute command:\n  "+cmd);
+        if (!quiet) out(ERROR,"Could not execute command:\n  "+cmd);
         return -1;
     }
 
@@ -798,7 +798,7 @@ int shbg(string cmd, int stdinfd)
         if (execve(path.c_str(), (char *const *) &(argv[0]),envp) == -1) {
             freepreparedenvironment(envp);
             cerr << "Errno: " << errno << "\n";
-            out(ERROR,"Cannot execve.");
+            if (!quiet) out(ERROR,"Cannot execve.");
             exit(17);
         }
     }
