@@ -105,7 +105,8 @@ Component GAP("GAP",GAP_dependencies,GAP_prerequisites,
 
 
 static Status BuildGAPPackage(string, string pkgname, bool withm32,
-                              Status err)
+                              Status err, bool withmakeclean = false,
+                              bool withabi32 = false)
 {
     string msg;
     string pkgdir = string("gap4r5/pkg/")+pkgname;
@@ -116,11 +117,11 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
         return err;
     }
     if (Double_Compile.num == 1) {
-        msg = string("Running ./configure CONFIGNAME=default32 for ")+
-                     pkgname+" package...";
-        out(OK,msg);
         cmd = string("./configure CONFIGNAME=default32");
         if (withm32) cmd += " CFLAGS=-m32";
+        if (withabi32) cmd += " ABI=32";
+        msg = string("Running "+cmd+" for ")+pkgname+" package...";
+        out(OK,msg);
         if (sh(cmd)) {
             out(err,"Error in configure stage.");
             return err;
@@ -130,6 +131,14 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
         if (sh("make")) {
             out(err,"Error in compilation stage.");
             return err;
+        }
+        if (withmakeclean) {
+            msg = string("Running make clean for ")+pkgname+" package...";
+            out(OK,msg);
+            if (sh("make clean")) {
+                out(err,"Error in make clean stage.");
+                return err;
+            }
         }
         msg = string("Running ./configure CONFIGNAME=default64 for ")+pkgname+
                      " package...";
@@ -220,7 +229,7 @@ static Status nq_prerequisites(string, Status depsresult)
 }
 
 static Status nq_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "nq-2.4", true, WARN); }
+{ return BuildGAPPackage(targetdir, "nq-2.4", true, WARN, true, true); }
 Component nq("nq",deps_onlyGAP,nq_prerequisites,NULL,nq_buildfunc);
 
 
@@ -363,6 +372,7 @@ static Status guava_buildfunc(string targetdir)
             ret = WARN;
             break;
         }
+        mkdir("bin",0755);  // intentionally ignore errors here
         msg = string("Running ./configure ../.. for ")+pkgname+" package...";
         out(OK,msg);
         if (sh("./configure ../..")) {
