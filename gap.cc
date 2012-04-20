@@ -1,4 +1,5 @@
 #include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/wait.h>
@@ -49,6 +50,7 @@ static Status GAP_getfunc(string targetdir)
 }
 
 vector<string> confignames;
+vector<string> GAParchs;
 
 static Status GAP_buildfunc(string)
 {
@@ -404,11 +406,66 @@ static Status kbmag_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"kbmag", WARN); }
 Component kbmag("kbmag",deps_onlyGAP,NULL,NULL,kbmag_buildfunc);
 
+static Status carat_buildfunc(string targetdir)
+{
+    string topdir;
+    if (chdir("gap4r5/pkg/carat") < 0) {
+        out(ERROR,"Cannot change directory to gap4r5/pkg/carat .");
+        return WARN;
+    }
+    if (unpack("carat-2.1b1.tgz") != OK) {
+        out(ERROR,"Cannot unpack carat archive.");
+        return WARN;
+    }
+    if (sh("ln -s carat-2.1b1/bin bin") != OK) {
+        out(ERROR,"Cannot create bin link for carat package.");
+        return WARN;
+    }
+    if (chdir("carat-2.1b1") < 0) {
+        out(ERROR,"Cannot change directory to carat-2.1b1 .");
+        return WARN;
+    }
+    topdir = targetdir + "gap4r5/pkg/carat/carat-2.1b1";
+    if (sh("make TOPDIR="+topdir) != OK) {
+        out(ERROR,"Failed to build standalone carat program.");
+        return WARN;
+    }
+    if (chdir("bin") < 0) {
+        out(ERROR,"Cannot change directory to carat-2.1b1/bin .");
+        return WARN;
+    }
+    DIR *dp;
+    struct dirent *ep;
+    string targetbin;
+    dp = opendir(".");
+    if (dp == NULL) goto errorout;
+    while (true) {
+        ep = readdir(dp);
+        if (ep == NULL) goto errorout;
+        if (strcmp(ep->d_name,".") &&
+            strcmp(ep->d_name,"..") &&
+            strcmp(ep->d_name,"config.guess") &&
+            strcmp(ep->d_name,"Makefile")) break;
+    }
+    targetbin = ep->d_name;
+    (void) closedir(dp);
+    unsigned int i;
+    for (i = 0;i < GAParchs.size();i++)
+        if (sh("ln -s "+targetbin+" "+GAParchs[i]) != OK) goto errorout;
+    return OK;
+
+  errorout:
+    out(ERROR,"Cannot create symbolic link to carat.");
+    return WARN;
+
+}
+Component carat("carat",deps_onlyGAP,NULL,NULL,carat_buildfunc);
+
 // Finishing off the installation:
 
 const char *AllPkgs[] =
   { "io", "orb", "edim", "example", "Browse", "cvec", "ace", "atlasrep",
-    "cohomolo", "fplsa", "fr", "grape", "guava", "kbmag",NULL };
+    "cohomolo", "fplsa", "fr", "grape", "guava", "kbmag", "carat", NULL };
 
 static Status GAP_cp_scripts_func(string targetdir)
 {
