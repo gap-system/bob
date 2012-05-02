@@ -441,7 +441,7 @@ static Status kbmag_buildfunc(string targetdir)
         out(OK,"Running make for kbmag package...");
 
         if (Which_Wordsize.num == 64)
-            msg = "make COPTS=-m32";
+            msg = "make COPTS=-O2~-m32";
         else
             msg = "make COPTS=-O2";
         if (sh(msg)) {

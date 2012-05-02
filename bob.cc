@@ -686,6 +686,24 @@ Status unpack(string archivename)
     return res;
 }
 
+static string massagearg(string cmd)
+{
+    string res;
+    unsigned long i;
+    res.reserve(cmd.size());
+    for (i = 0;i < cmd.size();i++) {
+        if (cmd[i] == '~') {
+            if (i+1 < cmd.size() && cmd[i+1] == '~') {
+                res.push_back('~');
+                i++;
+            } else
+                res.push_back(' ');
+        } else
+            res.push_back(cmd[i]);
+    }
+    return res;
+}
+
 Status sh(string cmd, int stdinfd, bool quiet)
 {
     string prog;
@@ -706,10 +724,11 @@ Status sh(string cmd, int stdinfd, bool quiet)
             pos = cmd.find(' ',oldpos);
             if (pos == string::npos) {
                 if (oldpos < cmd.size()-1)
-                    args.push_back(cmd.substr(oldpos));
+                    args.push_back(massagearg(cmd.substr(oldpos)));
                 break;
             }
-            if (pos > oldpos) args.push_back(cmd.substr(oldpos,pos-oldpos));
+            if (pos > oldpos) 
+                args.push_back(massagearg(cmd.substr(oldpos,pos-oldpos)));
         }
     } else prog = cmd;
     argv.push_back(prog.c_str());   // Give the prog as 0-th argument
@@ -794,10 +813,11 @@ int shbg(string cmd, int stdinfd, bool quiet)
             pos = cmd.find(' ',oldpos);
             if (pos == string::npos) {
                 if (oldpos < cmd.size()-1)
-                    args.push_back(cmd.substr(oldpos));
+                    args.push_back(massagearg(cmd.substr(oldpos)));
                 break;
             }
-            if (pos > oldpos) args.push_back(cmd.substr(oldpos,pos-oldpos));
+            if (pos > oldpos) 
+                args.push_back(massagearg(cmd.substr(oldpos,pos-oldpos)));
         }
     } else prog = cmd;
     argv.push_back(prog.c_str());   // Give the prog as 0-th argument

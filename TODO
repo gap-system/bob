@@ -41,6 +41,9 @@
 > Add make workspace: need better sh?
 > Check for 32-bit-compilation working on 64-bit
 > kbmag needs -m32 on 64-bit
+> sort out sh argument string containing strings in " with spaces
+>   --> then fix kbmag using -O2 with -m32
+determine GAParchs, when?
 xgap
 anupq: need to distinguish OS, existence of gmp and have to use 32-bit
 Gauss: needs fixing --> new version
@@ -52,8 +55,6 @@ Check for readline-dev for Browse
 
 Future:
 
-sort out sh argument string containing strings in " with spaces
-  --> then fix kbmag using -O2 with -m32
 test in chroot prison?
 pargap???
 exclude some components   -x
