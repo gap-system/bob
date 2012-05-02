@@ -52,6 +52,31 @@ static Status GAP_getfunc(string targetdir)
 vector<string> confignames;
 vector<string> GAParchs;
 
+static void DetermineGAParchs(void)
+// Must be in targetdir.
+{
+    fstream f;
+    int i;
+    string line;
+
+    if (GAParchs.size() > 0) return;
+    for (i = 0;i <= Double_Compile.num;i++) {
+        if (Double_Compile.num == 1 && i == 0)
+            f.open("gap4r5/sysinfo.gap-default32",fstream::in);
+        else if (Double_Compile.num == 1 && i == 1)
+            f.open("gap4r5/sysinfo.gap-default64",fstream::in);
+        else
+            f.open("gap4r5/sysinfo.gap",fstream::in);
+        if (f.fail()) {
+            out(ERROR,"Cannot determine GAParchs.");
+            return;
+        }
+        getline(f,line);
+        f.close();
+        GAParchs.push_back(line.substr(8));
+    }
+}
+
 static Status GAP_buildfunc(string)
 {
     // By convention, we are in the target directory.
@@ -458,6 +483,7 @@ Component kbmag("kbmag",deps_onlyGAP,kbmag_prerequisites,NULL,kbmag_buildfunc);
 static Status carat_buildfunc(string targetdir)
 {
     string topdir;
+    DetermineGAParchs();
     if (chdir("gap4r5/pkg/carat") < 0) {
         out(ERROR,"Cannot change directory to gap4r5/pkg/carat .");
         return WARN;
@@ -466,7 +492,7 @@ static Status carat_buildfunc(string targetdir)
         out(ERROR,"Cannot unpack carat archive.");
         return WARN;
     }
-    if (sh("ln -s carat-2.1b1/bin bin") != OK) {
+    if (sh("ln -sf carat-2.1b1/bin bin") != OK) {
         out(ERROR,"Cannot create bin link for carat package.");
         return WARN;
     }
@@ -500,7 +526,7 @@ static Status carat_buildfunc(string targetdir)
     (void) closedir(dp);
     unsigned int i;
     for (i = 0;i < GAParchs.size();i++)
-        if (sh("ln -s "+targetbin+" "+GAParchs[i]) != OK) goto errorout;
+        if (sh("ln -sf "+targetbin+" "+GAParchs[i]) != OK) goto errorout;
     return OK;
 
   errorout:
