@@ -6,4 +6,4 @@ export CXXFLAGS=-m32
 make bz2lib_m32
 make
 strip bob
-scp bob neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/for/BOB/bob-linux-32bit
+scp bob neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/Computer/Software/Gap/bob/bob-linux-32bit
