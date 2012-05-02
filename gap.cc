@@ -492,7 +492,7 @@ static Status carat_buildfunc(string targetdir)
         out(ERROR,"Cannot unpack carat archive.");
         return WARN;
     }
-    if (sh("ln -sf carat-2.1b1/bin bin") != OK) {
+    if (sh("ln -sfn carat-2.1b1/bin bin") != OK) {
         out(ERROR,"Cannot create bin link for carat package.");
         return WARN;
     }
@@ -509,32 +509,88 @@ static Status carat_buildfunc(string targetdir)
         out(ERROR,"Cannot change directory to carat-2.1b1/bin .");
         return WARN;
     }
-    DIR *dp;
-    struct dirent *ep;
-    string targetbin;
-    dp = opendir(".");
-    if (dp == NULL) goto errorout;
-    while (true) {
-        ep = readdir(dp);
-        if (ep == NULL) goto errorout;
-        if (strcmp(ep->d_name,".") &&
-            strcmp(ep->d_name,"..") &&
-            strcmp(ep->d_name,"config.guess") &&
-            strcmp(ep->d_name,"Makefile")) break;
+    char targetbin[256];
+    FILE *p = popen("./config.guess","r");
+    if (p == NULL) {
+        out(ERROR,"Cannot run ./config.guess .");
+        return WARN;
     }
-    targetbin = ep->d_name;
-    (void) closedir(dp);
-    unsigned int i;
+    if (fgets(targetbin,256,p) == NULL) {
+        pclose(p);
+        out(ERROR,"Cannot run ./config.guess .");
+        return WARN;
+    }
+    pclose(p);
+    size_t i = strlen(targetbin);
+    targetbin[i--] = 0;
+    strncat(targetbin,"-",255-i);
+    strncat(targetbin,Which_C_Compiler.str.c_str(),254-i);
     for (i = 0;i < GAParchs.size();i++)
-        if (sh("ln -sf "+targetbin+" "+GAParchs[i]) != OK) goto errorout;
+        if (sh(string("ln -sfn ")+targetbin+" "+GAParchs[i]) != OK) {
+            out(ERROR,"Cannot create symbolic link to carat.");
+            return WARN;
+        }
     return OK;
-
-  errorout:
-    out(ERROR,"Cannot create symbolic link to carat.");
-    return WARN;
-
 }
 Component carat("carat",deps_onlyGAP,NULL,NULL,carat_buildfunc);
+
+
+static Status xgap_prerequisites(string, Status)
+{
+    Status res = OK;
+    string path;
+    if (!which("/bin/sh",path)) {
+        out(ERROR,"Need a (bash-like) shell in /bin/sh, please install one.");
+        res = WARN;
+    }
+    if (Which_C_Compiler.num != 0) {
+        out(ERROR,"Need a C-compiler, preferably gcc, please install one.");
+        res = WARN;
+    }
+    if (Have_make.num != 0) {
+        out(ERROR,"Need the 'make' utility, please install it.");
+        res = WARN;
+    }
+    if (!which("m4",path)) {
+        out(ERROR,"Need the 'm4' utility, please install it.");
+        res = WARN;
+    }
+    // need some more
+    return res;
+}
+
+static string XGAP_archivename;
+
+static Status xgap_getfunc(string targetdir)
+{
+    if (getind(targetdir,
+           "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/XGAP.link",
+           XGAP_archivename)) {
+        out(ERROR,"Could not download XGAP archive.");
+        return ERROR;
+    } else 
+        return OK;
+}
+
+static Status xgap_buildfunc(string targetdir)
+{ 
+    if (chdir("gap4r5/pkg") != 0) {
+        out(ERROR,"Cannot change to GAP's pkg directory.");
+        return WARN;
+    }
+    out(OK,"Unpacking XGAP archive...");
+    if (unpack(XGAP_archivename)) {
+        out(ERROR,"A problem occurred when extracting the archive.");
+        return WARN;
+    }
+    if (chdir(targetdir.c_str()) != 0) {
+        out(ERROR,"Cannot change to target directory.");
+        return WARN;
+    }
+    return BuildGAPPackage(targetdir, "xgap", false, WARN); 
+}
+Component xgap("xgap",deps_onlyGAP,
+               xgap_prerequisites,xgap_getfunc,xgap_buildfunc);
 
 // Finishing off the installation:
 
