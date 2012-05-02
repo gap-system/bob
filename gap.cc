@@ -41,7 +41,7 @@ static string GAP_archivename;
 static Status GAP_getfunc(string targetdir)
 {
     if (getind(targetdir,
-           "http://www-groups.mcs.st-and.ac.uk/~neunhoef/for/BOB/GAP.link",
+           "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/GAP.link",
            GAP_archivename)) {
         out(ERROR,"Could not download GAP archive.");
         return ERROR;
@@ -402,9 +402,58 @@ static Status guava_buildfunc(string targetdir)
 }
 Component guava("guava",deps_onlyGAP,NULL,NULL,guava_buildfunc);
 
+static Status kbmag_prerequisites(string, Status depsresult)
+{
+    if (depsresult != OK) return depsresult;
+    if (Which_Wordsize.num == 64 &&
+        Can_Compile_32bit.num != 0) {
+        out(WARN,"Need to compile in 32-bit mode using -m32 for component "
+                 "kbmag.");
+        out(WARN,"Please use gcc or clang and install the necessary 32-bit "
+                 "libraries.");
+        return WARN;
+    }
+    return OK;
+}
+
 static Status kbmag_buildfunc(string targetdir)
-{ return BuildOldGAPPackage(targetdir,"kbmag", WARN); }
-Component kbmag("kbmag",deps_onlyGAP,NULL,NULL,kbmag_buildfunc);
+{
+    string msg;
+    int i;
+    Status ret = OK;
+    for (i = 0;i <= Double_Compile.num;i++) {
+        if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
+        string pkgdir = "gap4r5/pkg/kbmag";
+        string cmd;
+        if (chdir(pkgdir.c_str())) {
+            msg = "Cannot change to the kbmag package's directory.";
+            out(WARN,msg);
+            ret = WARN;
+            break;
+        }
+        msg = "Running ./configure ../.. for kbmag package...";
+        out(OK,msg);
+        if (sh("./configure ../..")) {
+            out(WARN,"Error in configure stage.");
+            ret = WARN;
+            break;
+        }
+        out(OK,"Running make for kbmag package...");
+
+        if (Which_Wordsize.num == 64)
+            msg = "make COPTS=-m32";
+        else
+            msg = "make COPTS=-O2";
+        if (sh(msg)) {
+            out(WARN,"Error in compilation stage.");
+            ret = WARN;
+            break;
+        }
+    }
+    if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
+    return ret;
+}
+Component kbmag("kbmag",deps_onlyGAP,kbmag_prerequisites,NULL,kbmag_buildfunc);
 
 static Status carat_buildfunc(string targetdir)
 {

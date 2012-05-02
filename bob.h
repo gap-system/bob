@@ -1,6 +1,6 @@
 // bob.h - Copyright 2012 by Max Neunhoeffer
 
-#define BOBVERSION 3
+#define BOBVERSION 4
 
 #include <unistd.h>
 #include <string.h>
@@ -51,6 +51,7 @@ extern Test Have_make;
 extern Test Which_C_Compiler;
 extern Test C_Compiler_Name;
 extern Test Which_Wordsize;
+extern Test Can_Compile_32bit;
 extern Test Double_Compile;
 
 Status Have_C_Header(string headername);

@@ -39,20 +39,23 @@
 > Compile packages which need sysinfo.gap link changed
 > Copy startup scripts to targetdir
 > Add make workspace: need better sh?
-Check for 32-bit-compilation working on 64-bit
+> Check for 32-bit-compilation working on 64-bit
+> kbmag needs -m32 on 64-bit
 xgap
 anupq: need to distinguish OS, existence of gmp and have to use 32-bit
-Gauss: needs fixing
+Gauss: needs fixing --> new version
 Check failure in Browse package --> need to detect???
 Check for readline-dev for Browse
-Create web page
-test in chroot prison?
-pargap???
+> Create web page
 
 
 
 Future:
 
+sort out sh argument string containing strings in " with spaces
+  --> then fix kbmag using -O2 with -m32
+test in chroot prison?
+pargap???
 exclude some components   -x
 selfupdate
 Implement test for C++ compiler

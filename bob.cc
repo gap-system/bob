@@ -243,10 +243,37 @@ Status Have_C_Library(string lib)
     return OK;
 }
 
+static int Can_Compile_32bit_Test(string &st)
+{
+    if (Which_C_Compiler.num != 0 ||
+        Which_Wordsize.num != 64 || 
+        (C_Compiler_Name.str != "gcc" && C_Compiler_Name.str != "clang")) {
+        st = "no";
+        return -1;
+    }
+    fstream testprog("/tmp/lib32test.c",fstream::out | fstream::trunc);
+    testprog << "int main(void) {\n";
+    testprog << "  return 0;\n";
+    testprog << "}\n";
+    testprog.close();
+    if (sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
+           getenvironment("CFLAGS")+" -m32 /tmp/lib32test.c -o /tmp/lib32test "+
+           getenvironment("LDFLAGS"),0,true)) {
+        st = "no";
+        return -1;
+    }
+    unlink("/tmp/lib32test.c");
+    unlink("/tmp/lib32test");
+    st = "yes";
+    return 0;
+}
+Test Can_Compile_32bit("Can_Compile_32bit",3,Can_Compile_32bit_Test);
+
 static int Double_Compile_Test(string &st)
 {
     if (Which_Wordsize.num == 64 && 
-        (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang")) {
+        (C_Compiler_Name.str == "gcc" || C_Compiler_Name.str == "clang") &&
+        Can_Compile_32bit.num == 0) {
         out(OK,"Performing 64-bit and 32-bit compilation.");
         st = "DoubleCompile";
         return 1;
@@ -256,7 +283,7 @@ static int Double_Compile_Test(string &st)
         return 0;
     }
 }
-Test Double_Compile("Double_Compile",3,Double_Compile_Test);
+Test Double_Compile("Double_Compile",4,Double_Compile_Test);
 
 // Access to the environment:
 
@@ -1007,7 +1034,7 @@ int main(int argc, char * const argv[], char *envp[])
         verbose = 2;
         string versionfile;
         string version;
-        if (get(targetdir,"http://www-groups.mcs.st-and.ac.uk/~neunhoef/for/BOB/BOBVERSION",versionfile,true) == ERROR) {
+        if (get(targetdir,"http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/BOBVERSION",versionfile,true) == ERROR) {
             verbose = merkverbose;
             out(OK,"Could not get latest version number, does not matter.");
         } else {
