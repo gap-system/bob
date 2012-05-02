@@ -1223,7 +1223,7 @@ int main(int argc, char * const argv[], char *envp[])
                    " failed prerequisites check.");
             c->getres = WARN;
             c->buildres = WARN;
-            break;
+            continue;
         }
         out(OK,"");
         out(OK,string("Working on component ")+c->name+" ...");
