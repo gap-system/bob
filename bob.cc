@@ -914,7 +914,7 @@ using namespace BOB;
 
 string origdir;
 string targetdir;
-bool interactive = false;
+bool interactive = true;
 
 void usage()
 {
@@ -935,9 +935,10 @@ void usage()
     cout << "           2 : show errors and warnings\n";
     cout << "           3 : show errors, warnings and what is going on\n";
     cout << "           4 : show additionally output of building process\n";
-    cout << "    -i : Run interactively, that is, ask if warnings are found\n";
-    cout << "         (without this options, the program runs despite\n";
-    cout << "          warnings but stops when errors are found)\n";
+    cout << "    -f : Run non-interactively, that is, do not ask if warnings\n";
+    cout << "         are found (without this options, the program asks the\n";
+    cout << "         user if it should continue if warnings are found,\n";
+    cout << "         when errors are found, it stops always)\n";
     cout << "    -n : Do not use network access\n";
     cout << "         (This means that all link and archive files must\n";
     cout << "          already be present and that Bob does not check for\n";
@@ -965,13 +966,13 @@ int main(int argc, char * const argv[], char *envp[])
     // Initialise our environment business:
     initenvironment(envp);
 
-    while ((opt = getopt(argc, argv, "hvqnit:c:")) != -1) {
+    while ((opt = getopt(argc, argv, "hvqnft:c:")) != -1) {
         switch (opt) {
           case 'h':
               usage();
               return 0;
-          case 'i':
-              interactive = true;
+          case 'f':
+              interactive = false;
               break;
           case 'v':
               verbose++;
@@ -1198,7 +1199,7 @@ int main(int argc, char * const argv[], char *envp[])
     }
     string answer;
     if (interactive && gotwarning) {
-        cout << "There have been warnings, go on regardless? ";
+        cout << "\nThere have been warnings, go on regardless? ";
         cout.flush();
         cin >> answer;
         if (answer.size() == 0 || 

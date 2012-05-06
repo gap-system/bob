@@ -555,7 +555,20 @@ static Status xgap_prerequisites(string, Status)
         out(ERROR,"Need the 'm4' utility, please install it.");
         res = WARN;
     }
-    // need some more
+    if (Have_C_Library("-lXaw -lXmu -lXt -lXext -lX11  -lSM -lICE") != OK) {
+        out(ERROR,"You have not enough X11 libraries installed, thus "
+                  "XGAP cannot run.");
+        res = WARN;
+    }
+    if (Have_C_Header("X11/X.h") != OK ||
+        Have_C_Header("X11/Xlib.h") != OK ||
+        Have_C_Header("X11/Intrinsic.h") != OK ||
+        Have_C_Header("X11/Xaw/XawInit.h") != OK ||
+        Have_C_Header("X11/keysym.h") != OK) {
+        out(ERROR,"You have not enough X11 headers installed, thus "
+                  "XGAP cannot be compiled.");
+        res = WARN;
+    }
     return res;
 }
 
@@ -574,6 +587,7 @@ static Status xgap_getfunc(string targetdir)
 
 static Status xgap_buildfunc(string targetdir)
 { 
+    Status res;
     if (chdir("gap4r5/pkg") != 0) {
         out(ERROR,"Cannot change to GAP's pkg directory.");
         return WARN;
@@ -587,7 +601,16 @@ static Status xgap_buildfunc(string targetdir)
         out(ERROR,"Cannot change to target directory.");
         return WARN;
     }
-    return BuildGAPPackage(targetdir, "xgap", false, WARN); 
+    res = BuildGAPPackage(targetdir, "xgap", false, WARN); 
+    if (res != OK) return res;
+    res = cp(targetdir+"gap4r5/pkg/xgap/bin/xgap.sh",targetdir+"xgap");
+    if (res != OK) {
+        out(WARN,"Could not copy startup script for xgap.");
+        return WARN;
+    }
+    if (chmod((targetdir+"xgap").c_str(),0755) != 0)
+        out(WARN,"Cannot make xgap script executable.");
+    return OK;
 }
 Component xgap("xgap",deps_onlyGAP,
                xgap_prerequisites,xgap_getfunc,xgap_buildfunc);
