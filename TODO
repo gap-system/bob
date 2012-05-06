@@ -44,8 +44,8 @@
 > sort out sh argument string containing strings in " with spaces
 >   --> then fix kbmag using -O2 with -m32
 > determine GAParchs, when?
-xgap: fix tests for X11
-xgap: copy scripts out (between compiles)
+> xgap: fix tests for X11
+> xgap: copy scripts out (between compiles)
 anupq: need to distinguish OS, existence of gmp and have to use 32-bit
 carat needs gmp? add a check --> no, but why does it not work on Debian64?
 Gauss: needs fixing --> new version
