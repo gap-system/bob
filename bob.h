@@ -1,6 +1,6 @@
 // bob.h - Copyright 2012 by Max Neunhoeffer
 
-#define BOBVERSION 4
+#define BOBVERSION 5
 
 #include <unistd.h>
 #include <string.h>
@@ -107,8 +107,10 @@ void get(string targetdir, string url, string &filename, bool alwaysget);
 // Throws an exception of type Status in case of an error
 void getind(string targetdir, string url, string &archivename);
 // Throws an exception of type Status in case of an error
-Status unpack(string archivename);
-Status sh(string cmd, int stdinfd = 0, bool quiet = false);
+void unpack(string archivename);
+// Throws an exception of type Status in case of an error
+void sh(string cmd, int stdinfd = 0, bool quiet = false);
+// Throws an exception of type Status in case of an error
 int shbg(string cmd, int stdinfd = 0, bool quiet = false);
 Status rmrf(string dirname);
 Status cp(string from, string to);

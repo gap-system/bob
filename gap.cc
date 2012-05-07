@@ -89,7 +89,8 @@ static Status GAP_buildfunc(string)
             out(WARN,"Could not remove directory \"gap4r5\" recursively!");
     }
     out(OK,"Unpacking GAP archive...");
-    if (unpack(GAP_archivename)) {
+    try { unpack(GAP_archivename); }
+    catch (Status e) {
         out(ERROR,"A problem occurred when extracting the archive.");
         return ERROR;
     }
@@ -100,29 +101,34 @@ static Status GAP_buildfunc(string)
     if (Double_Compile.num == 1) {
         out(OK,"Compiling for both 32-bit and 64-bit...");
         out(OK,"Running ./configure ABI=32 for GAP...");
-        if (sh("./configure ABI=32")) {
+        try { sh("./configure ABI=32"); }
+        catch (Status e) {
             out(ERROR,"Error in configure stage.");
             return ERROR;
         }
         out(OK,"Running make for GAP...");
-        if (sh("make")) {
+        try { sh("make"); }
+        catch (Status e) {
             out(ERROR,"Error in compilation stage.");
             return ERROR;
         }
         out(OK,"Running make clean for GAP...");
-        if (sh("make")) {
+        try { sh("make"); }
+        catch (Status e) {
             out(ERROR,"Error in compilation stage.");
             return ERROR;
         }
         confignames.push_back("default32");
     }
     out(OK,"Running ./configure for GAP...");
-    if (sh("./configure")) {
+    try { sh("./configure"); }
+    catch (Status e) {
         out(ERROR,"Error in configure stage.");
         return ERROR;
     }
     out(OK,"Running make for GAP...");
-    if (sh("make")) {
+    try { sh("make"); }
+    catch (Status e) {
         out(ERROR,"Error in compilation stage.");
         return ERROR;
     }
@@ -152,20 +158,23 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
         if (withabi32) cmd += " ABI=32";
         msg = string("Running "+cmd+" for ")+pkgname+" package...";
         out(OK,msg);
-        if (sh(cmd)) {
+        try { sh(cmd); }
+        catch (Status e) {
             out(err,"Error in configure stage.");
             return err;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
-        if (sh("make")) {
+        try { sh("make"); }
+        catch (Status e) {
             out(err,"Error in compilation stage.");
             return err;
         }
         if (withmakeclean) {
             msg = string("Running make clean for ")+pkgname+" package...";
             out(OK,msg);
-            if (sh("make clean")) {
+            try { sh("make clean"); }
+            catch (Status e) {
                 out(err,"Error in make clean stage.");
                 return err;
             }
@@ -173,26 +182,30 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
         msg = string("Running ./configure CONFIGNAME=default64 for ")+pkgname+
                      " package...";
         out(OK,msg);
-        if (sh("./configure CONFIGNAME=default64")) {
+        try { sh("./configure CONFIGNAME=default64"); }
+        catch (Status e) {
             out(err,"Error in configure stage.");
             return err;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
-        if (sh("make")) {
+        try { sh("make"); }
+        catch (Status e) {
             out(err,"Error in compilation stage.");
             return err;
         }
     } else {
         msg = string("Running ./configure for ")+pkgname+ " package...";
         out(OK,msg);
-        if (sh("./configure")) {
+        try { sh("./configure"); }
+        catch (Status e) {
             out(err,"Error in configure stage.");
             return err;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
-        if (sh("make")) {
+        try { sh("make"); }
+        catch (Status e) {
             out(err,"Error in compilation stage.");
             return err;
         }
@@ -314,14 +327,16 @@ static Status BuildOldGAPPackage(string targetdir, string pkgname, Status err)
         }
         msg = string("Running ./configure ../.. for ")+pkgname+" package...";
         out(OK,msg);
-        if (sh("./configure ../..")) {
+        try { sh("./configure ../.."); }
+        catch (Status e) {
             out(err,"Error in configure stage.");
             ret = err;
             break;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
-        if (sh("make")) {
+        try { sh("make"); }
+        catch (Status e) {
             out(err,"Error in compilation stage.");
             ret = err;
             break;
@@ -409,21 +424,24 @@ static Status guava_buildfunc(string targetdir)
         mkdir("bin",0755);  // intentionally ignore errors here
         msg = string("Running ./configure ../.. for ")+pkgname+" package...";
         out(OK,msg);
-        if (sh("./configure ../..")) {
+        try { sh("./configure ../.."); }
+        catch (Status e) {
             out(WARN,"Error in configure stage.");
             ret = WARN;
             break;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
-        if (sh("make")) {
+        try { sh("make"); }
+        catch (Status e) {
             out(WARN,"Error in compilation stage.");
             ret = WARN;
             break;
         }
         msg = string("Running make install for ")+pkgname+" package...";
         out(OK,msg);
-        if (sh("make install")) {
+        try { sh("make install"); }
+        catch (Status e) {
             out(WARN,"Error in installation stage.");
             ret = WARN;
             break;
@@ -465,7 +483,8 @@ static Status kbmag_buildfunc(string targetdir)
         }
         msg = "Running ./configure ../.. for kbmag package...";
         out(OK,msg);
-        if (sh("./configure ../..")) {
+        try { sh("./configure ../.."); }
+        catch (Status e) {
             out(WARN,"Error in configure stage.");
             ret = WARN;
             break;
@@ -476,7 +495,8 @@ static Status kbmag_buildfunc(string targetdir)
             msg = "make COPTS=-O2~-m32";
         else
             msg = "make COPTS=-O2";
-        if (sh(msg)) {
+        try { sh(msg); }
+        catch (Status e) {
             out(WARN,"Error in compilation stage.");
             ret = WARN;
             break;
@@ -495,11 +515,13 @@ static Status carat_buildfunc(string targetdir)
         out(ERROR,"Cannot change directory to gap4r5/pkg/carat .");
         return WARN;
     }
-    if (unpack("carat-2.1b1.tgz") != OK) {
+    try {unpack("carat-2.1b1.tgz"); }
+    catch (Status e) {
         out(ERROR,"Cannot unpack carat archive.");
         return WARN;
     }
-    if (sh("ln -sfn carat-2.1b1/bin bin") != OK) {
+    try { sh("ln -sfn carat-2.1b1/bin bin"); }
+    catch (Status e) {
         out(ERROR,"Cannot create bin link for carat package.");
         return WARN;
     }
@@ -508,7 +530,8 @@ static Status carat_buildfunc(string targetdir)
         return WARN;
     }
     topdir = targetdir + "gap4r5/pkg/carat/carat-2.1b1";
-    if (sh("make TOPDIR="+topdir) != OK) {
+    try { sh("make TOPDIR="+topdir); }
+    catch (Status e) {
         out(ERROR,"Failed to build standalone carat program.");
         return WARN;
     }
@@ -533,7 +556,8 @@ static Status carat_buildfunc(string targetdir)
     strncat(targetbin,"-",255-i);
     strncat(targetbin,Which_C_Compiler.str.c_str(),254-i);
     for (i = 0;i < GAParchs.size();i++)
-        if (sh(string("ln -sfn ")+targetbin+" "+GAParchs[i]) != OK) {
+        try { sh(string("ln -sfn ")+targetbin+" "+GAParchs[i]); }
+        catch (Status e) {
             out(ERROR,"Cannot create symbolic link to carat.");
             return WARN;
         }
@@ -603,7 +627,8 @@ static Status xgap_buildfunc(string targetdir)
         return WARN;
     }
     out(OK,"Unpacking XGAP archive...");
-    if (unpack(XGAP_archivename)) {
+    try { unpack(XGAP_archivename); }
+    catch (Status e) {
         out(ERROR,"A problem occurred when extracting the archive.");
         return WARN;
     }
@@ -625,12 +650,67 @@ static Status xgap_buildfunc(string targetdir)
 Component xgap("xgap",deps_onlyGAP,
                xgap_prerequisites,xgap_getfunc,xgap_buildfunc);
 
+static Status anupq_prerequisites(string, Status depsresult)
+{
+    if (depsresult != OK) return depsresult;
+    if (Which_Wordsize.num == 64 &&
+        Can_Compile_32bit.num != 0) {
+        out(WARN,"Need to compile in 32-bit mode using -m32 for component "
+                 "anupq.");
+        out(WARN,"Please use gcc or clang and install the necessary 32-bit "
+                 "libraries.");
+        return WARN;
+    }
+    return OK;
+}
+
+static Status anupq_buildfunc(string targetdir)
+{
+    string msg;
+    int i;
+    Status ret = OK;
+    for (i = 0;i <= Double_Compile.num;i++) {
+        if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
+        string pkgdir = "gap4r5/pkg/anupq";
+        string cmd;
+        if (chdir(pkgdir.c_str())) {
+            msg = "Cannot change to the anupq package's directory.";
+            out(WARN,msg);
+            ret = WARN;
+            break;
+        }
+        msg = "Running ./configure ../.. for anupq package...";
+        out(OK,msg);
+        try { sh("./configure ../.."); }
+        catch (Status e) {
+            out(WARN,"Error in configure stage.");
+            ret = WARN;
+            break;
+        }
+        out(OK,"Running make for anupq package...");
+
+        if (Which_Wordsize.num == 64)
+            msg = "make linux-iX86-gcc2 COPTS=-m32~-g LOPTS=-m32~-g";
+        else
+            msg = "make linux-iX86-gcc2";
+        try { sh(msg); }
+        catch (Status e) {
+            out(WARN,"Error in compilation stage.");
+            ret = WARN;
+            break;
+        }
+    }
+    if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
+    return ret;
+}
+Component anupq("anupq",deps_onlyGAP,anupq_prerequisites,NULL,anupq_buildfunc);
+
 // Finishing off the installation:
 
 const char *AllPkgs[] =
   { "io", "orb", "edim", "example", "Browse", "cvec", "ace", "atlasrep",
     "cohomolo", "fplsa", "fr", "grape", "guava", "kbmag", "carat", "xgap",
-    "Gauss", NULL };
+    "Gauss", "anupq", NULL };
 
 static Status GAP_cp_scripts_func(string targetdir)
 {

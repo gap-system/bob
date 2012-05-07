@@ -190,8 +190,8 @@ static int Which_Wordsize_Test(string &st)
     testprog << "  return 0;\n";
     testprog << "}\n";
     testprog.close();
-    if (sh(Which_C_Compiler.str+" /tmp/wordsize.c -o /tmp/wordsize"))
-        return 0;
+    try { sh(Which_C_Compiler.str+" /tmp/wordsize.c -o /tmp/wordsize"); }
+    catch (Status e) { return 0; }
     FILE *prog = popen("/tmp/wordsize","r");
     if (prog == NULL) return 0;
     int size,ret;
@@ -217,10 +217,12 @@ Status Have_C_Header(string headername)
     testprog << "  return 0;\n";
     testprog << "}\n";
     testprog.close();
-    if (sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
+    try { 
+        sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
            getenvironment("CFLAGS")+
-           " -E /tmp/headertest.c -o /tmp/headertest",0,true))
-        return ERROR;
+           " -E /tmp/headertest.c -o /tmp/headertest",0,true); 
+    }
+    catch (Status e) { return ERROR; }
     unlink("/tmp/headertest.c");
     unlink("/tmp/headertest");
     return OK;
@@ -234,10 +236,12 @@ Status Have_C_Library(string lib)
     testprog << "  return 0;\n";
     testprog << "}\n";
     testprog.close();
-    if (sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
+    try {
+        sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
            getenvironment("CFLAGS")+" /tmp/libtest.c -o /tmp/libtest "+
-           getenvironment("LDFLAGS")+" "+lib,0,true))
-        return ERROR;
+           getenvironment("LDFLAGS")+" "+lib,0,true);
+    }
+    catch (Status e) { return ERROR; }
     unlink("/tmp/libtest.c");
     unlink("/tmp/libtest");
     return OK;
@@ -256,9 +260,12 @@ static int Can_Compile_32bit_Test(string &st)
     testprog << "  return 0;\n";
     testprog << "}\n";
     testprog.close();
-    if (sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
+    try { 
+        sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
            getenvironment("CFLAGS")+" -m32 /tmp/lib32test.c -o /tmp/lib32test "+
-           getenvironment("LDFLAGS"),0,true)) {
+           getenvironment("LDFLAGS"),0,true);
+    }
+    catch (Status e) {
         st = "no";
         return -1;
     }
@@ -626,7 +633,7 @@ static int copy_data(struct archive *ar, struct archive *aw)
     }
 }
 
-Status unpack(string archivename)
+void unpack(string archivename)
 {
     struct archive *a;
     struct archive *ext;
@@ -646,7 +653,7 @@ Status unpack(string archivename)
         out(ERROR,"Cannot read archive "+archivename+"\nMessage: "+
             archive_error_string(a));
         archive_read_finish(a);
-        return ERROR;
+        throw ERROR;
     }
     ext = archive_write_disk_new();
     archive_write_disk_set_options(ext, ARCHIVE_EXTRACT_TIME);
@@ -681,7 +688,7 @@ Status unpack(string archivename)
     archive_read_finish(a);
     archive_write_close(ext);
     archive_write_finish(ext);
-    return res;
+    if (res != OK) throw res;
 }
 
 static string massagearg(string cmd)
@@ -702,7 +709,7 @@ static string massagearg(string cmd)
     return res;
 }
 
-Status sh(string cmd, int stdinfd, bool quiet)
+void sh(string cmd, int stdinfd, bool quiet)
 {
     string prog;
     string path;
@@ -736,13 +743,13 @@ Status sh(string cmd, int stdinfd, bool quiet)
 
     if (!which(prog,path)) {
         if (!quiet) out(ERROR,"Could not execute command:\n  "+cmd);
-        return ERROR;
+        throw ERROR;
     }
 
     int fds[2];
     if (pipe(fds) != 0) {
         if (!quiet) out(ERROR,"Could not create pipes for:\n  "+cmd);
-        return ERROR;
+        throw ERROR;
     }
 
     pid = fork();
@@ -786,9 +793,8 @@ Status sh(string cmd, int stdinfd, bool quiet)
     waitpid(pid,&status,0);
     if (WEXITSTATUS(status) != 0) {
         if (!quiet) out(ERROR,"Subprocess "+cmd+" returned with an error.");
-        return ERROR;
+        throw ERROR;
     }
-    return OK;
 }
 
 int shbg(string cmd, int stdinfd, bool quiet)
