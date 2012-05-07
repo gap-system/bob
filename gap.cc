@@ -40,13 +40,16 @@ static string GAP_archivename;
 
 static Status GAP_getfunc(string targetdir)
 {
-    if (getind(targetdir,
+    try {
+        getind(targetdir,
            "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/GAP.link",
-           GAP_archivename)) {
+           GAP_archivename);
+    }
+    catch (Status e) {
         out(ERROR,"Could not download GAP archive.");
         return ERROR;
-    } else 
-        return OK;
+    }
+    return OK;
 }
 
 vector<string> confignames;
@@ -382,6 +385,10 @@ static Status grape_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"grape", WARN); }
 Component grape("grape",deps_onlyGAP,NULL,NULL,grape_buildfunc);
 
+static Status Gauss_buildfunc(string targetdir)
+{ return BuildOldGAPPackage(targetdir,"Gauss", WARN); }
+Component Gauss("Gauss",deps_onlyGAP,NULL,NULL,Gauss_buildfunc);
+
 static Status guava_buildfunc(string targetdir)
 { 
     string msg;
@@ -576,13 +583,16 @@ static string XGAP_archivename;
 
 static Status xgap_getfunc(string targetdir)
 {
-    if (getind(targetdir,
+    try {
+        getind(targetdir,
            "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/XGAP.link",
-           XGAP_archivename)) {
+           XGAP_archivename);
+    }
+    catch (Status e) {
         out(ERROR,"Could not download XGAP archive.");
         return ERROR;
-    } else 
-        return OK;
+    }
+    return OK;
 }
 
 static Status xgap_buildfunc(string targetdir)
@@ -619,7 +629,8 @@ Component xgap("xgap",deps_onlyGAP,
 
 const char *AllPkgs[] =
   { "io", "orb", "edim", "example", "Browse", "cvec", "ace", "atlasrep",
-    "cohomolo", "fplsa", "fr", "grape", "guava", "kbmag", "carat", NULL };
+    "cohomolo", "fplsa", "fr", "grape", "guava", "kbmag", "carat", "xgap",
+    "Gauss", NULL };
 
 static Status GAP_cp_scripts_func(string targetdir)
 {

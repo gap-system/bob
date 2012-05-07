@@ -103,8 +103,10 @@ bool which(string name, string &res);
 Status downloadname(string targetname, string url, string &localname);
 Status download(string url, string localname);
 Status checksha1(string filename, string hash);
-Status get(string targetdir, string url, string &filename, bool alwaysget);
-Status getind(string targetdir, string url, string &archivename);
+void get(string targetdir, string url, string &filename, bool alwaysget);
+// Throws an exception of type Status in case of an error
+void getind(string targetdir, string url, string &archivename);
+// Throws an exception of type Status in case of an error
 Status unpack(string archivename);
 Status sh(string cmd, int stdinfd = 0, bool quiet = false);
 int shbg(string cmd, int stdinfd = 0, bool quiet = false);

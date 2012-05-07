@@ -487,16 +487,16 @@ Status download(string url, string localname)
     return OK;
 }
 
-Status get(string targetdir, string url, string &filename, bool alwaysget)
+void get(string targetdir, string url, string &filename, bool alwaysget)
 {
     Status res;
-    if (downloadname(targetdir,url,filename) == ERROR) return ERROR;
+    if (downloadname(targetdir,url,filename) == ERROR) throw ERROR;
     if (!alwaysget && access(filename.c_str(),R_OK) == 0) {
         out(OK,"Already have "+url);
-        return OK;
+        return;
     }
     res = download(url,filename);
-    return res;
+    if (res != OK) throw res;
 }
 
 unsigned char *sha1(FILE *f)
@@ -539,7 +539,7 @@ Status checksha1(string filename, string hash)
     return OK;
 }
 
-Status getind(string targetdir, string url, string &archivename)
+void getind(string targetdir, string url, string &archivename)
 {
     string filename;
     string url2;
@@ -549,10 +549,11 @@ Status getind(string targetdir, string url, string &archivename)
 
     out(OK,"Getting link file...");
     if (nonetwork)
-        res = get(targetdir, url, filename, false);
+        get(targetdir, url, filename, false);
+        // WARN or ERROR exception is handed through
     else
-        res = get(targetdir, url, filename, true);
-    if (res == ERROR) return ERROR;
+        get(targetdir, url, filename, true);
+        // WARN or ERROR exception is handed through
     fstream file;
     file.exceptions ( ifstream::failbit | ifstream::badbit );
     try {
@@ -560,14 +561,14 @@ Status getind(string targetdir, string url, string &archivename)
     }
     catch (ifstream::failure e) {
         out(ERROR,"Could not write link file "+filename+" .");
-        return ERROR;
+        throw ERROR;
     }
     try {
         getline(file,url2);
         if (url2 != "BOB") {
             file.close();
             out(ERROR,"Link file "+filename+" corrupt.");
-            return ERROR;
+            throw ERROR;
         }
         getline(file,url2);
         getline(file,hash);
@@ -576,11 +577,10 @@ Status getind(string targetdir, string url, string &archivename)
     catch (ifstream::failure e) {
         file.close();
         out(ERROR,"Could not read link file "+filename+" .");
-        return ERROR;
+        throw ERROR;
     }
     // Now check if it is already there:
-    res = downloadname(targetdir,url2,archivename);
-    if (res == ERROR) return res;
+    if (downloadname(targetdir,url2,archivename) == ERROR) throw ERROR;
     pos = archivename.rfind('/');
     if (pos != string::npos)
         out(OK,string("Archive name: ")+archivename.substr(pos+1));
@@ -588,14 +588,13 @@ Status getind(string targetdir, string url, string &archivename)
     // Is it already there?
     if (access(archivename.c_str(),R_OK) == 0) {
         out(OK,"Checking sha1 checksum of file that was found...");
-        res = checksha1(archivename,hash);
-        if (res == OK) return OK;
+        if (checksha1(archivename,hash) == OK) return;
         out(OK,"Checksum of archive found is wrong, downloading it again...");
     }
 
     // Now get it:
     res = download(url2,archivename);
-    if (res == ERROR) return ERROR;
+    if (res == ERROR) throw ERROR;
 
     // Now check it (again):
     out(OK,"Checking sha1 checksum of downloaded file...");
@@ -603,9 +602,8 @@ Status getind(string targetdir, string url, string &archivename)
     if (res == ERROR) {
         out(ERROR,"SHA1 checksum of downloaded file "+archivename+
                   " was wrong!");
-        return ERROR;
+        throw ERROR;
     }
-    return OK;
 }
 
 static int copy_data(struct archive *ar, struct archive *aw)
@@ -1055,10 +1053,8 @@ int main(int argc, char * const argv[], char *envp[])
         verbose = 2;
         string versionfile;
         string version;
-        if (get(targetdir,"http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/BOBVERSION",versionfile,true) == ERROR) {
-            verbose = merkverbose;
-            out(OK,"Could not get latest version number, does not matter.");
-        } else {
+        try {
+            get(targetdir,"http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/BOBVERSION",versionfile,true);
             verbose = merkverbose;
             fstream file(versionfile.c_str(),fstream::in);
             getline(file,version);
@@ -1068,6 +1064,10 @@ int main(int argc, char * const argv[], char *envp[])
             } else {
                 out(OK,"I am the latest version of myself, good. :-)");
             }
+        }
+        catch (Status e) {
+            verbose = merkverbose;
+            out(OK,"Could not get latest version number, does not matter.");
         }
     }
 
