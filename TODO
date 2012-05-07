@@ -49,6 +49,7 @@
 > anupq: need to distinguish OS, existence of gmp and have to use 32-bit
 > Gauss: needs fixing --> new version
 > Compile and finish web page
+do not download xgap
 cpscripts and workspace should execute regardless
 carat needs gmp? add a check --> no, but why does it not work on Debian64?
 Check failure in Browse package --> need to detect???
