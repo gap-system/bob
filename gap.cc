@@ -605,8 +605,9 @@ static Status xgap_prerequisites(string, Status)
 
 static string XGAP_archivename;
 
-static Status xgap_getfunc(string targetdir)
+static Status xgap_getfunc(string)
 {
+#if 0
     try {
         getind(targetdir,
            "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/XGAP.link",
@@ -616,6 +617,7 @@ static Status xgap_getfunc(string targetdir)
         out(ERROR,"Could not download XGAP archive.");
         return ERROR;
     }
+#endif
     return OK;
 }
 
