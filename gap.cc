@@ -214,7 +214,7 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
 }
 
 static const char *deps_onlyGAP[]
-  = { "GAP", NULL };
+  = { "!GAP", NULL };
 
 static Status io_buildfunc(string targetdir)
 { return BuildGAPPackage(targetdir, "io", true, ERROR); }
@@ -708,9 +708,9 @@ Component anupq("anupq",deps_onlyGAP,anupq_prerequisites,NULL,anupq_buildfunc);
 // Finishing off the installation:
 
 const char *AllPkgs[] =
-  { "io", "orb", "edim", "example", "Browse", "cvec", "ace", "atlasrep",
-    "cohomolo", "fplsa", "fr", "grape", "guava", "kbmag", "carat", "xgap",
-    "Gauss", "anupq", NULL };
+  { " io", " orb", " edim", " example", " Browse", " cvec", " ace", " atlasrep",
+    " cohomolo", " fplsa", " fr", " grape", " guava", " kbmag", " carat", 
+    " xgap", " Gauss", " anupq", NULL };
 
 static Status GAP_cp_scripts_func(string targetdir)
 {
@@ -742,7 +742,7 @@ Component GAP_cp_scripts("GAP_cp_scripts",AllPkgs,NULL,NULL,
 // Create a saved workspace:
 
 static const char *GAP_workspace_deps[]
-  = { "GAP_cp_scripts", NULL };
+  = { "!GAP_cp_scripts", NULL };
 
 static Status GAP_workspace_func(string targetdir)
 {

@@ -1010,10 +1010,8 @@ int main(int argc, char * const argv[], char *envp[])
     // At this stage we ignore further arguments.
 
     // Create the necessary infrastructure for logging:
-    boblogfilename = targetdir;
-    boblogfilename += "bob.log";
-    buildlogfilename = targetdir;
-    buildlogfilename += "build.log";
+    boblogfilename = targetdir + "bob.log";
+    buildlogfilename = targetdir + "build.log";
 
     fstream outs(boblogfilename.c_str(),fstream::out | fstream::trunc);
     if (outs.fail()) {
@@ -1151,7 +1149,7 @@ int main(int argc, char * const argv[], char *envp[])
             if (!done[i]) {
                 cando = true;
                 for (j = 0;j < c->depends.size();j++) {
-                    pos = Component::findnr(c->depends[j]);
+                    pos = Component::findnr(c->depends[j].substr(1));
                     if (pos >= 0 && !done[pos]) {
                         cando = false;
                         break;
@@ -1177,11 +1175,13 @@ int main(int argc, char * const argv[], char *envp[])
     for (i = 0;i < deporder.size();i++) {
         c = deporder[i];
         res = UNKNOWN;
-        // First check whether all our dependencies are happy:
+        // First check whether all necessary dependencies are happy:
         for (j = 0;j < c->depends.size();j++) {
-            cc = Component::find(c->depends[j]);
-            if (cc != NULL) {
-                if (res < cc->prereqres) res = cc->prereqres;
+            if (c->depends[j][0] == '!') {
+                cc = Component::find(c->depends[j].substr(1));
+                if (cc != NULL) {
+                    if (res < cc->prereqres) res = cc->prereqres;
+                }
             }
         }
         if (c->prereq != NULL) {
