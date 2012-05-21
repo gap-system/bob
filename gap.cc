@@ -624,6 +624,7 @@ static Status xgap_getfunc(string)
 static Status xgap_buildfunc(string targetdir)
 { 
     Status res;
+#if 0
     if (chdir("gap4r5/pkg") != 0) {
         out(ERROR,"Cannot change to GAP's pkg directory.");
         return WARN;
@@ -638,6 +639,7 @@ static Status xgap_buildfunc(string targetdir)
         out(ERROR,"Cannot change to target directory.");
         return WARN;
     }
+#endif
     res = BuildGAPPackage(targetdir, "xgap", false, WARN); 
     if (res != OK) return res;
     res = cp(targetdir+"gap4r5/pkg/xgap/bin/xgap.sh",targetdir+"xgap");
