@@ -551,10 +551,10 @@ static Status carat_buildfunc(string targetdir)
         return WARN;
     }
     pclose(p);
-    size_t i = strlen(targetbin);
+    size_t i = strlen(targetbin)-1;  // lose the line end
     targetbin[i--] = 0;
     strncat(targetbin,"-",255-i);
-    strncat(targetbin,Which_C_Compiler.str.c_str(),254-i);
+    strncat(targetbin,C_Compiler_Name.str.c_str(),254-i);
     for (i = 0;i < GAParchs.size();i++)
         try { sh(string("ln -sfn ")+targetbin+" "+GAParchs[i]); }
         catch (Status e) {
