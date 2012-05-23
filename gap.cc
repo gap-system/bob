@@ -570,22 +570,6 @@ static Status xgap_prerequisites(string, Status)
 {
     Status res = OK;
     string path;
-    if (!which("/bin/sh",path)) {
-        out(ERROR,"Need a (bash-like) shell in /bin/sh, please install one.");
-        res = WARN;
-    }
-    if (Which_C_Compiler.num != 0) {
-        out(ERROR,"Need a C-compiler, preferably gcc, please install one.");
-        res = WARN;
-    }
-    if (Have_make.num != 0) {
-        out(ERROR,"Need the 'make' utility, please install it.");
-        res = WARN;
-    }
-    if (!which("m4",path)) {
-        out(ERROR,"Need the 'm4' utility, please install it.");
-        res = WARN;
-    }
     if (Have_C_Library("-lXaw -lXmu -lXt -lXext -lX11  -lSM -lICE") != OK) {
         out(ERROR,"You have not enough X11 libraries installed, thus "
                   "XGAP cannot run.");
