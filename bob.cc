@@ -255,6 +255,8 @@ static int Can_Compile_32bit_Test(string &st)
         st = "no";
         return -1;
     }
+    out(OK,"We are on a 64-bit system using gcc or clang.");
+    out(OK,"Checking whether or not we can compile in 32-bit mode...");
     fstream testprog("/tmp/lib32test.c",fstream::out | fstream::trunc);
     testprog << "int main(void) {\n";
     testprog << "  return 0;\n";
@@ -267,11 +269,21 @@ static int Can_Compile_32bit_Test(string &st)
     }
     catch (Status e) {
         st = "no";
+        out(OK,"No, we cannot compile 32-bit mode executables.");
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, then you can "
+                     "install the");
+          out(ADVICE,"necessary tools by doing:");
+          out(ADVICE,"  apt-get install ia32-libs libc6-dev-i386 "
+                     "lib32readline5-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+        }
         return -1;
     }
     unlink("/tmp/lib32test.c");
     unlink("/tmp/lib32test");
     st = "yes";
+    out(OK,"Yes, we can compile 32-bit mode executables.");
     return 0;
 }
 Test Can_Compile_32bit("Can_Compile_32bit",3,Can_Compile_32bit_Test);
@@ -391,6 +403,7 @@ void out(Status severity, string msg)
         (verbose >= 1 && severity == ERROR)) {
         if (verbose >= 4) cout << "BOB:";
         if (severity == WARN) cout << "Warning:";
+        else if (severity == ADVICE) cout << "Advice:";
         else if (severity == ERROR) cout << "Error:";
         cout << msg << "\n";
     }
@@ -1185,6 +1198,7 @@ int main(int argc, char * const argv[], char *envp[])
             }
         }
         if (c->prereq != NULL) {
+            out(OK,"Checking prerequisites for component "+c->name+" ...");
             c->prereqres = c->prereq(targetdir,res);
             if (c->prereqres == ERROR) goterror = true;
             else if (c->prereqres == WARN) gotwarning = true;

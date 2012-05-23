@@ -33,6 +33,15 @@ static Status GAP_prerequisites(string, Status)
         out(ERROR,"Need the 'm4' utility, please install it.");
         res = ERROR;
     }
+    if (res != OK) {
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, then you can "
+                     "install the necessary");
+          out(ADVICE,"tools by doing:");
+          out(ADVICE,"  apt-get install gcc make m4 libc6-dev libreadline-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+        }
+    }
     return res;
 }
 
@@ -235,18 +244,34 @@ Component edim("edim",deps_onlyGAP,NULL,NULL,edim_buildfunc);
 static Status Browse_prerequisites(string, Status depsresult)
 {
     string path;
+    Status ret;
+    ret = OK;
     if (depsresult != OK) return depsresult;
     if (Have_C_Library("-lncurses") != OK ||
         Have_C_Header("ncurses.h") != OK) {
         out(WARN,"Need ncurses library installed for component Browse.");
-        return WARN;
+        ret = WARN;
     }
     if (Have_C_Library("-lpanel") != OK ||
         Have_C_Header("panel.h") != OK) {
         out(WARN,"Need panel library installed for component Browse.");
-        return WARN;
+        ret = WARN;
     }
-    return OK;
+    if (ret != OK) {
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, then you can "
+                     "install the");
+          out(ADVICE,"necessary libraries by doing:");
+          out(ADVICE,"  apt-get install libncurses-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          if (Can_Compile_32bit.num == 0) {
+            out(ADVICE,"For the 32-bit libraries do:");
+            out(ADVICE,"  apt-get install lib32ncurses5-dev");
+          }
+        }
+
+    }
+    return ret;
 }
 
 static Status Browse_buildfunc(string targetdir)
@@ -257,18 +282,29 @@ Component Browse("Browse",deps_onlyGAP,Browse_prerequisites,NULL,
 static Status nq_prerequisites(string, Status depsresult)
 {
     string path;
+    Status ret;
     if (depsresult != OK) return depsresult;
+    ret = OK;
     if (!(which("gawk",path) || which("mawk",path) || which("nawk",path) ||
           which("awk",path))) {
         out(WARN,"Need awk for component nq-Pkg.");
-        return WARN;
+        ret = WARN;
     }
     if (Have_C_Library("-lgmp") != OK ||
         Have_C_Header("gmp.h") != OK) {
         out(WARN,"Need gmp installed for component nq.");
-        return WARN;
+        ret = WARN;
     }
-    return OK;
+    if (ret != OK) {
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, then you can "
+                     "install the necessary");
+          out(ADVICE,"tools by doing:");
+          out(ADVICE,"  apt-get install mawk libgmp3-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+        }
+    }
+    return ret;
 }
 
 static Status nq_buildfunc(string targetdir)
@@ -383,12 +419,18 @@ static Status fr_prerequisites(string, Status depsresult)
     if (depsresult != OK) return depsresult;
     if (Have_C_Header("gsl/gsl_vector.h") != OK) {
         out(WARN,"Need gsl library installed for component fr.");
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, then you can "
+                     "install the necessary");
+          out(ADVICE,"libraries by doing:");
+          out(ADVICE,"  apt-get install libgsl0-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+        }
         return WARN;
     }
     if (!which("appletviewer",path) ||
         !which("javac",path)) {
         out(WARN,"Need appletviewer and java compiler for component fr.");
-        return WARN;
     }
     return OK;
 }
@@ -582,7 +624,19 @@ static Status xgap_prerequisites(string, Status)
         Have_C_Header("X11/keysym.h") != OK) {
         out(ERROR,"You have not enough X11 headers installed, thus "
                   "XGAP cannot be compiled.");
+        out(ERROR,"The following libraries with headers are required "
+                  "for XGAP:");
+        out(ERROR,"  libXaw libXmu libXt libXext libX11 libSM libICE");
         res = WARN;
+    }
+    if (res != OK) {
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, then you can "
+                     "install the necessary");
+          out(ADVICE,"libraries by doing:");
+          out(ADVICE,"  apt-get install libx11-dev libxt-dev libxaw7-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+        }
     }
     return res;
 }
