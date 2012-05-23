@@ -55,7 +55,9 @@
 > better say for what component we are checking prerequisites
 > better say that we check for -m32
 > carat needs gmp? add a check --> no, but why does it not work on Debian64?
-
+homology package?
+compile linboxing
+llok through LoadAllPackages to find further packages to compile
 
 
 Future:
