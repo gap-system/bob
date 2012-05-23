@@ -35,7 +35,7 @@ static Status GAP_prerequisites(string, Status)
     }
     if (res != OK) {
         if (Which_Architecture.str == "LINUX") {
-          out(ADVICE,"If you are running a debian-like Linux, then you can "
+          out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the necessary");
           out(ADVICE,"tools by doing:");
           out(ADVICE,"  apt-get install gcc make m4 libc6-dev libreadline-dev");
@@ -259,7 +259,7 @@ static Status Browse_prerequisites(string, Status depsresult)
     }
     if (ret != OK) {
         if (Which_Architecture.str == "LINUX") {
-          out(ADVICE,"If you are running a debian-like Linux, then you can "
+          out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the");
           out(ADVICE,"necessary libraries by doing:");
           out(ADVICE,"  apt-get install libncurses-dev");
@@ -297,7 +297,7 @@ static Status nq_prerequisites(string, Status depsresult)
     }
     if (ret != OK) {
         if (Which_Architecture.str == "LINUX") {
-          out(ADVICE,"If you are running a debian-like Linux, then you can "
+          out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the necessary");
           out(ADVICE,"tools by doing:");
           out(ADVICE,"  apt-get install mawk libgmp3-dev");
@@ -420,7 +420,7 @@ static Status fr_prerequisites(string, Status depsresult)
     if (Have_C_Header("gsl/gsl_vector.h") != OK) {
         out(WARN,"Need gsl library installed for component fr.");
         if (Which_Architecture.str == "LINUX") {
-          out(ADVICE,"If you are running a debian-like Linux, then you can "
+          out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the necessary");
           out(ADVICE,"libraries by doing:");
           out(ADVICE,"  apt-get install libgsl0-dev");
@@ -631,7 +631,7 @@ static Status xgap_prerequisites(string, Status)
     }
     if (res != OK) {
         if (Which_Architecture.str == "LINUX") {
-          out(ADVICE,"If you are running a debian-like Linux, then you can "
+          out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the necessary");
           out(ADVICE,"libraries by doing:");
           out(ADVICE,"  apt-get install libx11-dev libxt-dev libxaw7-dev");

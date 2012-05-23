@@ -271,7 +271,7 @@ static int Can_Compile_32bit_Test(string &st)
         st = "no";
         out(OK,"No, we cannot compile 32-bit mode executables.");
         if (Which_Architecture.str == "LINUX") {
-          out(ADVICE,"If you are running a debian-like Linux, then you can "
+          out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the");
           out(ADVICE,"necessary tools by doing:");
           out(ADVICE,"  apt-get install ia32-libs libc6-dev-i386 "
