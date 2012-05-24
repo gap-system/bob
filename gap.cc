@@ -613,8 +613,8 @@ static Status xgap_prerequisites(string, Status)
     Status res = OK;
     string path;
     if (Have_C_Library("-lXaw -lXmu -lXt -lXext -lX11  -lSM -lICE") != OK) {
-        out(ERROR,"You have not enough X11 libraries installed, thus "
-                  "XGAP cannot run.");
+        out(WARN,"You have not enough X11 libraries installed, thus "
+                 "XGAP cannot run.");
         res = WARN;
     }
     if (Have_C_Header("X11/X.h") != OK ||
@@ -622,11 +622,11 @@ static Status xgap_prerequisites(string, Status)
         Have_C_Header("X11/Intrinsic.h") != OK ||
         Have_C_Header("X11/Xaw/XawInit.h") != OK ||
         Have_C_Header("X11/keysym.h") != OK) {
-        out(ERROR,"You have not enough X11 headers installed, thus "
+        out(WARN,"You have not enough X11 headers installed, thus "
                   "XGAP cannot be compiled.");
-        out(ERROR,"The following libraries with headers are required "
+        out(WARN,"The following libraries with headers are required "
                   "for XGAP:");
-        out(ERROR,"  libXaw libXmu libXt libXext libX11 libSM libICE");
+        out(WARN,"  libXaw libXmu libXt libXext libX11 libSM libICE");
         res = WARN;
     }
     if (res != OK) {
