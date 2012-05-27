@@ -9,7 +9,7 @@ bob_LDFLAGS = ${FORLDFLAGS}
 BUILT_SOURCES = libs/include/zlib.h libs/include/bzlib.h \
 		libs/include/archive.h libs/include/curl/curl.h
 
-ZLIBVERSION = 1.2.6
+ZLIBVERSION = 1.2.7
 BZ2LIBVERSION = 1.0.6
 LIBARCHIVEVERSION = 3.0.3
 CURLVERSION = 7.24.0
