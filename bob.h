@@ -1,6 +1,6 @@
 // bob.h - Copyright 2012 by Max Neunhoeffer
 
-#define BOBVERSION 5
+#define BOBVERSION 7
 
 #include <unistd.h>
 #include <string.h>
@@ -15,7 +15,7 @@ using std::string;
 
 namespace BOB {
 
-enum Status { UNKNOWN = -1, OK = 0, WARN = 1, ERROR = 2 };
+enum Status { UNKNOWN = -1, OK = 0, ADVICE = 1, WARN = 2, ERROR = 3 };
 
 typedef int (*testfunc_t)(string &st);
 
@@ -50,6 +50,7 @@ class Test {
 extern Test Have_make;
 extern Test Which_C_Compiler;
 extern Test C_Compiler_Name;
+extern Test Which_Architecture;
 extern Test Which_Wordsize;
 extern Test Can_Compile_32bit;
 extern Test Double_Compile;

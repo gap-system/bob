@@ -33,6 +33,15 @@ static Status GAP_prerequisites(string, Status)
         out(ERROR,"Need the 'm4' utility, please install it.");
         res = ERROR;
     }
+    if (res != OK) {
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, you can "
+                     "install the necessary");
+          out(ADVICE,"tools by doing:");
+          out(ADVICE,"  apt-get install gcc make m4 libc6-dev libreadline-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+        }
+    }
     return res;
 }
 
@@ -214,7 +223,7 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
 }
 
 static const char *deps_onlyGAP[]
-  = { "GAP", NULL };
+  = { "!GAP", NULL };
 
 static Status io_buildfunc(string targetdir)
 { return BuildGAPPackage(targetdir, "io", true, ERROR); }
@@ -235,18 +244,34 @@ Component edim("edim",deps_onlyGAP,NULL,NULL,edim_buildfunc);
 static Status Browse_prerequisites(string, Status depsresult)
 {
     string path;
+    Status ret;
+    ret = OK;
     if (depsresult != OK) return depsresult;
     if (Have_C_Library("-lncurses") != OK ||
         Have_C_Header("ncurses.h") != OK) {
         out(WARN,"Need ncurses library installed for component Browse.");
-        return WARN;
+        ret = WARN;
     }
     if (Have_C_Library("-lpanel") != OK ||
         Have_C_Header("panel.h") != OK) {
         out(WARN,"Need panel library installed for component Browse.");
-        return WARN;
+        ret = WARN;
     }
-    return OK;
+    if (ret != OK) {
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, you can "
+                     "install the");
+          out(ADVICE,"necessary libraries by doing:");
+          out(ADVICE,"  apt-get install libncurses-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          if (Can_Compile_32bit.num == 0) {
+            out(ADVICE,"For the 32-bit libraries do:");
+            out(ADVICE,"  apt-get install lib32ncurses5-dev");
+          }
+        }
+
+    }
+    return ret;
 }
 
 static Status Browse_buildfunc(string targetdir)
@@ -257,18 +282,29 @@ Component Browse("Browse",deps_onlyGAP,Browse_prerequisites,NULL,
 static Status nq_prerequisites(string, Status depsresult)
 {
     string path;
+    Status ret;
     if (depsresult != OK) return depsresult;
+    ret = OK;
     if (!(which("gawk",path) || which("mawk",path) || which("nawk",path) ||
           which("awk",path))) {
         out(WARN,"Need awk for component nq-Pkg.");
-        return WARN;
+        ret = WARN;
     }
     if (Have_C_Library("-lgmp") != OK ||
         Have_C_Header("gmp.h") != OK) {
         out(WARN,"Need gmp installed for component nq.");
-        return WARN;
+        ret = WARN;
     }
-    return OK;
+    if (ret != OK) {
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, you can "
+                     "install the necessary");
+          out(ADVICE,"tools by doing:");
+          out(ADVICE,"  apt-get install mawk libgmp3-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+        }
+    }
+    return ret;
 }
 
 static Status nq_buildfunc(string targetdir)
@@ -383,12 +419,18 @@ static Status fr_prerequisites(string, Status depsresult)
     if (depsresult != OK) return depsresult;
     if (Have_C_Header("gsl/gsl_vector.h") != OK) {
         out(WARN,"Need gsl library installed for component fr.");
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, you can "
+                     "install the necessary");
+          out(ADVICE,"libraries by doing:");
+          out(ADVICE,"  apt-get install libgsl0-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+        }
         return WARN;
     }
     if (!which("appletviewer",path) ||
         !which("javac",path)) {
         out(WARN,"Need appletviewer and java compiler for component fr.");
-        return WARN;
     }
     return OK;
 }
@@ -551,10 +593,10 @@ static Status carat_buildfunc(string targetdir)
         return WARN;
     }
     pclose(p);
-    size_t i = strlen(targetbin);
+    size_t i = strlen(targetbin)-1;  // lose the line end
     targetbin[i--] = 0;
     strncat(targetbin,"-",255-i);
-    strncat(targetbin,Which_C_Compiler.str.c_str(),254-i);
+    strncat(targetbin,C_Compiler_Name.str.c_str(),254-i);
     for (i = 0;i < GAParchs.size();i++)
         try { sh(string("ln -sfn ")+targetbin+" "+GAParchs[i]); }
         catch (Status e) {
@@ -570,25 +612,9 @@ static Status xgap_prerequisites(string, Status)
 {
     Status res = OK;
     string path;
-    if (!which("/bin/sh",path)) {
-        out(ERROR,"Need a (bash-like) shell in /bin/sh, please install one.");
-        res = WARN;
-    }
-    if (Which_C_Compiler.num != 0) {
-        out(ERROR,"Need a C-compiler, preferably gcc, please install one.");
-        res = WARN;
-    }
-    if (Have_make.num != 0) {
-        out(ERROR,"Need the 'make' utility, please install it.");
-        res = WARN;
-    }
-    if (!which("m4",path)) {
-        out(ERROR,"Need the 'm4' utility, please install it.");
-        res = WARN;
-    }
     if (Have_C_Library("-lXaw -lXmu -lXt -lXext -lX11  -lSM -lICE") != OK) {
-        out(ERROR,"You have not enough X11 libraries installed, thus "
-                  "XGAP cannot run.");
+        out(WARN,"You have not enough X11 libraries installed, thus "
+                 "XGAP cannot run.");
         res = WARN;
     }
     if (Have_C_Header("X11/X.h") != OK ||
@@ -596,17 +622,30 @@ static Status xgap_prerequisites(string, Status)
         Have_C_Header("X11/Intrinsic.h") != OK ||
         Have_C_Header("X11/Xaw/XawInit.h") != OK ||
         Have_C_Header("X11/keysym.h") != OK) {
-        out(ERROR,"You have not enough X11 headers installed, thus "
+        out(WARN,"You have not enough X11 headers installed, thus "
                   "XGAP cannot be compiled.");
+        out(WARN,"The following libraries with headers are required "
+                  "for XGAP:");
+        out(WARN,"  libXaw libXmu libXt libXext libX11 libSM libICE");
         res = WARN;
+    }
+    if (res != OK) {
+        if (Which_Architecture.str == "LINUX") {
+          out(ADVICE,"If you are running a debian-like Linux, you can "
+                     "install the necessary");
+          out(ADVICE,"libraries by doing:");
+          out(ADVICE,"  apt-get install libx11-dev libxt-dev libxaw7-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+        }
     }
     return res;
 }
 
 static string XGAP_archivename;
 
-static Status xgap_getfunc(string targetdir)
+static Status xgap_getfunc(string)
 {
+#if 0
     try {
         getind(targetdir,
            "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/XGAP.link",
@@ -616,12 +655,14 @@ static Status xgap_getfunc(string targetdir)
         out(ERROR,"Could not download XGAP archive.");
         return ERROR;
     }
+#endif
     return OK;
 }
 
 static Status xgap_buildfunc(string targetdir)
 { 
     Status res;
+#if 0
     if (chdir("gap4r5/pkg") != 0) {
         out(ERROR,"Cannot change to GAP's pkg directory.");
         return WARN;
@@ -636,6 +677,7 @@ static Status xgap_buildfunc(string targetdir)
         out(ERROR,"Cannot change to target directory.");
         return WARN;
     }
+#endif
     res = BuildGAPPackage(targetdir, "xgap", false, WARN); 
     if (res != OK) return res;
     res = cp(targetdir+"gap4r5/pkg/xgap/bin/xgap.sh",targetdir+"xgap");
@@ -708,9 +750,9 @@ Component anupq("anupq",deps_onlyGAP,anupq_prerequisites,NULL,anupq_buildfunc);
 // Finishing off the installation:
 
 const char *AllPkgs[] =
-  { "io", "orb", "edim", "example", "Browse", "cvec", "ace", "atlasrep",
-    "cohomolo", "fplsa", "fr", "grape", "guava", "kbmag", "carat", "xgap",
-    "Gauss", "anupq", NULL };
+  { " io", " orb", " edim", " example", " Browse", " cvec", " ace", " atlasrep",
+    " cohomolo", " fplsa", " fr", " grape", " guava", " kbmag", " carat", 
+    " xgap", " Gauss", " anupq", NULL };
 
 static Status GAP_cp_scripts_func(string targetdir)
 {
@@ -742,7 +784,7 @@ Component GAP_cp_scripts("GAP_cp_scripts",AllPkgs,NULL,NULL,
 // Create a saved workspace:
 
 static const char *GAP_workspace_deps[]
-  = { "GAP_cp_scripts", NULL };
+  = { "!GAP_cp_scripts", NULL };
 
 static Status GAP_workspace_func(string targetdir)
 {

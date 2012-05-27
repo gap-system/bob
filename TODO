@@ -48,18 +48,48 @@
 > xgap: copy scripts out (between compiles)
 > anupq: need to distinguish OS, existence of gmp and have to use 32-bit
 > Gauss: needs fixing --> new version
-carat needs gmp? add a check --> no, but why does it not work on Debian64?
-Check failure in Browse package --> need to detect???
-Check for readline-dev for Browse
-Compile and finish web page
-
+> Compile and finish web page
+> cpscripts and workspace should execute regardless
+> do not download xgap
+> better say why xgap fails and what it needs
+> better say for what component we are checking prerequisites
+> better say that we check for -m32
+> carat needs gmp? add a check --> no, but why does it not work on Debian64?
+homology package?
+compile linboxing
+llok through LoadAllPackages to find further packages to compile
 
 
 Future:
 
+Check failure in Browse package --> need to detect???
+  --> in -m32 mode also check for 32-bit ncurses and panel
+  --> need -m32-testing of libs and headers
 test in chroot prison?
 pargap???
 exclude some components   -x
 selfupdate
 Implement test for C++ compiler
 More tests?
+
+
+Publish info about debian-like systems:
+
+apt-get install build-essential
+
+Basic:
+
+apt-get install gcc make m4 libc6-dev libreadline-dev
+
+for packages (including xgap):
+
+apt-get install libgsl0-dev libx11-dev libxt-dev libxaw7-dev libgmp3-dev libncurses-dev
+
+for fr:
+
+apt-get install free-java-sdk
+
+for -m32 on a 64-bit machine:
+
+apt-get install ia32-libs libc6-dev-i386 lib32ncurses5-dev lib32readline5-dev
+
