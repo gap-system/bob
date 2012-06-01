@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <fstream>
+#include <iostream>
 
 #include "bob.h"
 
@@ -93,6 +94,16 @@ static Status GAP_buildfunc(string)
 {
     // By convention, we are in the target directory.
     if (access("gap4r5",F_OK) == 0) {
+        string answer;
+        cout << "\nATTENTION!\n\n"
+             << "There seems to be an old installation of GAP 4.5 in the "
+             << "gap4r5 directory.\n\nRemove old installation?\n\n"
+             << "Answer \"yes\" to proceed or anything else to abort --> ";
+        getline(cin,answer);
+        if (answer != "yes") {
+            out(ERROR,"Not removing old installation. Aborting.");
+            exit(2);
+        }
         out(OK,"Removing old installation...");
         if (rmrf("gap4r5") == ERROR) 
             out(WARN,"Could not remove directory \"gap4r5\" recursively!");

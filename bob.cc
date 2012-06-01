@@ -190,7 +190,7 @@ static int Which_Wordsize_Test(string &st)
     testprog << "  return 0;\n";
     testprog << "}\n";
     testprog.close();
-    try { sh(Which_C_Compiler.str+" /tmp/wordsize.c -o /tmp/wordsize"); }
+    try { sh(Which_C_Compiler.str+" /tmp/wordsize.c -o /tmp/wordsize",0,true); }
     catch (Status e) { return 0; }
     FILE *prog = popen("/tmp/wordsize","r");
     if (prog == NULL) return 0;
@@ -733,6 +733,13 @@ void sh(string cmd, int stdinfd, bool quiet)
     size_t pos,oldpos;
     pid_t pid;
 
+    // First log command if not quiet:
+    if (!quiet) {
+        fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
+        logfile << "COMMAND:" << cmd << "\n";
+        logfile.close();
+    }
+
     // Split string into command and arguments:
     pos = cmd.find(' ');
     if (pos != string::npos) {
@@ -820,6 +827,13 @@ int shbg(string cmd, int stdinfd, bool quiet)
     unsigned int i;
     size_t pos,oldpos;
     pid_t pid;
+
+    // First log command if not quiet:
+    if (!quiet) {
+        fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
+        logfile << "COMMAND:" << cmd << "\n";
+        logfile.close();
+    }
 
     // Split string into command and arguments:
     pos = cmd.find(' ');
@@ -973,12 +987,25 @@ int main(int argc, char * const argv[], char *envp[])
     int opt;
     string onlycomp;
 
-    // Initialise targetdir with the realpath of the current dir:
+    // Keep the original current directory:
     char *cwd = getcwd(NULL,1024);
     origdir = cwd;
     free(cwd);
     if (origdir[origdir.size()-1] != '/') origdir.push_back('/');
-    targetdir = origdir;
+
+    // Initialise targetdir with our position if given:
+    string ourname = argv[0];
+    size_t po = ourname.rfind('/');
+    if (po == string::npos) {
+        targetdir = origdir;
+    } else {
+        targetdir = ourname.substr(0,po+1);
+        cwd = realpath(targetdir.c_str(),NULL);
+        targetdir = cwd;
+        free(cwd);
+        if (targetdir[targetdir.size()-1] != '/') 
+            targetdir.push_back('/');
+    }
 
     // Initialise our environment business:
     initenvironment(envp);
@@ -1050,6 +1077,7 @@ int main(int argc, char * const argv[], char *envp[])
     stringstream msg;
     msg << "This is BOB version " << BOBVERSION << ".\n";
     out(OK,msg.str());
+    out(OK,"Target directory is: "+targetdir);
     struct stat statbuf;
     if (stat("download",&statbuf) == -1) {
         if (mkdir("download",S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH) != 0 &&
