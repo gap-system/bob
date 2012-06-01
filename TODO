@@ -55,9 +55,32 @@
 > better say for what component we are checking prerequisites
 > better say that we check for -m32
 > carat needs gmp? add a check --> no, but why does it not work on Debian64?
+ask before deleting existing gap4r5 dir
+take basename of args[0] instead of current dir
+wrap in tar.gz on Linux
+wrap with Reimer's Applescript and dmg on Mac
+only do 32-bit on Mac
+add -I and -L to CPPFLAGS and LDFLAGS on Mac for /usr/local:/opt:/opt/local
+collect rpm hints
+collect emerge hints
+detect Linux variant by some heuristics
+union of debian hints
+union of rpm hints
+union of emerge hints
+detect Mac installer variant by some heuristics
+detect 64bit and 32bit deps separately for Browse at least and act
+  accordingly
+find fink hints
+find macports hints
+find homebrew hints
+union of hints for Mac
 homology package?
 compile linboxing
-llok through LoadAllPackages to find further packages to compile
+look through LoadAllPackages to find further packages to compile
+implement optional components
+add support for xz compression
+test password protected download
+
 
 
 Future:
@@ -71,6 +94,7 @@ exclude some components   -x
 selfupdate
 Implement test for C++ compiler
 More tests?
+optional libsingular
 
 
 Publish info about debian-like systems:
