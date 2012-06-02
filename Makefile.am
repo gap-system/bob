@@ -26,7 +26,8 @@ OPENSSLARCH = openssl-${OPENSSLVERSION}.tar.gz
 
 distclean-local:
 	rm -rf libs zlib-${ZLIBVERSION} bzip2-${BZ2LIBVERSION} \
-	       curl-${CURLVERSION} libarchive-${LIBARCHIVEVERSION}
+	       curl-${CURLVERSION} libarchive-${LIBARCHIVEVERSION} \
+	       xzutils-${XZUTILSVERSION}
 
 libs/include/zlib.h:
 	( if [ ! -e ${ZLIBARCH} ] ; then \
