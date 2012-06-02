@@ -21,7 +21,7 @@ CURLARCH = curl-${CURLVERSION}.tar.gz
 LIBARCHIVEARCH = libarchive-${LIBARCHIVEVERSION}.tar.gz
 ZLIBARCH = zlib-${ZLIBVERSION}.tar.gz
 BZ2LIBARCH = bzip2-${BZ2LIBVERSION}.tar.gz
-XZUTILSARCH = xzutils-${XZUTILSVERSION}.tar.gz
+XZUTILSARCH = xz-${XZUTILSVERSION}.tar.gz
 OPENSSLARCH = openssl-${OPENSSLVERSION}.tar.gz
 
 distclean-local:
@@ -116,11 +116,12 @@ libs/include/lzma.h:
 	( if [ ! -e ${XZUTILSARCH} ] ; then \
 	    curl http://tukaani.org/xz/${XZUTILSARCH} \
 	     -o ${XZUTILSARCH} ; fi )
-	rm -rf xzutils-${XZUTILSVERSION}
+	rm -rf xz-${XZUTILSVERSION}
 	tar xzvf ${XZUTILSARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
-	( export MYPATH=`pwd` ; cd xzutils-${XZUTILSVERSION} ; \
-	  ./configure --prefix=$$MYPATH/libs ; make ; make install )
+	( export MYPATH=`pwd` ; cd xz-${XZUTILSVERSION} ; \
+	  ./configure --prefix=$$MYPATH/libs --disable-shared ; make ; \
+	  make install )
 
 tolinux64: bob
 	strip bob
