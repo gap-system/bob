@@ -21,7 +21,7 @@ CURLARCH = curl-${CURLVERSION}.tar.gz
 LIBARCHIVEARCH = libarchive-${LIBARCHIVEVERSION}.tar.gz
 ZLIBARCH = zlib-${ZLIBVERSION}.tar.gz
 BZ2LIBARCH = bzip2-${BZ2LIBVERSION}.tar.gz
-XZUTILSARCH = xy-${XZUTILSVERSION}.tar.gz
+XZUTILSARCH = xzutils-${XZUTILSVERSION}.tar.gz
 OPENSSLARCH = openssl-${OPENSSLVERSION}.tar.gz
 
 distclean-local:
