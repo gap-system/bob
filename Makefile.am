@@ -12,7 +12,7 @@ BUILT_SOURCES = libs/include/zlib.h libs/include/bzlib.h \
 
 ZLIBVERSION = 1.2.7
 BZ2LIBVERSION = 1.0.6
-LIBARCHIVEVERSION = 3.0.3
+LIBARCHIVEVERSION = 3.0.4
 CURLVERSION = 7.24.0
 OPENSSLVERSION = 1.0.0g
 XZUTILSVERSION = 5.0.3
@@ -80,7 +80,7 @@ libs/include/curl/curl.h:
 
 libs/include/archive.h: libs/include/zlib.h libs/include/bzlib.h libs/include/lzma.h
 	( if [ ! -e ${LIBARCHIVEARCH} ] ; then \
-	     curl http://libarchive.googlecode.com/files/${LIBARCHIVEARCH} \
+	     curl -k https://cloud.github.com/downloads/libarchive/libarchive/${LIBARCHIVEARCH} \
 	     -o ${LIBARCHIVEARCH} ; fi )
 	rm -rf libarchive-${LIBARCHIVEVERSION}
 	tar xzvf ${LIBARCHIVEARCH}

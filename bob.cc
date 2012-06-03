@@ -660,6 +660,7 @@ void unpack(string archivename)
     archive_read_support_format_zip(a);
     archive_read_support_compression_gzip(a);
     archive_read_support_compression_bzip2(a);
+    archive_read_support_compression_xz(a);
     archive_read_support_compression_compress(a);
     if (filename != NULL && strcmp(filename, "-") == 0) filename = NULL;
     if ((r = archive_read_open_filename(a, filename, 10240))) {
