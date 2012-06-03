@@ -61,8 +61,9 @@
 > add support for xz compression
 > test password protected download
 > wrap in tar.gz on Linux
-wrap with Reimer's Applescript and dmg on Mac
-only do 32-bit on Mac
+> wrap with Reimer's Applescript and dmg on Mac
+> only do 32-bit on Mac
+make cd command which logs that it was done, maybe mkdir command?
 add -I and -L to CPPFLAGS and LDFLAGS on Mac for /usr/local:/opt:/opt/local
 collect rpm hints
 collect emerge hints
