@@ -1,5 +1,4 @@
 #!/bin/sh
-make distclean
 export CFLAGS=-m32
 export CXXFLAGS=-m32
 ./configure

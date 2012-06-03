@@ -1,2 +1,5 @@
 #!/bin/sh
-scp bob neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/Computer/Software/Gap/bob/bob-linux-64bit
+export F=bob-linux-64bit.tar.gz
+rm -rf $F
+tar czvf $F bob
+scp $F neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/Computer/Software/Gap/bob/$F
