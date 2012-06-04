@@ -63,21 +63,24 @@
 > wrap in tar.gz on Linux
 > wrap with Reimer's Applescript and dmg on Mac
 > only do 32-bit on Mac
-make cd command which logs that it was done, maybe mkdir command?
+> make cd command which logs that it was done, maybe mkdir command?
 add -I and -L to CPPFLAGS and LDFLAGS on Mac for /usr/local:/opt:/opt/local
+  --> does this clash with preset ones?
+detect Linux variant by some heuristics
+detect 64bit and 32bit deps separately for Browse at least and act
+  accordingly
 collect rpm hints
 collect emerge hints
-detect Linux variant by some heuristics
+
 union of debian hints
 union of rpm hints
 union of emerge hints
 detect Mac installer variant by some heuristics
-detect 64bit and 32bit deps separately for Browse at least and act
-  accordingly
 find fink hints
 find macports hints
 find homebrew hints
 union of hints for Mac
+
 homology package?
 compile linboxing
 look through LoadAllPackages to find further packages to compile

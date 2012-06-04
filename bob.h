@@ -1,6 +1,6 @@
 // bob.h - Copyright 2012 by Max Neunhoeffer
 
-#define BOBVERSION 7
+#define BOBVERSION 8
 
 #include <unistd.h>
 #include <string.h>
@@ -100,21 +100,35 @@ void delenvironment(string key);
 // Some utility functions:
 
 void out(Status severity, string msg);
+
 bool which(string name, string &res);
+
 Status downloadname(string targetname, string url, string &localname);
+
 Status download(string url, string localname);
+
 Status checksha1(string filename, string hash);
+
 void get(string targetdir, string url, string &filename, bool alwaysget);
 // Throws an exception of type Status in case of an error
+
 void getind(string targetdir, string url, string &archivename);
 // Throws an exception of type Status in case of an error
+
 void unpack(string archivename);
 // Throws an exception of type Status in case of an error
+
 void sh(string cmd, int stdinfd = 0, bool quiet = false);
 // Throws an exception of type Status in case of an error
+
 int shbg(string cmd, int stdinfd = 0, bool quiet = false);
+
 Status rmrf(string dirname);
+
 Status cp(string from, string to);
+
+void cd(string dir);
+// Throws an exception of type Status in case of an error
 
 }  // namespace BOB
 

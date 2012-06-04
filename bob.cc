@@ -938,6 +938,19 @@ Status cp(string from, string to)
     return OK;
 }
 
+void cd(string dir)
+{
+    fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
+    logfile << "COMMAND:cd " << dir << "\n";
+    if (chdir(dir.c_str()) != 0) {
+        out(ERROR,"Could not change to directory "+dir);
+        logfile << "ERROR: Could not change to directory "+dir << "\n";
+        logfile.close();
+        throw ERROR;
+    }
+    logfile.close();
+}
+
 }   // namespace BOB
 
 using namespace BOB;
@@ -1117,6 +1130,9 @@ int main(int argc, char * const argv[], char *envp[])
         }
     }
 
+    // For Mac OSX, add things to CFLAGS and LDFLAGS:
+    // ...
+    
     out(OK,"Performing tests...");
     static vector<Test *> &tests = alltests();
     Test *t;

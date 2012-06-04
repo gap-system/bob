@@ -114,10 +114,7 @@ static Status GAP_buildfunc(string)
         out(ERROR,"A problem occurred when extracting the archive.");
         return ERROR;
     }
-    if (chdir("gap4r5") != 0) {
-        out(ERROR,"Cannot change to GAP's root directory.");
-        return ERROR;
-    }
+    try { cd("gap4r5"); } catch (Status e) { return ERROR; }
     if (Double_Compile.num == 1) {
         out(OK,"Compiling for both 32-bit and 64-bit...");
         out(OK,"Running ./configure ABI=32 for GAP...");
@@ -167,11 +164,7 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
     string msg;
     string pkgdir = string("gap4r5/pkg/")+pkgname;
     string cmd;
-    if (chdir(pkgdir.c_str())) {
-        msg = string("Cannot change to the ")+pkgname+" package's directory.";
-        out(err,msg);
-        return err;
-    }
+    try { cd(pkgdir); } catch (Status e) { return err; }
     if (Double_Compile.num == 1) {
         cmd = string("./configure CONFIGNAME=default32");
         if (withm32) cmd += " CFLAGS=-m32";
@@ -349,7 +342,7 @@ static Status switch_sysinfo_link(string targetdir, int towhat)
             return ERROR;
         }
     }
-    if (chdir(targetdir.c_str()) != 0) {
+    try { cd(targetdir); } catch (Status e) {
         out(ERROR,"Could not switch sysinfo.gap symbolic link.");
         return ERROR;
     }
@@ -403,10 +396,7 @@ Component ace("ace",deps_onlyGAP,NULL,NULL,ace_buildfunc);
 
 static Status atlasrep_buildfunc(string)
 {
-    if (chdir("gap4r5/pkg/atlasrep") < 0) {
-        out(WARN,"Cannot change directory to \"gap4r5/pkg/atlasrep\".");
-        return WARN;
-    }
+    try { cd("gap4r5/pkg/atlasrep"); } catch (Status e) { return WARN; }
     if (chmod("datagens",01777) < 0 ||
         chmod("dataword",01777) < 0) {
         out(WARN,"Cannot set permissions for \"datagens\" and \"dataword\"."); 
@@ -564,10 +554,7 @@ static Status carat_buildfunc(string targetdir)
 {
     string topdir;
     DetermineGAParchs();
-    if (chdir("gap4r5/pkg/carat") < 0) {
-        out(ERROR,"Cannot change directory to gap4r5/pkg/carat .");
-        return WARN;
-    }
+    try { cd("gap4r5/pkg/carat"); } catch (Status e) { return WARN; }
     try {unpack("carat-2.1b1.tgz"); }
     catch (Status e) {
         out(ERROR,"Cannot unpack carat archive.");
@@ -578,20 +565,14 @@ static Status carat_buildfunc(string targetdir)
         out(ERROR,"Cannot create bin link for carat package.");
         return WARN;
     }
-    if (chdir("carat-2.1b1") < 0) {
-        out(ERROR,"Cannot change directory to carat-2.1b1 .");
-        return WARN;
-    }
+    try { cd("carat-2.1b1"); } catch (Status e) { return WARN; }
     topdir = targetdir + "gap4r5/pkg/carat/carat-2.1b1";
     try { sh("make TOPDIR="+topdir); }
     catch (Status e) {
         out(ERROR,"Failed to build standalone carat program.");
         return WARN;
     }
-    if (chdir("bin") < 0) {
-        out(ERROR,"Cannot change directory to carat-2.1b1/bin .");
-        return WARN;
-    }
+    try { cd("bin"); } catch (Status e) { return WARN; }
     char targetbin[256];
     FILE *p = popen("./config.guess","r");
     if (p == NULL) {
