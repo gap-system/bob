@@ -242,8 +242,9 @@ static int Which_Wordsize_Test(string &st)
 }
 Test Which_Wordsize("Which_Wordsize",2,Which_Wordsize_Test);
 
-Status Have_C_Header(string headername)
+Status Have_C_Header(string headername, bool m32)
 {
+    string m32opt = m32 ? " -m32" : "";
     if (Which_C_Compiler.num != 0) return ERROR;
     fstream testprog("/tmp/headertest.c",fstream::out | fstream::trunc);
     testprog << "#include <" << headername << ">\n";
@@ -253,7 +254,7 @@ Status Have_C_Header(string headername)
     testprog.close();
     try { 
         sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
-           getenvironment("CFLAGS")+
+           getenvironment("CFLAGS")+m32opt+
            " -E /tmp/headertest.c -o /tmp/headertest",0,true); 
     }
     catch (Status e) { return ERROR; }
@@ -262,8 +263,9 @@ Status Have_C_Header(string headername)
     return OK;
 }
 
-Status Have_C_Library(string lib)
+Status Have_C_Library(string lib, bool m32)
 {
+    string m32opt = m32 ? " -m32" : "";
     if (Which_C_Compiler.num != 0) return ERROR;
     fstream testprog("/tmp/libtest.c",fstream::out | fstream::trunc);
     testprog << "int main(void) {\n";
@@ -272,7 +274,7 @@ Status Have_C_Library(string lib)
     testprog.close();
     try {
         sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
-           getenvironment("CFLAGS")+" /tmp/libtest.c -o /tmp/libtest "+
+           getenvironment("CFLAGS")+m32opt+" /tmp/libtest.c -o /tmp/libtest "+
            getenvironment("LDFLAGS")+" "+lib,0,true);
     }
     catch (Status e) { return ERROR; }

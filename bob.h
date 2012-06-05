@@ -56,8 +56,8 @@ extern Test Which_Wordsize;
 extern Test Can_Compile_32bit;
 extern Test Double_Compile;
 
-Status Have_C_Header(string headername);
-Status Have_C_Library(string lib);
+Status Have_C_Header(string headername, bool m32 = false);
+Status Have_C_Library(string lib, bool m32 = false);
 
 extern bool interactive;
 extern bool osxaddpaths;

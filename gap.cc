@@ -49,12 +49,28 @@ static Status GAP_prerequisites(string, Status)
         out(WARN,"GAP will be compiled without readline support.");
         hint = true;
     }
+    if (Double_Compile.str == "DoubleCompile") {
+        if (Have_C_Library("-lreadline",true) != OK) {
+            out(OK,"");
+            out(WARN,"You do not have the 32bit readline library installed.");
+            out(WARN,"32bit-GAP will be compiled without readline support.");
+            hint = true;
+        }
+        if (Have_C_Header("readline/readline.h",true) != OK) {
+            out(OK,"");
+            out(WARN,"You do not have the headers for the 32bit readline "
+                     "library installed.");
+            out(WARN,"32bit-GAP will be compiled without readline support.");
+            hint = true;
+        }
+    }
     if (res != OK || hint) {
         if (Which_Architecture.str == "LINUX" &&
             Which_OS_Variant.str == "apt-get") {
           out(OK,"");
           out(ADVICE,"You can install the necessary tools by doing:");
-          out(ADVICE,"  apt-get install gcc make m4 libc6-dev libreadline-dev");
+          out(ADVICE," apt-get install gcc make m4 libc6-dev libreadline-dev"
+                     " lib32readline5-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
         }
@@ -168,7 +184,7 @@ static Status GAP_buildfunc(string)
     try { cd("gap4r5"); } catch (Status e) { return ERROR; }
     // Clean up environment due to GAP's funny behaviour:
     GAP_sortoutenvironment();
-    if (Double_Compile.num == 1) {
+    if (Double_Compile.str == "DoubleCompile") {
         out(OK,"Compiling for both 32-bit and 64-bit...");
         out(OK,"Running ./configure ABI=32 for GAP...");
         try { sh("./configure ABI=32"); }
@@ -226,8 +242,9 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
     string msg;
     string pkgdir = string("gap4r5/pkg/")+pkgname;
     string cmd;
+    Status res = OK;
     try { cd(pkgdir); } catch (Status e) { return err; }
-    if (Double_Compile.num == 1) {
+    if (Double_Compile.str == "DoubleCompile") {
         cmd = string("./configure CONFIGNAME=default32");
         if (withm32) cmd += " CFLAGS=-m32";
         if (withabi32) cmd += " ABI=32";
@@ -236,14 +253,16 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
         try { sh(cmd); }
         catch (Status e) {
             out(err,"Error in configure stage.");
-            return err;
+            res = err;
+            goto dosixtyfour;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
         try { sh("make"); }
         catch (Status e) {
             out(err,"Error in compilation stage.");
-            return err;
+            res = err;
+            goto dosixtyfour;
         }
         if (withmakeclean) {
             msg = string("Running make clean for ")+pkgname+" package...";
@@ -251,9 +270,10 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
             try { sh("make clean"); }
             catch (Status e) {
                 out(err,"Error in make clean stage.");
-                return err;
+                res = err;
             }
         }
+      dosixtyfour:
         msg = string("Running ./configure CONFIGNAME=default64 for ")+pkgname+
                      " package...";
         out(OK,msg);
@@ -269,6 +289,7 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
             out(err,"Error in compilation stage.");
             return err;
         }
+        return err;
     } else {
         msg = string("Running ./configure for ")+pkgname+ " package...";
         out(OK,msg);
@@ -311,31 +332,51 @@ static Status Browse_prerequisites(string, Status depsresult)
 {
     string path;
     Status ret;
+    bool hint = false;
     ret = OK;
     if (depsresult != OK) return depsresult;
     if (Have_C_Library("-lncurses") != OK ||
         Have_C_Header("ncurses.h") != OK) {
-        out(WARN,"Need ncurses library installed for component Browse.");
+        out(OK,"");
+        out(WARN,"Need ncurses library for component Browse.");
         ret = WARN;
     }
     if (Have_C_Library("-lpanel") != OK ||
         Have_C_Header("panel.h") != OK) {
-        out(WARN,"Need panel library installed for component Browse.");
+        out(OK,"");
+        out(WARN,"Need panel library for component Browse.");
         ret = WARN;
     }
-    if (ret != OK) {
-        if (Which_Architecture.str == "LINUX") {
-          out(ADVICE,"If you are running a debian-like Linux, you can "
-                     "install the");
-          out(ADVICE,"necessary libraries by doing:");
+    if (Double_Compile.str == "DoubleCompile") {
+        if (Have_C_Library("-lncurses",true) != OK ||
+            Have_C_Header("ncurses.h",true) != OK) {
+            out(OK,"");
+            out(WARN,"Need 32bit ncurses library for component "
+                     "Browse to work in 32bit GAP.");
+            hint = true;
+        }
+        if (Have_C_Library("-lpanel",true) != OK ||
+            Have_C_Header("panel.h",true) != OK) {
+            out(OK,"");
+            out(WARN,"Need 32bit panel library for component "
+                     "Browse to work in 32bit GAP.");
+            hint = true;
+        }
+    }
+
+    if (ret != OK || hint) {
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "apt-get") {
+          out(OK,"");
+          out(ADVICE,"You can install the necessary libraries by doing:");
           out(ADVICE,"  apt-get install libncurses-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
-          if (Can_Compile_32bit.num == 0) {
+          if (Double_Compile.str == "DoubleCompile") {
             out(ADVICE,"For the 32-bit libraries do:");
             out(ADVICE,"  apt-get install lib32ncurses5-dev");
           }
+          out(OK,"");
         }
-
     }
     return ret;
 }
@@ -363,11 +404,13 @@ static Status nq_prerequisites(string, Status depsresult)
     }
     if (ret != OK) {
         if (Which_Architecture.str == "LINUX") {
+          out(OK,"");
           out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the necessary");
           out(ADVICE,"tools by doing:");
           out(ADVICE,"  apt-get install mawk libgmp3-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
         }
     }
     return ret;
@@ -380,7 +423,7 @@ Component nq("nq",deps_onlyGAP,nq_prerequisites,NULL,nq_buildfunc);
 
 static Status switch_sysinfo_link(string targetdir, int towhat)
 {
-    if (Double_Compile.num == 0) return OK;
+    if (Double_Compile.str == "SingleCompile") return OK;
 
     if (chdir(targetdir.c_str()) != 0 ||
         chdir("gap4r5") != 0 ||
@@ -481,13 +524,16 @@ static Status fr_prerequisites(string, Status depsresult)
     string path;
     if (depsresult != OK) return depsresult;
     if (Have_C_Header("gsl/gsl_vector.h") != OK) {
+        out(OK,"");
         out(WARN,"Need gsl library installed for component fr.");
         if (Which_Architecture.str == "LINUX") {
+          out(OK,"");
           out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the necessary");
           out(ADVICE,"libraries by doing:");
           out(ADVICE,"  apt-get install libgsl0-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
         }
         return WARN;
     }
@@ -685,11 +731,13 @@ static Status xgap_prerequisites(string, Status)
     }
     if (res != OK) {
         if (Which_Architecture.str == "LINUX") {
+          out(OK,"");
           out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the necessary");
           out(ADVICE,"libraries by doing:");
           out(ADVICE,"  apt-get install libx11-dev libxt-dev libxaw7-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
         }
     }
     return res;
@@ -810,7 +858,7 @@ const char *AllPkgs[] =
 
 static Status GAP_cp_scripts_func(string targetdir)
 {
-    if (Double_Compile.num == 1) {
+    if (Double_Compile.str == "DoubleCompile") {
         if (cp(targetdir+"gap4r5/bin/gap-default64.sh",targetdir+"gap64") 
                  == ERROR) return WARN;
         if (chmod((targetdir+"gap64").c_str(),0755) != 0)

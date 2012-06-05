@@ -72,8 +72,7 @@
 > see whether or not this works with ABI=32
 > check for libreadline and warn if not there
 > detect Mac installer variant by some heuristics
-detect 64bit and 32bit deps separately for Browse at least and act
-  accordingly
+> detect 64bit and 32bit deps separately for Browse at least and act accordingly
 
 find fink hints
 find homebrew hints
