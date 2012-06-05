@@ -1188,9 +1188,10 @@ int main(int argc, char * const argv[], char *envp[])
     }
 
     // For Mac OSX, add things to CFLAGS and LDFLAGS:
+#if SYS_IS_OSX
     origCFLAGS = getenvironment("CFLAGS");
     origLDFLAGS = getenvironment("LDFLAGS");
-    if (Which_Architecture.str == "OSX" && osxaddpaths) {
+    if (osxaddpaths) {
         if (isdir("/usr/local/include")) {
             setenvironment("CFLAGS",getenvironment("CFLAGS") +
                            " -I/usr/local/include");
@@ -1232,6 +1233,7 @@ int main(int argc, char * const argv[], char *envp[])
             out(OK,"Adding \"-L/opt/lib\" to LDFLAGS.");
         }
     }
+#endif
     
     out(OK,"Performing tests...");
     static vector<Test *> &tests = alltests();
