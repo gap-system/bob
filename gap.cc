@@ -289,7 +289,7 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
             out(err,"Error in compilation stage.");
             return err;
         }
-        return err;
+        return res;
     } else {
         msg = string("Running ./configure for ")+pkgname+ " package...";
         out(OK,msg);
