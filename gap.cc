@@ -184,13 +184,13 @@ static Status GAP_buildfunc(string)
             GAP_restoreenvironment();
             return ERROR;
         }
-        out(OK,"Running make clean_gmp for GAP...");
-        try { sh("make clean_gmp"); }
-        catch (Status e) {
-            out(ERROR,"Error in compilation stage.");
-            GAP_restoreenvironment();
-            return ERROR;
-        }
+        // out(OK,"Running make clean_gmp for GAP...");
+        // try { sh("make clean_gmp"); }
+        // catch (Status e) {
+        //     out(ERROR,"Error in compilation stage.");
+        //     GAP_restoreenvironment();
+        //     return ERROR;
+        // }
         confignames.push_back("default32");
     }
     out(OK,"Running ./configure for GAP...");

@@ -70,33 +70,33 @@
 > add to CFLAGS on OSX only if exists
 > component GAP: move CFLAGS to COPTS and LDFLAGS to LOPTS, clear CFLAGS and LDFLAGS
 > see whether or not this works with ABI=32
+> check for libreadline and warn if not there
+> detect Mac installer variant by some heuristics
 detect 64bit and 32bit deps separately for Browse at least and act
   accordingly
-check for libreadline and warn if not there
+
+find fink hints
+find homebrew hints
+find macports hints
 collect rpm hints
 collect emerge hints
 
+union of hints for Mac
 union of debian hints
 union of rpm hints
 union of emerge hints
-detect Mac installer variant by some heuristics
-find fink hints
-find macports hints
-find homebrew hints
-union of hints for Mac
 
-homology package?
-compile linboxing
-look through LoadAllPackages to find further packages to compile
-implement optional components
+update web page
+
 
 
 
 Future:
 
-Check failure in Browse package --> need to detect???
-  --> in -m32 mode also check for 32-bit ncurses and panel
-  --> need -m32-testing of libs and headers
+homology package?
+compile linboxing
+look through LoadAllPackages to find further packages to compile
+implement optional components
 test in chroot prison?
 pargap???
 exclude some components   -x
