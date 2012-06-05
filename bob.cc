@@ -960,6 +960,7 @@ using namespace BOB;
 string origdir;
 string targetdir;
 bool interactive = true;
+bool osxaddpaths = true;
 
 void usage()
 {
@@ -992,6 +993,8 @@ void usage()
     cout << "         directory. Bob needs write access to that directory.\n";
     cout << "    -c : Specify one component name and only the build routine\n";
     cout << "         for that component is run without any dependencies.\n";
+    cout << "    -z : Do not add various paths for additional libraries\n";
+    cout << "         to CFLAGS and LDFLAGS on Mac OSX.\n";
     cout << "For any questions or complaints please contact:\n";
     cout << "  Max Neunhoeffer <neunhoef@mcs.st-and.ac.uk>\n\n";
 }
@@ -1024,7 +1027,7 @@ int main(int argc, char * const argv[], char *envp[])
     // Initialise our environment business:
     initenvironment(envp);
 
-    while ((opt = getopt(argc, argv, "hvqnft:c:")) != -1) {
+    while ((opt = getopt(argc, argv, "zhvqnft:c:")) != -1) {
         switch (opt) {
           case 'h':
               usage();
@@ -1055,6 +1058,9 @@ int main(int argc, char * const argv[], char *envp[])
               break;
           case 'n':
               nonetwork = true;
+              break;
+          case 'z':
+              osxaddpaths = false;
               break;
           default: /* '?' */
               cerr << "Usage: " << argv[0] << "[-v] [-q] [-n] [-t TARGETDIR]\n";
@@ -1131,7 +1137,14 @@ int main(int argc, char * const argv[], char *envp[])
     }
 
     // For Mac OSX, add things to CFLAGS and LDFLAGS:
-    // ...
+    if (osxaddpaths) {
+        setenvironment("CFLAGS",getenvironment("CFLAGS") +
+                " -I/usr/local/include -I/sw/include" +
+                " -I/opt/local/include -I/opt/include");
+        setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
+                " -L/usr/local/lib -L/sw/lib" +
+                " -L/opt/local/lib -L/opt/lib");
+    }
     
     out(OK,"Performing tests...");
     static vector<Test *> &tests = alltests();
