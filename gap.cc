@@ -90,19 +90,46 @@ static void DetermineGAParchs(void)
     }
 }
 
+static string merkCFLAGS;
+static string merkCPPFLAGS;
+static string merkLDFLAGS;
+
+static void GAP_sortoutenvironment(void)
+{
+    merkCFLAGS = getenvironment("CFLAGS");
+    merkCPPFLAGS = getenvironment("CPPFLAGS");
+    merkLDFLAGS = getenvironment("LDFLAGS");
+    delenvironment("CFLAGS");
+    delenvironment("CPPFLAGS");
+    delenvironment("LDFLAGS");
+    setenvironment("COPTS",merkCPPFLAGS + " " + merkCFLAGS);
+    setenvironment("LOPTS",merkLDFLAGS);
+}
+
+static void GAP_restoreenvironment(void)
+{
+    if (merkCFLAGS != "") setenvironment("CFLAGS",merkCFLAGS);
+    if (merkCPPFLAGS != "") setenvironment("CPPFLAGS",merkCPPFLAGS);
+    if (merkLDFLAGS != "") setenvironment("LDFLAGS",merkLDFLAGS);
+    delenvironment("COPTS");
+    delenvironment("LOPTS");
+}
+
 static Status GAP_buildfunc(string)
 {
     // By convention, we are in the target directory.
     if (access("gap4r5",F_OK) == 0) {
-        string answer;
-        cout << "\nATTENTION!\n\n"
-             << "There seems to be an old installation of GAP 4.5 in the "
-             << "gap4r5 directory.\n\nRemove old installation?\n\n"
-             << "Answer \"yes\" to proceed or anything else to abort --> ";
-        cin >> answer;
-        if (answer != "yes") {
-            out(ERROR,"Not removing old installation. Aborting.");
-            exit(2);
+        if (interactive) {
+            string answer;
+            cout << "\nATTENTION!\n\n"
+                 << "There seems to be an old installation of GAP 4.5 in the "
+                 << "gap4r5 directory.\n\nRemove old installation?\n\n"
+                 << "Answer \"yes\" to proceed or anything else to abort --> ";
+            cin >> answer;
+            if (answer != "yes") {
+                out(ERROR,"Not removing old installation. Aborting.");
+                exit(2);
+            }
         }
         out(OK,"Removing old installation...");
         if (rmrf("gap4r5") == ERROR) 
@@ -115,24 +142,29 @@ static Status GAP_buildfunc(string)
         return ERROR;
     }
     try { cd("gap4r5"); } catch (Status e) { return ERROR; }
+    // Clean up environment due to GAP's funny behaviour:
+    GAP_sortoutenvironment();
     if (Double_Compile.num == 1) {
         out(OK,"Compiling for both 32-bit and 64-bit...");
         out(OK,"Running ./configure ABI=32 for GAP...");
         try { sh("./configure ABI=32"); }
         catch (Status e) {
             out(ERROR,"Error in configure stage.");
+            GAP_restoreenvironment();
             return ERROR;
         }
         out(OK,"Running make for GAP...");
         try { sh("make"); }
         catch (Status e) {
             out(ERROR,"Error in compilation stage.");
+            GAP_restoreenvironment();
             return ERROR;
         }
         out(OK,"Running make clean for GAP...");
-        try { sh("make"); }
+        try { sh("make clean"); }
         catch (Status e) {
             out(ERROR,"Error in compilation stage.");
+            GAP_restoreenvironment();
             return ERROR;
         }
         confignames.push_back("default32");
@@ -141,15 +173,21 @@ static Status GAP_buildfunc(string)
     try { sh("./configure"); }
     catch (Status e) {
         out(ERROR,"Error in configure stage.");
+        GAP_restoreenvironment();
         return ERROR;
     }
     out(OK,"Running make for GAP...");
     try { sh("make"); }
     catch (Status e) {
         out(ERROR,"Error in compilation stage.");
+        GAP_restoreenvironment();
         return ERROR;
     }
-    confignames.push_back("default32");
+    GAP_restoreenvironment();
+    if (Which_Wordsize.num == 32)
+        confignames.push_back("default32");
+    else
+        confignames.push_back("default64");
     return OK;
 }
 

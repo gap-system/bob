@@ -477,6 +477,19 @@ bool which(string name, string &res)
     }
 }
 
+bool exists(string filename)
+{
+    struct stat stFileInfo;
+    return (stat(filename.c_str(), &stFileInfo) == 0);
+}
+
+bool isdir(string dirname)
+{
+    struct stat stFileInfo;
+    return stat(dirname.c_str(), &stFileInfo) == 0 &&
+           S_ISDIR(stFileInfo.st_mode);
+}
+
 static CURL *curl = NULL;
 
 void shutdowncurl()
@@ -985,6 +998,11 @@ void cd(string dir)
     logfile.close();
 }
 
+bool interactive = true;
+bool osxaddpaths = true;
+string origCFLAGS = "";
+string origLDFLAGS = "";
+
 }   // namespace BOB
 
 using namespace BOB;
@@ -993,8 +1011,6 @@ using namespace BOB;
 
 string origdir;
 string targetdir;
-bool interactive = true;
-bool osxaddpaths = true;
 
 void usage()
 {
@@ -1172,13 +1188,49 @@ int main(int argc, char * const argv[], char *envp[])
     }
 
     // For Mac OSX, add things to CFLAGS and LDFLAGS:
-    if (osxaddpaths) {
-        setenvironment("CFLAGS",getenvironment("CFLAGS") +
-                " -I/usr/local/include -I/sw/include" +
-                " -I/opt/local/include -I/opt/include");
-        setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
-                " -L/usr/local/lib -L/sw/lib" +
-                " -L/opt/local/lib -L/opt/lib");
+    origCFLAGS = getenvironment("CFLAGS");
+    origLDFLAGS = getenvironment("LDFLAGS");
+    if (Which_Architecture.str == "OSX" && osxaddpaths) {
+        if (isdir("/usr/local/include")) {
+            setenvironment("CFLAGS",getenvironment("CFLAGS") +
+                           " -I/usr/local/include");
+            out(OK,"Adding \"-I/usr/local/include\" to CFLAGS.");
+        }
+        if (isdir("/sw/include")) {
+            setenvironment("CFLAGS",getenvironment("CFLAGS") +
+                           " -I/sw/include");
+            out(OK,"Adding \"-I/sw/include\" to CFLAGS.");
+        }
+        if (isdir("/opt/local/include")) {
+            setenvironment("CFLAGS",getenvironment("CFLAGS") +
+                           " -I/opt/local/include");
+            out(OK,"Adding \"-I/opt/local/include\" to CFLAGS.");
+        }
+        if (isdir("/opt/include")) {
+            setenvironment("CFLAGS",getenvironment("CFLAGS") +
+                           " -I/opt/include");
+            out(OK,"Adding \"-I/opt/include\" to CFLAGS.");
+        }
+        if (isdir("/usr/local/lib")) {
+            setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
+                           " -L/usr/local/lib");
+            out(OK,"Adding \"-L/opt/lib\" to LDFLAGS.");
+        }
+        if (isdir("/sw/lib")) {
+            setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
+                           " -L/sw/lib");
+            out(OK,"Adding \"-L/sw/lib\" to LDFLAGS.");
+        }
+        if (isdir("/opt/local/lib")) {
+            setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
+                           " -L/opt/local/lib");
+            out(OK,"Adding \"-L/opt/local/lib\" to LDFLAGS.");
+        }
+        if (isdir("/opt/lib")) {
+            setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
+                           " -L/opt/lib");
+            out(OK,"Adding \"-L/opt/lib\" to LDFLAGS.");
+        }
     }
     
     out(OK,"Performing tests...");

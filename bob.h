@@ -59,6 +59,11 @@ extern Test Double_Compile;
 Status Have_C_Header(string headername);
 Status Have_C_Library(string lib);
 
+extern bool interactive;
+extern bool osxaddpaths;
+extern string origCFLAGS;
+extern string origLDFLAGS;
+
 // Build components:
 
 class Component;
@@ -103,6 +108,10 @@ void delenvironment(string key);
 void out(Status severity, string msg);
 
 bool which(string name, string &res);
+
+bool exists(string filename);
+
+bool isdir(string dirname);
 
 Status downloadname(string targetname, string url, string &localname);
 
