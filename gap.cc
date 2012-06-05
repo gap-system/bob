@@ -394,22 +394,30 @@ static Status nq_prerequisites(string, Status depsresult)
     ret = OK;
     if (!(which("gawk",path) || which("mawk",path) || which("nawk",path) ||
           which("awk",path))) {
+        out(OK,"");
         out(WARN,"Need awk for component nq-Pkg.");
         ret = WARN;
     }
     if (Have_C_Library("-lgmp") != OK ||
         Have_C_Header("gmp.h") != OK) {
+        out(OK,"");
         out(WARN,"Need gmp installed for component nq.");
         ret = WARN;
     }
     if (ret != OK) {
-        if (Which_Architecture.str == "LINUX") {
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "apt-get") {
           out(OK,"");
-          out(ADVICE,"If you are running a debian-like Linux, you can "
-                     "install the necessary");
-          out(ADVICE,"tools by doing:");
+          out(ADVICE,"You can install the necessary tools by doing:");
           out(ADVICE,"  apt-get install mawk libgmp3-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "OSX" &&
+            Which_OS_Variant.str == "brew") {
+          out(OK,"");
+          out(ADVICE,"You can install the necessary tools by doing:");
+          out(ADVICE,"  brew install gawk gmp");
           out(OK,"");
         }
     }
@@ -527,12 +535,17 @@ static Status fr_prerequisites(string, Status depsresult)
         out(OK,"");
         out(WARN,"Need gsl library installed for component fr.");
         out(OK,"");
-        if (Which_Architecture.str == "LINUX") {
-          out(ADVICE,"If you are running a debian-like Linux, you can "
-                     "install the necessary");
-          out(ADVICE,"libraries by doing:");
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "apt-get") {
+          out(ADVICE,"You can install the necessary libraries by doing:");
           out(ADVICE,"  apt-get install libgsl0-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "OSX" &&
+            Which_OS_Variant.str == "brew") {
+          out(ADVICE,"You can install the necessary libraries by doing:");
+          out(ADVICE,"  brew install gsl");
           out(OK,"");
         }
         return WARN;
