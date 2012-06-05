@@ -180,6 +180,40 @@ static int Which_Architecture_Test(string &st)
 }
 Test Which_Architecture("Which_Architecture",1,Which_Architecture_Test);
 
+static int Which_OS_Variant_Test(string &st)
+{
+    string path;
+#if SYS_IS_LINUX
+    if (which("apt-get",path)) {
+        st = "apt-get";
+        return 0;
+    } else if (which("rpm",path)) {
+        st = "rpm";
+        return 0;
+    } else if (which("emerge",path)) {
+        st = "emerge";
+        return 0;
+    } 
+#endif
+#if SYS_IS_OSX
+    if (which("apt-get",path)) {
+        st = "fink";
+        return 0;
+    } else if (which("brew",path)) {
+        st = "homebrew";
+        return 0;
+    } else if (which("ports",path)) {
+        st = "macports";
+        return 0;
+    } 
+    st = "none";
+    return 0;
+#endif
+    st = "unknown";
+    return 0;
+}
+Test Which_OS_Variant("Which_OS_Variant",2,Which_OS_Variant_Test);
+
 static int Which_Wordsize_Test(string &st)
 {
     if (Which_C_Compiler.num != 0) return 0;
@@ -461,7 +495,7 @@ Status downloadname(string targetdir, string url, string &localname)
         out(ERROR,"Given URL does not contain /.");
         return ERROR;
     }
-    localname = targetdir+"download/"+url.substr(pos+1);
+    localname = targetdir+"bobdownloads/"+url.substr(pos+1);
     return OK;
 }
 
@@ -1099,15 +1133,16 @@ int main(int argc, char * const argv[], char *envp[])
     out(OK,msg.str());
     out(OK,"Target directory is: "+targetdir);
     struct stat statbuf;
-    if (stat("download",&statbuf) == -1) {
-        if (mkdir("download",S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH) != 0 &&
+    if (stat("bobdownloads",&statbuf) == -1) {
+        if (mkdir("bobdownloads",S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH)!=0 &&
             errno != EEXIST) {
-            out(ERROR,"Cannot create \"download\" directory in "+
+            out(ERROR,"Cannot create \"bobdownloads\" directory in "+
                       targetdir+" .");
             return 7;
         }
     } else if (!S_ISDIR(statbuf.st_mode)) {
-        out(ERROR,"Cannot create \"download\" directory in "+targetdir+" .");
+        out(ERROR,"Cannot create \"bobdownloads\" directory in "+
+            targetdir+" .");
         return ERROR;
     }
 

@@ -51,6 +51,7 @@ extern Test Have_make;
 extern Test Which_C_Compiler;
 extern Test C_Compiler_Name;
 extern Test Which_Architecture;
+extern Test Which_OS_Variant;
 extern Test Which_Wordsize;
 extern Test Can_Compile_32bit;
 extern Test Double_Compile;

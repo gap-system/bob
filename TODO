@@ -65,7 +65,7 @@
 > only do 32-bit on Mac
 > make cd command which logs that it was done, maybe mkdir command?
 > add -I and -L to CFLAGS and LDFLAGS on Mac for /usr/local:/sw:/opt/local:/opt
-detect Linux variant by some heuristics
+> detect Linux variant by some heuristics
 detect 64bit and 32bit deps separately for Browse at least and act
   accordingly
 collect rpm hints
