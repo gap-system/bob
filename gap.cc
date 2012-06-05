@@ -512,7 +512,7 @@ Component Gauss("Gauss",deps_onlyGAP,NULL,NULL,Gauss_buildfunc);
 static Status guava_buildfunc(string targetdir)
 { 
     string msg;
-    string pkgname = "guava3.11";
+    string pkgname = "guava-3.12";
     int i;
     Status ret = OK;
     for (i = 0;i <= Double_Compile.num;i++) {
