@@ -69,10 +69,10 @@
 > direxists function
 > add to CFLAGS on OSX only if exists
 > component GAP: move CFLAGS to COPTS and LDFLAGS to LOPTS, clear CFLAGS and LDFLAGS
-see whether or not this works with ABI=32
-check for libreadline and warn if not there
+> see whether or not this works with ABI=32
 detect 64bit and 32bit deps separately for Browse at least and act
   accordingly
+check for libreadline and warn if not there
 collect rpm hints
 collect emerge hints
 

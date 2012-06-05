@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <readline.h>
 
 using namespace std;
 

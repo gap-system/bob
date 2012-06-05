@@ -18,6 +18,8 @@ static Status GAP_prerequisites(string, Status)
 {
     Status res = OK;
     string path;
+    bool hint = false;
+
     if (!which("/bin/sh",path)) {
         out(ERROR,"Need a (bash-like) shell in /bin/sh, please install one.");
         res = ERROR;
@@ -34,13 +36,35 @@ static Status GAP_prerequisites(string, Status)
         out(ERROR,"Need the 'm4' utility, please install it.");
         res = ERROR;
     }
-    if (res != OK) {
-        if (Which_Architecture.str == "LINUX") {
-          out(ADVICE,"If you are running a debian-like Linux, you can "
-                     "install the necessary");
-          out(ADVICE,"tools by doing:");
+    if (Have_C_Library("-lreadline") != OK) {
+        out(OK,"");
+        out(WARN,"You do not have the readline library installed.");
+        out(WARN,"GAP will be compiled without readline support.");
+        hint = true;
+    }
+    if (Have_C_Header("readline/readline.h") != OK) {
+        out(OK,"");
+        out(WARN,"You do not have the headers for the readline library "
+                 "installed.");
+        out(WARN,"GAP will be compiled without readline support.");
+        hint = true;
+    }
+    if (res != OK || hint) {
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "apt-get") {
+          out(OK,"");
+          out(ADVICE,"You can install the necessary tools by doing:");
           out(ADVICE,"  apt-get install gcc make m4 libc6-dev libreadline-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "OSX" &&
+            Which_OS_Variant.str == "apt-get") {
+          out(OK,"");
+          out(ADVICE,"You can install the necessary tools by doing:");
+          out(ADVICE,"  apt-get install gcc47 ... make m4 libc6-dev libreadline-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
         }
     }
     return res;
@@ -160,8 +184,8 @@ static Status GAP_buildfunc(string)
             GAP_restoreenvironment();
             return ERROR;
         }
-        out(OK,"Running make clean for GAP...");
-        try { sh("make clean"); }
+        out(OK,"Running make clean_gmp for GAP...");
+        try { sh("make clean_gmp"); }
         catch (Status e) {
             out(ERROR,"Error in compilation stage.");
             GAP_restoreenvironment();

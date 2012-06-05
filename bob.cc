@@ -1235,6 +1235,7 @@ int main(int argc, char * const argv[], char *envp[])
     }
 #endif
     
+    out(OK,"");
     out(OK,"Performing tests...");
     static vector<Test *> &tests = alltests();
     Test *t;
@@ -1328,6 +1329,7 @@ int main(int argc, char * const argv[], char *envp[])
     bool gotwarning;
 
     // Now check all the prerequisites:
+    out(OK,"");
     out(OK,"Checking prerequisites...");
     goterror = false;
     gotwarning = false;
