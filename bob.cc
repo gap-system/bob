@@ -1217,7 +1217,7 @@ int main(int argc, char * const argv[], char *envp[])
         if (isdir("/usr/local/lib")) {
             setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
                            " -L/usr/local/lib");
-            out(OK,"Adding \"-L/opt/lib\" to LDFLAGS.");
+            out(OK,"Adding \"-L/usr/local/lib\" to LDFLAGS.");
         }
         if (isdir("/sw/lib")) {
             setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
