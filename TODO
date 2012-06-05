@@ -66,6 +66,10 @@
 > make cd command which logs that it was done, maybe mkdir command?
 > add -I and -L to CFLAGS and LDFLAGS on Mac for /usr/local:/sw:/opt/local:/opt
 > detect Linux variant by some heuristics
+direxists function
+add to CFLAGS on OSX only if exists
+component GAP: move CFLAGS to COPTS and LDFLAGS to LOPTS, clear CFLAGS and LDFLAGS
+see whether or not this works with ABI=32
 detect 64bit and 32bit deps separately for Browse at least and act
   accordingly
 collect rpm hints

@@ -99,7 +99,7 @@ static Status GAP_buildfunc(string)
              << "There seems to be an old installation of GAP 4.5 in the "
              << "gap4r5 directory.\n\nRemove old installation?\n\n"
              << "Answer \"yes\" to proceed or anything else to abort --> ";
-        getline(cin,answer);
+        cin >> answer;
         if (answer != "yes") {
             out(ERROR,"Not removing old installation. Aborting.");
             exit(2);

@@ -1,5 +1,6 @@
 #!/bin/sh
 rm -rf dmgdir bob-osx.dmg
+mkdir dmgdir
 cp -a bob dmgdir
 cp -a BOB.app dmgdir
 hdiutil create -srcfolder dmgdir bob-osx.dmg
