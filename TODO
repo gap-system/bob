@@ -73,6 +73,7 @@
 > check for libreadline and warn if not there
 > detect Mac installer variant by some heuristics
 > detect 64bit and 32bit deps separately for Browse at least and act accordingly
+sort out carat and fplsa on Mac (malloc/malloc.h - problem)
 
 find fink hints
 find homebrew hints
