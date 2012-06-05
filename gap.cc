@@ -526,8 +526,8 @@ static Status fr_prerequisites(string, Status depsresult)
     if (Have_C_Header("gsl/gsl_vector.h") != OK) {
         out(OK,"");
         out(WARN,"Need gsl library installed for component fr.");
+        out(OK,"");
         if (Which_Architecture.str == "LINUX") {
-          out(OK,"");
           out(ADVICE,"If you are running a debian-like Linux, you can "
                      "install the necessary");
           out(ADVICE,"libraries by doing:");
