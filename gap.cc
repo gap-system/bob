@@ -377,6 +377,16 @@ static Status Browse_prerequisites(string, Status depsresult)
           }
           out(OK,"");
         }
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "rpm") {
+          out(ADVICE,"You can install the necessary libraries from"
+                     " the following rpm-packages:");
+          out(ADVICE,"  XXX");
+          out(ADVICE,"Use");
+          out(ADVICE,"  yum install XXX");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
     }
     return ret;
 }
@@ -557,6 +567,16 @@ static Status fr_prerequisites(string, Status depsresult)
             Which_OS_Variant.str == "apt-get") {
           out(ADVICE,"You can install the necessary libraries by doing:");
           out(ADVICE,"  apt-get install libgsl0-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "rpm") {
+          out(ADVICE,"You can install the necessary libraries from"
+                     " the following rpm-packages:");
+          out(ADVICE,"  gsl");
+          out(ADVICE,"Use");
+          out(ADVICE,"  yum install gsl");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
         }
@@ -784,6 +804,17 @@ static Status xgap_prerequisites(string, Status)
                      "install the necessary");
           out(ADVICE,"libraries by doing:");
           out(ADVICE,"  apt-get install libx11-dev libxt-dev libxaw7-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "rpm") {
+          out(ADVICE,"You can install the necessary libraries from"
+                     " the following rpm-packages:");
+          out(ADVICE,"  libX11 libXaw libXmu libXt libXext libSM libICE");
+          out(ADVICE,"Use");
+          out(ADVICE,"  yum install libX11 libXaw libXmu libXt libXext "
+                     "libSM libICE");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
         }

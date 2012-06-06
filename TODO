@@ -74,33 +74,37 @@
 > check for libreadline and warn if not there
 > detect Mac installer variant by some heuristics
 > detect 64bit and 32bit deps separately for Browse at least and act accordingly
-Add primitive editing support
-Patch fplsa
-Patch carat
-report fr problems
-rename dmgdir
-look into spaces in filenames
-Add hint about spaces in filenames to web page
-Make README for archives
+> Add primitive editing support
+> Patch fplsa
+> Patch carat
+> rename dmgdir
+> Add hint about spaces in filenames to web page
+> Make README for archives
 
-find fink hints
-find more homebrew hints
-find macports hints
 collect rpm hints
-collect emerge hints
+  http://fr2.rpmfind.net/linux/rpm2html/search.php?query=ncurses-devel&submit=Search+...&system=&arch=
+find more homebrew hints
+find fink hints
+find macports hints
+bump version number to 9
 
 union of hints for Mac
 union of debian hints
 union of rpm hints
-union of emerge hints
 
+compile all
 update web page
+report fr problems
 
 
 
 
 Future:
 
+test with fedora
+union of emerge hints
+collect emerge hints
+look into spaces in filenames
 homology package?
 compile linboxing
 look through LoadAllPackages to find further packages to compile
