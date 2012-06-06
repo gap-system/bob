@@ -1005,6 +1005,81 @@ bool osxaddpaths = true;
 string origCFLAGS = "";
 string origLDFLAGS = "";
 
+void readlines(string filename, vector<string> &v)
+// Throws ERROR if anything goes wrong.
+{
+    string line;
+    fstream f;
+    f.exceptions( ifstream::failbit | ifstream::badbit );
+    try { f.open(filename.c_str(),fstream::in); }
+    catch (ifstream::failure e) {
+        out(ERROR,"Could not open file \""+failname+"\" for reading");
+        throw ERROR;
+    }
+    v.clear();
+    try {
+        while (!f.eof()) {
+            getline(f,line);
+            v.push_back(line);
+        }
+        f.close();
+    }
+    catch (ifstream::failure e) {
+        out(ERROR,"Could not read file \""+failname+"\"");
+        throw ERROR;
+    }
+}
+
+void writelines(string filename, vector<string> &v)
+// Throws ERROR if anything goes wrong.
+{
+    string line;
+    fstream f;
+    f.exceptions( ifstream::failbit | ifstream::badbit );
+    try { f.open(filename.c_str(),fstream::out | fstream::trunc); }
+    catch (ifstream::failure e) {
+        out(ERROR,"Could not open file \""+failname+"\" for writing");
+        throw ERROR;
+    }
+    try {
+        for (i = 0;i < v.size();i++) f << v[i] << "\n";
+        f.close();
+    }
+    catch (ifstream::failure e) {
+        out(ERROR,"Could not write file \""+failname+"\"");
+        throw ERROR;
+    }
+}
+
+
+void edit(string edscriptpath)
+// Throws ERROR if anything goes wrong.
+{
+    vector<string> edscript;
+    vector<string> file;
+    int start,stop;
+    string find,replace;
+
+    readlines(edscriptpath,edscript);
+    readlines(edscript[0],file);
+    for (int i = 1;i+3 < edscript.size();i += 4) {
+        start = atoi(edscript[i].c_str());
+        stop = atoi(edscript[i+1].c_str());
+        if (start < 1 || start > file.size() || 
+            stop < start || stop > file.size()) break;
+        find = edscript[i+2];
+        replace = edscript[i+3];
+        for (int j = start-1;j <= stop-1;j++) {
+            pos = file[j].find(find);
+            if (pos != string::npos) {
+                file[j] = file[j].substr(0,pos) + replace + 
+                          file[j].substr(pos+find.size());
+            }
+        }
+    }
+    writelines(edscript[0],file);
+}
+
 }   // namespace BOB
 
 using namespace BOB;
