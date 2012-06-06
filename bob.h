@@ -140,5 +140,8 @@ Status cp(string from, string to);
 void cd(string dir);
 // Throws an exception of type Status in case of an error
 
+void edit(string edscriptpath);
+// Throws ERROR if anything goes wrong.
+
 }  // namespace BOB
 

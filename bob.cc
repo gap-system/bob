@@ -1010,22 +1010,19 @@ void readlines(string filename, vector<string> &v)
 {
     string line;
     fstream f;
-    f.exceptions( ifstream::failbit | ifstream::badbit );
+    f.exceptions( ifstream::badbit );
     try { f.open(filename.c_str(),fstream::in); }
     catch (ifstream::failure e) {
-        out(ERROR,"Could not open file \""+failname+"\" for reading");
+        out(ERROR,"Could not open file \""+filename+"\" for reading");
         throw ERROR;
     }
     v.clear();
     try {
-        while (!f.eof()) {
-            getline(f,line);
-            v.push_back(line);
-        }
+        while (getline(f,line)) v.push_back(line);
         f.close();
     }
     catch (ifstream::failure e) {
-        out(ERROR,"Could not read file \""+failname+"\"");
+        out(ERROR,"Could not read file \""+filename+"\"");
         throw ERROR;
     }
 }
@@ -1038,15 +1035,15 @@ void writelines(string filename, vector<string> &v)
     f.exceptions( ifstream::failbit | ifstream::badbit );
     try { f.open(filename.c_str(),fstream::out | fstream::trunc); }
     catch (ifstream::failure e) {
-        out(ERROR,"Could not open file \""+failname+"\" for writing");
+        out(ERROR,"Could not open file \""+filename+"\" for writing");
         throw ERROR;
     }
     try {
-        for (i = 0;i < v.size();i++) f << v[i] << "\n";
+        for (size_t i = 0;i < v.size();i++) f << v[i] << "\n";
         f.close();
     }
     catch (ifstream::failure e) {
-        out(ERROR,"Could not write file \""+failname+"\"");
+        out(ERROR,"Could not write file \""+filename+"\"");
         throw ERROR;
     }
 }
@@ -1057,20 +1054,20 @@ void edit(string edscriptpath)
 {
     vector<string> edscript;
     vector<string> file;
-    int start,stop;
+    size_t start,stop;
     string find,replace;
 
     readlines(edscriptpath,edscript);
     readlines(edscript[0],file);
-    for (int i = 1;i+3 < edscript.size();i += 4) {
+    for (size_t i = 1;i+3 < edscript.size();i += 4) {
         start = atoi(edscript[i].c_str());
         stop = atoi(edscript[i+1].c_str());
         if (start < 1 || start > file.size() || 
             stop < start || stop > file.size()) break;
         find = edscript[i+2];
         replace = edscript[i+3];
-        for (int j = start-1;j <= stop-1;j++) {
-            pos = file[j].find(find);
+        for (size_t j = start-1;j <= stop-1;j++) {
+            size_t pos = file[j].find(find);
             if (pos != string::npos) {
                 file[j] = file[j].substr(0,pos) + replace + 
                           file[j].substr(pos+find.size());

@@ -523,9 +523,27 @@ static Status cohomolo_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"cohomolo", WARN); }
 Component cohomolo("cohomolo",deps_onlyGAP,NULL,NULL,cohomolo_buildfunc);
 
+static Status fplsa_patchfunc(string targetdir)
+{
+    string edscriptname;
+    if (Which_Architecture.str != "OSX") return OK;
+    out(OK,"Patching fplsa for Mac OSX...");
+    try {
+        getind(targetdir,
+           "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/fplsa.edit.link",
+           edscriptname);
+    }
+    catch (Status e) {
+        out(ERROR,"Could not download patch for fplsa.");
+        return WARN;
+    }
+    try { edit(edscriptname); } catch (Status e) { return WARN; }
+    return OK;
+}
+
 static Status fplsa_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"fplsa", WARN); }
-Component fplsa("fplsa",deps_onlyGAP,NULL,NULL,fplsa_buildfunc);
+Component fplsa("fplsa",deps_onlyGAP,NULL,fplsa_patchfunc,fplsa_buildfunc);
 
 static Status fr_prerequisites(string, Status depsresult)
 {
@@ -687,6 +705,23 @@ static Status carat_buildfunc(string targetdir)
         return WARN;
     }
     try { cd("carat-2.1b1"); } catch (Status e) { return WARN; }
+
+    // Now patch the Makefile for Mac OSX:
+    string edscriptname;
+    if (Which_Architecture.str == "LINUX") {
+        out(OK,"Patching carat for Mac OSX...");
+        try {
+            getind(targetdir,
+               "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/carat.edit.link",
+               edscriptname);
+        }
+        catch (Status e) {
+            out(ERROR,"Could not download patch for carat.");
+            return WARN;
+        }
+        try { edit(edscriptname); } catch (Status e) { return WARN; }
+    }
+
     topdir = targetdir + "gap4r5/pkg/carat/carat-2.1b1";
     try { sh("make TOPDIR="+topdir); }
     catch (Status e) {
