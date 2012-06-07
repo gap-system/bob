@@ -1263,8 +1263,10 @@ int main(int argc, char * const argv[], char *envp[])
 
     origCFLAGS = getenvironment("CFLAGS");
     origLDFLAGS = getenvironment("LDFLAGS");
-    if (C_Compiler_Name.str == "gcc")
+    if (C_Compiler_Name.str == "gcc") {
         setenvironment("CFLAGS","-march=native "+getenvironment("CFLAGS"));
+        out(OK,"Adding \"-march=native\" to CFLAGS.");
+    }
 #if SYS_IS_OSX
     // For Mac OSX, add things to CFLAGS and LDFLAGS:
     if (osxaddpaths) {
