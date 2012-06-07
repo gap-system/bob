@@ -107,12 +107,6 @@ static Status GAP_prerequisites(string, Status)
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
             out(ADVICE,"  brew install readline");
-            out(ADVICE,"with root privileges (using su or sudo).");
-            out(OK,"");
-          }
-          if (which("fink",path)) {
-            out(ADVICE,"Currently, installing readline via fink does "
-                       "not work.");
             out(OK,"");
           }
         }
@@ -178,6 +172,8 @@ static void GAP_sortoutenvironment(void)
     delenvironment("LDFLAGS");
     setenvironment("COPTS",merkCPPFLAGS + " " + merkCFLAGS);
     setenvironment("LOPTS",merkLDFLAGS);
+    out(OK,"Using COPTS=\""+getenvironment("COPTS")+"\"");
+    out(OK,"Using LOPTS=\""+getenvironment("COPTS")+"\"");
 }
 
 static void GAP_restoreenvironment(void)
@@ -452,13 +448,6 @@ static Status Browse_prerequisites(string, Status depsresult)
             out(ADVICE,"Currently you cannot install ncurses via homebrew.");
             out(OK,"");
           }
-          if (which("apt-get",path)) {
-            out(ADVICE,"You can install the necessary additional libraries "
-                       "by doing:");
-            out(ADVICE,"  apt-get install libncurses5-64bit");
-            out(ADVICE,"with root privileges (using su or sudo).");
-            out(OK,"");
-          }
         }
     }
     return ret;
@@ -511,31 +500,16 @@ static Status nq_prerequisites(string, Status depsresult)
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
-            out(ADVICE,"  port install gmp");
+            out(ADVICE,"  port install gawk gmp");
             out(ADVICE,"with root privileges (using su or sudo).");
             out(OK,"");
           }
           if (which("brew",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
-            out(ADVICE,"  brew install gmp");
-            out(ADVICE,"with root privileges (using su or sudo).");
+            out(ADVICE,"  brew install gawk gmp");
             out(OK,"");
           }
-          if (which("apt-get",path)) {
-            out(ADVICE,"You can install the necessary additional libraries "
-                       "by doing:");
-            out(ADVICE,"  apt-get install gmp");
-            out(ADVICE,"with root privileges (using su or sudo).");
-            out(OK,"");
-          }
-        }
-        if (Which_Architecture.str == "OSX" &&
-            Which_OS_Variant.str == "brew") {
-          out(OK,"");
-          out(ADVICE,"You can install the necessary tools by doing:");
-          out(ADVICE,"  brew install gawk gmp");
-          out(OK,"");
         }
     }
     return ret;
@@ -687,11 +661,21 @@ static Status fr_prerequisites(string, Status depsresult)
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
         }
-        if (Which_Architecture.str == "OSX" &&
-            Which_OS_Variant.str == "brew") {
-          out(ADVICE,"You can install the necessary libraries by doing:");
-          out(ADVICE,"  brew install gsl");
+        if (Which_Architecture.str == "OSX") {
           out(OK,"");
+          if (which("port",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  port install gsl");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
+          if (which("brew",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  brew install gsl");
+            out(OK,"");
+          }
         }
         return WARN;
     }
@@ -899,17 +883,16 @@ static Status xgap_prerequisites(string, Status)
         Have_C_Header("X11/keysym.h") != OK) {
         out(WARN,"You have not enough X11 headers installed, thus "
                   "XGAP cannot be compiled.");
-        out(WARN,"The following libraries with headers are required "
-                  "for XGAP:");
-        out(WARN,"  libXaw libXmu libXt libXext libX11 libSM libICE");
         res = WARN;
     }
     if (res != OK) {
-        if (Which_Architecture.str == "LINUX") {
+        out(WARN,"The following libraries with headers are required "
+                  "for XGAP:");
+        out(WARN,"  libXaw libXmu libXt libXext libX11 libSM libICE");
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "apt-get") {
           out(OK,"");
-          out(ADVICE,"If you are running a debian-like Linux, you can "
-                     "install the necessary");
-          out(ADVICE,"libraries by doing:");
+          out(ADVICE,"You can install the necessary libraries by doing:");
           out(ADVICE,"  apt-get install libx11-dev libxt-dev libxaw7-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
@@ -926,6 +909,20 @@ static Status xgap_prerequisites(string, Status)
           out(ADVICE,"              libSM-devel libICE-devel");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
+        }
+        if (Which_Architecture.str == "OSX") {
+          out(OK,"");
+          if (which("port",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  port install xorg-libX11 xorg-libXaw");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
+          if (which("brew",path)) {
+            out(ADVICE,"You can currently not install X11 using homebrew.");
+            out(OK,"");
+          }
         }
     }
     return res;
