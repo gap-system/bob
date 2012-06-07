@@ -69,9 +69,26 @@ static Status GAP_prerequisites(string, Status)
             Which_OS_Variant.str == "apt-get") {
           out(OK,"");
           out(ADVICE,"You can install the necessary tools by doing:");
-          out(ADVICE," apt-get install gcc make m4 libc6-dev libreadline-dev"
-                     " lib32readline5-dev");
+          out(ADVICE,"  apt-get install gcc make m4 libc6-dev libreadline-dev");
           out(ADVICE,"with root privileges (using su or sudo).");
+          if (Double_Compile.str == "DoubleCompile") {
+            out(ADVICE,"For the 32-bit libraries do:");
+            out(ADVICE,"  apt-get install lib32readline5-dev");
+          }
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "rpm") {
+          out(ADVICE,"You can install the necessary libraries from"
+                     " the following rpm-packages:");
+          out(ADVICE,"  gcc make m4 glibc-devel readline-devel");
+          out(ADVICE,"Use");
+          out(ADVICE,"  yum install gcc make m4 glibc-devel readline-devel");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          if (Double_Compile.str == "DoubleCompile") {
+            out(ADVICE,"For the 32-bit libraries do:");
+            out(ADVICE,"  yum install glibc-devel.i686 readline-devel.i686");
+          }
           out(OK,"");
         }
         if (Which_Architecture.str == "OSX" &&
@@ -381,10 +398,14 @@ static Status Browse_prerequisites(string, Status depsresult)
             Which_OS_Variant.str == "rpm") {
           out(ADVICE,"You can install the necessary libraries from"
                      " the following rpm-packages:");
-          out(ADVICE,"  XXX");
+          out(ADVICE,"  ncurses-devel");
           out(ADVICE,"Use");
-          out(ADVICE,"  yum install XXX");
+          out(ADVICE,"  yum install ncurses-devel");
           out(ADVICE,"with root privileges (using su or sudo).");
+          if (Double_Compile.str == "DoubleCompile") {
+            out(ADVICE,"For the 32-bit libraries do:");
+            out(ADVICE,"  yum install ncurses-devel.i686");
+          }
           out(OK,"");
         }
     }
@@ -420,6 +441,16 @@ static Status nq_prerequisites(string, Status depsresult)
           out(OK,"");
           out(ADVICE,"You can install the necessary tools by doing:");
           out(ADVICE,"  apt-get install mawk libgmp3-dev");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "rpm") {
+          out(ADVICE,"You can install the necessary libraries from"
+                     " the following rpm-packages:");
+          out(ADVICE,"  mawk gmp");
+          out(ADVICE,"Use");
+          out(ADVICE,"  yum install mawk gmp-devel");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
         }
@@ -574,9 +605,9 @@ static Status fr_prerequisites(string, Status depsresult)
             Which_OS_Variant.str == "rpm") {
           out(ADVICE,"You can install the necessary libraries from"
                      " the following rpm-packages:");
-          out(ADVICE,"  gsl");
+          out(ADVICE,"  gsl-devel");
           out(ADVICE,"Use");
-          out(ADVICE,"  yum install gsl");
+          out(ADVICE,"  yum install gsl-devel");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
         }
@@ -811,10 +842,12 @@ static Status xgap_prerequisites(string, Status)
             Which_OS_Variant.str == "rpm") {
           out(ADVICE,"You can install the necessary libraries from"
                      " the following rpm-packages:");
-          out(ADVICE,"  libX11 libXaw libXmu libXt libXext libSM libICE");
+          out(ADVICE,"  libX11-devel libXaw-devel libXmu-devel libXt-devel"
+                     "  libXext-devel libSM-devel libICE-devel");
           out(ADVICE,"Use");
-          out(ADVICE,"  yum install libX11 libXaw libXmu libXt libXext "
-                     "libSM libICE");
+          out(ADVICE,"  yum install libX11-devel libXaw-devel libXmu-devel "
+                     "libXt-devel libXext-devel \\ ");
+          out(ADVICE,"              libSM-devel libICE-devel");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
         }

@@ -80,9 +80,8 @@
 > rename dmgdir
 > Add hint about spaces in filenames to web page
 > Make README for archives
-
-collect rpm hints
-  http://fr2.rpmfind.net/linux/rpm2html/search.php?query=ncurses-devel&submit=Search+...&system=&arch=
+> collect rpm hints
+>   http://fr2.rpmfind.net/linux/rpm2html
 find more homebrew hints
 find fink hints
 find macports hints
