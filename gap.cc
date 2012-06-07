@@ -819,7 +819,7 @@ static Status carat_buildfunc(string targetdir)
 
     // Now patch the Makefile for Mac OSX:
     string edscriptname;
-    if (Which_Architecture.str == "LINUX") {
+    if (Which_Architecture.str == "OSX") {
         out(OK,"Patching carat for Mac OSX...");
         try {
             getind(targetdir,
