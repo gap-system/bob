@@ -662,7 +662,6 @@ static Status fr_prerequisites(string, Status depsresult)
           out(OK,"");
         }
         if (Which_Architecture.str == "OSX") {
-          out(OK,"");
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
