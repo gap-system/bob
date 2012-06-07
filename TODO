@@ -91,15 +91,14 @@
 > find macports hints
 > find more homebrew hints
 > bump version number to 9
-
-union of macports hints for Mac
-union of homebrew hints?
-union of debian hints
-union of rpm hints
-
-compile all
-update web page
+> union of macports hints for Mac
+> union of homebrew hints? no
+> union of debian hints
+> union of rpm hints
+> compile all
+> update web page
 report fr problems
+report carat problems
 report fink 32bit problems
 
 
