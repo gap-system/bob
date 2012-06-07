@@ -679,6 +679,44 @@ static Status fr_prerequisites(string, Status depsresult)
         }
         return WARN;
     }
+    if (!which("wget",path)) {
+        out(OK,"");
+        out(WARN,"Need wget utility installed for component fr.");
+        out(OK,"");
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "apt-get") {
+          out(ADVICE,"You can install the necessary tool by doing:");
+          out(ADVICE,"  apt-get install wget");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "rpm") {
+          out(ADVICE,"You can install the necessary libraries from"
+                     " the following rpm-packages:");
+          out(ADVICE,"  wget");
+          out(ADVICE,"Use");
+          out(ADVICE,"  yum install wget");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "OSX") {
+          out(OK,"");
+          if (which("port",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  port install wget");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
+          if (which("brew",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  brew install wget");
+            out(OK,"");
+          }
+        }
+    }
     if (!which("appletviewer",path) ||
         !which("javac",path)) {
         out(WARN,"Need appletviewer and java compiler for component fr.");
