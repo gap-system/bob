@@ -36,7 +36,7 @@ static Status GAP_prerequisites(string, Status)
         out(ERROR,"Need the 'm4' utility, please install it.");
         res = ERROR;
     }
-    if (Have_C_Library("-lreadline") != OK) {
+    if (Have_C_Library("-lreadline -lncurses") != OK) {
         out(OK,"");
         out(WARN,"You do not have the readline library installed.");
         out(WARN,"GAP will be compiled without readline support.");
@@ -50,7 +50,7 @@ static Status GAP_prerequisites(string, Status)
         hint = true;
     }
     if (Double_Compile.str == "DoubleCompile") {
-        if (Have_C_Library("-lreadline",true) != OK) {
+        if (Have_C_Library("-lreadline -lncurses",true) != OK) {
             out(OK,"");
             out(WARN,"You do not have the 32bit readline library installed.");
             out(WARN,"32bit-GAP will be compiled without readline support.");
@@ -91,13 +91,30 @@ static Status GAP_prerequisites(string, Status)
           }
           out(OK,"");
         }
-        if (Which_Architecture.str == "OSX" &&
-            Which_OS_Variant.str == "apt-get") {
+        if (Which_Architecture.str == "OSX") {
           out(OK,"");
-          out(ADVICE,"You can install the necessary tools by doing:");
-          out(ADVICE,"  apt-get install gcc47 ... make m4 libc6-dev libreadline-dev");
-          out(ADVICE,"with root privileges (using su or sudo).");
+          out(ADVICE,"First you need to install XCode with \"gcc\" \"make\""
+                     " and \"m4\".");
           out(OK,"");
+          if (which("port",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  port install readline");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
+          if (which("brew",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  brew install readline");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
+          if (which("fink",path)) {
+            out(ADVICE,"Currently, installing readline via fink does "
+                       "not work.");
+            out(OK,"");
+          }
         }
     }
     return res;
@@ -201,6 +218,21 @@ static Status GAP_buildfunc(string)
     try { cd("gap4r5"); } catch (Status e) { return ERROR; }
     // Clean up environment due to GAP's funny behaviour:
     GAP_sortoutenvironment();
+    string readlineopt = "";
+    if (Which_Architecture.str == "OSX") {
+        if (exists("/opt/local/lib/libreadline.dylib") &&
+            exists("/opt/local/include/readline/readline.h")) {
+            // MacPorts put the readline library there
+            readlineopt = " --with-readline=/opt/local";
+        } else if (exists("/opt/lib/libreadline.dylib") &&
+                   exists("/opt/include/readline/readline.h")) {
+            readlineopt = " --with-readline=/opt";
+        } else if (isdir("/usr/local/Cellar/readline")) {
+            // homebrew currently has it here.
+            readlineopt = " --with-readline=/usr/local/Cellar/readline/6.2.2";
+            // FIXME: Read off version number here
+        }
+    }
     if (Double_Compile.str == "DoubleCompile") {
         out(OK,"Compiling for both 32-bit and 64-bit...");
         out(OK,"Running ./configure ABI=32 for GAP...");
@@ -227,7 +259,7 @@ static Status GAP_buildfunc(string)
         confignames.push_back("default32");
     }
     out(OK,"Running ./configure for GAP...");
-    try { sh("./configure"); }
+    try { sh("./configure"+readlineopt); }
     catch (Status e) {
         out(ERROR,"Error in configure stage.");
         GAP_restoreenvironment();
@@ -408,6 +440,26 @@ static Status Browse_prerequisites(string, Status depsresult)
           }
           out(OK,"");
         }
+        if (Which_Architecture.str == "OSX") {
+          if (which("port",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  port install ncurses");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
+          if (which("brew",path)) {
+            out(ADVICE,"Currently you cannot install ncurses via homebrew.");
+            out(OK,"");
+          }
+          if (which("apt-get",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  apt-get install libncurses5-64bit");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
+        }
     }
     return ret;
 }
@@ -453,6 +505,30 @@ static Status nq_prerequisites(string, Status depsresult)
           out(ADVICE,"  yum install mawk gmp-devel");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
+        }
+        if (Which_Architecture.str == "OSX") {
+          out(OK,"");
+          if (which("port",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  port install gmp");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
+          if (which("brew",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  brew install gmp");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
+          if (which("apt-get",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  apt-get install gmp");
+            out(ADVICE,"with root privileges (using su or sudo).");
+            out(OK,"");
+          }
         }
         if (Which_Architecture.str == "OSX" &&
             Which_OS_Variant.str == "brew") {

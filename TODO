@@ -82,19 +82,26 @@
 > Make README for archives
 > collect rpm hints
 >   http://fr2.rpmfind.net/linux/rpm2html
-find more homebrew hints
-find fink hints
+> find readline library explicitly?
+>   --> use --with-readline= if either ports of current homebrew is
+>       there for 64-bit compile
+> xz with -9, change sha1sum in link file
+> change fplsa patch --> makefile
+> -march test and usage
 find macports hints
+find more homebrew hints
+remove find fink hints
 bump version number to 9
 
-union of hints for Mac
+union of macports hints for Mac
+union of homebrew hints?
 union of debian hints
 union of rpm hints
 
 compile all
 update web page
 report fr problems
-
+report fink 32bit problems
 
 
 

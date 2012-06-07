@@ -1261,10 +1261,12 @@ int main(int argc, char * const argv[], char *envp[])
         }
     }
 
-    // For Mac OSX, add things to CFLAGS and LDFLAGS:
-#if SYS_IS_OSX
     origCFLAGS = getenvironment("CFLAGS");
     origLDFLAGS = getenvironment("LDFLAGS");
+    if (C_Compiler_Name.str == "gcc")
+        setenvironment("CFLAGS","-march=native "+getenvironment("CFLAGS"));
+#if SYS_IS_OSX
+    // For Mac OSX, add things to CFLAGS and LDFLAGS:
     if (osxaddpaths) {
         if (isdir("/usr/local/include")) {
             setenvironment("CFLAGS",getenvironment("CFLAGS") +
