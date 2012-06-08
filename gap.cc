@@ -470,18 +470,12 @@ static Status nq_prerequisites(string, Status depsresult)
         out(WARN,"Need awk for component nq-Pkg.");
         ret = WARN;
     }
-    if (Have_C_Library("-lgmp") != OK ||
-        Have_C_Header("gmp.h") != OK) {
-        out(OK,"");
-        out(WARN,"Need gmp installed for component nq.");
-        ret = WARN;
-    }
     if (ret != OK) {
         if (Which_Architecture.str == "LINUX" &&
             Which_OS_Variant.str == "apt-get") {
           out(OK,"");
           out(ADVICE,"You can install the necessary tools by doing:");
-          out(ADVICE,"  apt-get install mawk libgmp3-dev");
+          out(ADVICE,"  apt-get install mawk");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
         }
@@ -489,9 +483,9 @@ static Status nq_prerequisites(string, Status depsresult)
             Which_OS_Variant.str == "rpm") {
           out(ADVICE,"You can install the necessary libraries from"
                      " the following rpm-packages:");
-          out(ADVICE,"  mawk gmp");
+          out(ADVICE,"  mawk");
           out(ADVICE,"Use");
-          out(ADVICE,"  yum install mawk gmp-devel");
+          out(ADVICE,"  yum install mawk");
           out(ADVICE,"with root privileges (using su or sudo).");
           out(OK,"");
         }
@@ -500,14 +494,14 @@ static Status nq_prerequisites(string, Status depsresult)
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
-            out(ADVICE,"  port install gawk gmp");
+            out(ADVICE,"  port install gawk");
             out(ADVICE,"with root privileges (using su or sudo).");
             out(OK,"");
           }
           if (which("brew",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
-            out(ADVICE,"  brew install gawk gmp");
+            out(ADVICE,"  brew install gawk");
             out(OK,"");
           }
         }
