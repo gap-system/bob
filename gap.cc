@@ -861,7 +861,20 @@ static Status carat_buildfunc(string targetdir)
             out(ERROR,"Could not download patch for carat.");
             return WARN;
         }
-        try { edit(edscriptname); } catch (Status e) { return WARN; }
+        vector<string> edscript;
+        try { 
+            readlines(edscriptname,edscript);
+            edscript[edscript.size()-1] 
+              += " -I"+targetdir+"gap4r5/bin/"+GAParchs[Double_Compile.num]+
+                 "/extern/gmp/include"+
+                 " -L"+targetdir+"gap4r5/bin/"+GAParchs[Double_Compile.num]+
+                 "/extern/gmp/lib";
+            edit(edscript);
+        }
+        catch (Status e) { 
+            out(ERROR,"Failed to patch carat.");
+            return WARN; 
+        }
     }
 
     topdir = targetdir + "gap4r5/pkg/carat/carat-2.1b1";

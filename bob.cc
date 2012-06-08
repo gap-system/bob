@@ -1049,15 +1049,13 @@ void writelines(string filename, vector<string> &v)
 }
 
 
-void edit(string edscriptpath)
+void edit(vector<string> &edscript)
 // Throws ERROR if anything goes wrong.
 {
-    vector<string> edscript;
     vector<string> file;
     size_t start,stop;
     string find,replace;
 
-    readlines(edscriptpath,edscript);
     readlines(edscript[0],file);
     for (size_t i = 1;i+3 < edscript.size();i += 4) {
         start = atoi(edscript[i].c_str());
@@ -1075,6 +1073,13 @@ void edit(string edscriptpath)
         }
     }
     writelines(edscript[0],file);
+}
+
+void edit(string edscriptpath)
+{
+    vector<string> edscript;
+    readlines(edscriptpath,edscript);
+    edit(edscript);
 }
 
 void listdir(string dirname, vector<string> &names)

@@ -140,6 +140,12 @@ Status cp(string from, string to);
 void cd(string dir);
 // Throws an exception of type Status in case of an error
 
+void readlines(string filename, vector<string> &v);
+// Throws ERROR if anything goes wrong.
+void writelines(string filename, vector<string> &v);
+// Throws ERROR if anything goes wrong.
+void edit(vector<string> &edscript);
+// Throws ERROR if anything goes wrong.
 void edit(string edscriptpath);
 // Throws ERROR if anything goes wrong.
 
