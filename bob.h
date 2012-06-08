@@ -143,5 +143,8 @@ void cd(string dir);
 void edit(string edscriptpath);
 // Throws ERROR if anything goes wrong.
 
+void listdir(string dirname, vector<string> &names);
+// Throws ERROR if anything goes wrong.
+
 }  // namespace BOB
 

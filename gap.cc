@@ -877,22 +877,21 @@ static Status carat_buildfunc(string targetdir)
         return WARN;
     }
     try { cd("bin"); } catch (Status e) { return WARN; }
-    char targetbin[256];
-    FILE *p = popen("./config.guess","r");
-    if (p == NULL) {
-        out(ERROR,"Cannot run ./config.guess .");
+    vector<string> filenames;
+    try { listdir(".",filenames); }
+    catch (Status e) {
+        out(ERROR,"Could not read off architecture string for carat.");
         return WARN;
     }
-    if (fgets(targetbin,256,p) == NULL) {
-        pclose(p);
-        out(ERROR,"Cannot run ./config.guess .");
+    size_t i;
+    for (i = 0;i < filenames.size();i++) {
+        if (filenames[i] != "Makefile" && filenames[i] != "config.guess") break;
+    }
+    if (i >= filenames.size()) {
+        out(ERROR,"Could not find architecture string for carat.");
         return WARN;
     }
-    pclose(p);
-    size_t i = strlen(targetbin)-1;  // lose the line end
-    targetbin[i--] = 0;
-    strncat(targetbin,"-",255-i);
-    strncat(targetbin,C_Compiler_Name.str.c_str(),254-i);
+    string targetbin = filenames[i];
     for (i = 0;i < GAParchs.size();i++)
         try { sh(string("ln -sfn ")+targetbin+" "+GAParchs[i]); }
         catch (Status e) {

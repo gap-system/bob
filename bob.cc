@@ -1077,6 +1077,22 @@ void edit(string edscriptpath)
     writelines(edscript[0],file);
 }
 
+void listdir(string dirname, vector<string> &names)
+{
+    DIR *dp;
+    struct dirent *ep;
+
+    names.clear();
+    dp = opendir (dirname.c_str());
+    if (dp == NULL) throw ERROR;
+    while ((ep = readdir(dp)) != NULL) {
+        if(strcmp(ep->d_name, ".") && strcmp(ep->d_name, "..")) {
+            names.push_back(string(ep->d_name));
+        }
+    }
+    (void) closedir (dp);
+}
+    
 }   // namespace BOB
 
 using namespace BOB;
