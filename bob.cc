@@ -218,11 +218,11 @@ static int Which_Wordsize_Test(string &st)
 {
     if (Which_C_Compiler.num != 0) return 0;
     fstream testprog("/tmp/wordsize.c",fstream::out | fstream::trunc);
-    testprog << "#include <stdio.h>\n";
-    testprog << "int main(void) {\n";
-    testprog << "  printf(\"%ld\\n\",sizeof(void *));\n";
-    testprog << "  return 0;\n";
-    testprog << "}\n";
+    testprog << "#include <stdio.h>" << endl;
+    testprog << "int main(void) {" << endl;
+    testprog << "  printf(\"%ld\\n\",sizeof(void *));" << endl;
+    testprog << "  return 0;" << endl;
+    testprog << "}" << endl;
     testprog.close();
     try { sh(Which_C_Compiler.str+" /tmp/wordsize.c -o /tmp/wordsize",0,true); }
     catch (Status e) { return 0; }
@@ -247,10 +247,10 @@ Status Have_C_Header(string headername, bool m32)
     string m32opt = m32 ? " -m32" : "";
     if (Which_C_Compiler.num != 0) return ERROR;
     fstream testprog("/tmp/headertest.c",fstream::out | fstream::trunc);
-    testprog << "#include <" << headername << ">\n";
-    testprog << "int main(void) {\n";
-    testprog << "  return 0;\n";
-    testprog << "}\n";
+    testprog << "#include <" << headername << ">" << endl;
+    testprog << "int main(void) {" << endl;
+    testprog << "  return 0;" << endl;
+    testprog << "}" << endl;
     testprog.close();
     try { 
         sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
@@ -268,9 +268,9 @@ Status Have_C_Library(string lib, bool m32)
     string m32opt = m32 ? " -m32" : "";
     if (Which_C_Compiler.num != 0) return ERROR;
     fstream testprog("/tmp/libtest.c",fstream::out | fstream::trunc);
-    testprog << "int main(void) {\n";
-    testprog << "  return 0;\n";
-    testprog << "}\n";
+    testprog << "int main(void) {" << endl;
+    testprog << "  return 0;" << endl;
+    testprog << "}" << endl;
     testprog.close();
     try {
         sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
@@ -294,9 +294,9 @@ static int Can_Compile_32bit_Test(string &st)
     out(OK,"We are on a 64-bit system using gcc or clang.");
     out(OK,"Checking whether or not we can compile in 32-bit mode...");
     fstream testprog("/tmp/lib32test.c",fstream::out | fstream::trunc);
-    testprog << "int main(void) {\n";
-    testprog << "  return 0;\n";
-    testprog << "}\n";
+    testprog << "int main(void) {" << endl;
+    testprog << "  return 0;" << endl;
+    testprog << "}" << endl;
     testprog.close();
     try { 
         sh(Which_C_Compiler.str+" "+getenvironment("CPPFLAGS")+" "+
@@ -432,7 +432,7 @@ string buildlogfilename;
 void out(Status severity, string msg)
 {
     fstream outs(boblogfilename.c_str(),fstream::out | fstream::app);
-    outs << msg << "\n";
+    outs << msg << endl;
     outs.close();
     if (verbose >= 3 || 
         (verbose >= 2 && severity == WARN) ||
@@ -441,7 +441,7 @@ void out(Status severity, string msg)
         if (severity == WARN) cout << "Warning:";
         else if (severity == ADVICE) cout << "Advice:";
         else if (severity == ERROR) cout << "Error:";
-        cout << msg << "\n";
+        cout << msg << endl;
     }
 }
 
@@ -786,7 +786,7 @@ void sh(string cmd, int stdinfd, bool quiet)
     // First log command if not quiet:
     if (!quiet) {
         fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
-        logfile << "COMMAND:" << cmd << "\n";
+        logfile << "COMMAND:" << cmd << endl;
         logfile.close();
     }
 
@@ -835,7 +835,7 @@ void sh(string cmd, int stdinfd, bool quiet)
         envp = prepareenvironment();
         if (execve(path.c_str(), (char *const *) &(argv[0]),envp) == -1) {
             freepreparedenvironment(envp);
-            cerr << "Errno: " << errno << "\n";
+            cerr << "Errno: " << errno << endl;
             if (!quiet) out(ERROR,"Cannot execve.");
             exit(17);
         }
@@ -881,7 +881,7 @@ int shbg(string cmd, int stdinfd, bool quiet)
     // First log command if not quiet:
     if (!quiet) {
         fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
-        logfile << "COMMAND:" << cmd << "\n";
+        logfile << "COMMAND:" << cmd << endl;
         logfile.close();
     }
 
@@ -925,7 +925,7 @@ int shbg(string cmd, int stdinfd, bool quiet)
         envp = prepareenvironment();
         if (execve(path.c_str(), (char *const *) &(argv[0]),envp) == -1) {
             freepreparedenvironment(envp);
-            cerr << "Errno: " << errno << "\n";
+            cerr << "Errno: " << errno << endl;
             if (!quiet) out(ERROR,"Cannot execve.");
             exit(17);
         }
@@ -990,10 +990,10 @@ Status cp(string from, string to)
 void cd(string dir)
 {
     fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
-    logfile << "COMMAND:cd " << dir << "\n";
+    logfile << "COMMAND:cd " << dir << endl;
     if (chdir(dir.c_str()) != 0) {
         out(ERROR,"Could not change to directory "+dir);
-        logfile << "ERROR: Could not change to directory "+dir << "\n";
+        logfile << "ERROR: Could not change to directory "+dir << endl;
         logfile.close();
         throw ERROR;
     }
@@ -1039,7 +1039,7 @@ void writelines(string filename, vector<string> &v)
         throw ERROR;
     }
     try {
-        for (size_t i = 0;i < v.size();i++) f << v[i] << "\n";
+        for (size_t i = 0;i < v.size();i++) f << v[i] << endl;
         f.close();
     }
     catch (ifstream::failure e) {
@@ -1109,39 +1109,49 @@ string targetdir;
 
 void usage()
 {
-    cout << "============\n";
-    cout << " Bob-Manual \n";
-    cout << "============\n\n";
-    cout << "This program will download and compile GAP on your machine.\n";
-    cout << "It needs a working C-Compiler and some other utilities.\n";
-    cout << "It will first check whether everything that is needed is there.\n";
-    cout << "and alert you about missing tools.\n\n";
-    cout << "Usage: bob [-h] [-i] [-v] [-q] [-t TARGETDIR]\n";
-    cout << "    -h : Show this help\n";
-    cout << "    -v : Increase verbosity by 1, default is 3\n";
-    cout << "    -q : Decrease verbosity by 1\n";
-    cout << "         Verbosity levels:\n";
-    cout << "           0 : do not show anything, completely quiet\n";
-    cout << "           1 : only show errors\n";
-    cout << "           2 : show errors and warnings\n";
-    cout << "           3 : show errors, warnings and what is going on\n";
-    cout << "           4 : show additionally output of building process\n";
-    cout << "    -f : Run non-interactively, that is, do not ask if warnings\n";
-    cout << "         are found (without this options, the program asks the\n";
-    cout << "         user if it should continue if warnings are found,\n";
-    cout << "         when errors are found, it stops always)\n";
-    cout << "    -n : Do not use network access\n";
-    cout << "         (This means that all link and archive files must\n";
-    cout << "          already be present and that Bob does not check for\n";
-    cout << "          updates.)\n";
-    cout << "    -t : Specify a different target directory than the current\n";
-    cout << "         directory. Bob needs write access to that directory.\n";
-    cout << "    -c : Specify one component name and only the build routine\n";
-    cout << "         for that component is run without any dependencies.\n";
-    cout << "    -z : Do not add various paths for additional libraries\n";
-    cout << "         to CFLAGS and LDFLAGS on Mac OSX.\n";
-    cout << "For any questions or complaints please contact:\n";
-    cout << "  Max Neunhoeffer <neunhoef@mcs.st-and.ac.uk>\n\n";
+    cout << "============" << endl;
+    cout << " Bob-Manual " << endl;
+    cout << "============" << endl << endl;
+    cout << "This program will download and compile GAP on your machine."<<endl;
+    cout << "It needs a working C-Compiler and some other utilities." << endl;
+    cout << "It will first check whether everything that is needed is there." 
+         << endl;
+    cout << "and alert you about missing tools." << endl << endl;
+    cout << "Usage: bob [-h] [-i] [-v] [-q] [-t TARGETDIR]" << endl;
+    cout << "    -h : Show this help" << endl;
+    cout << "    -v : Increase verbosity by 1, default is 3" << endl;
+    cout << "    -q : Decrease verbosity by 1" << endl;
+    cout << "         Verbosity levels:" << endl;
+    cout << "           0 : do not show anything, completely quiet" << endl;
+    cout << "           1 : only show errors" << endl;
+    cout << "           2 : show errors and warnings" << endl;
+    cout << "           3 : show errors, warnings and what is going on" << endl;
+    cout << "           4 : show additionally output of building process" 
+         << endl;
+    cout << "    -f : Run non-interactively, that is, do not ask if warnings" 
+         << endl;
+    cout << "         are found (without this options, the program asks the" 
+         << endl;
+    cout << "         user if it should continue if warnings are found,"<<endl;
+    cout << "         when errors are found, it stops always)" << endl;
+    cout << "    -n : Do not use network access" << endl;
+    cout << "         (This means that all link and archive files must" << endl;
+    cout << "          already be present and that Bob does not check for" 
+         << endl;
+    cout << "          updates.)" << endl;
+    cout << "    -t : Specify a different target directory than the current" 
+         << endl;
+    cout << "         directory. Bob needs write access to that directory." 
+         << endl;
+    cout << "    -c : Specify one component name and only the build routine" 
+         << endl;
+    cout << "         for that component is run without any dependencies." 
+         << endl;
+    cout << "    -z : Do not add various paths for additional libraries" 
+         << endl;
+    cout << "         to CFLAGS and LDFLAGS on Mac OS X." << endl;
+    cout << "For any questions or complaints please contact:" << endl;
+    cout << "  Max Neunhoeffer <neunhoef@mcs.st-and.ac.uk>" << endl << endl;
 }
 
 int main(int argc, char * const argv[], char *envp[])
@@ -1189,7 +1199,7 @@ int main(int argc, char * const argv[], char *envp[])
           case 't':
               if (chdir(optarg) != 0) {
                   if (chdir(origdir.c_str()) != 0) {
-                      cerr << "Cannot chdir to original dir. Stopping.\n";
+                      cerr << "Cannot chdir to original dir. Stopping." << endl;
                       return 16;
                   }
               } else {
@@ -1208,7 +1218,8 @@ int main(int argc, char * const argv[], char *envp[])
               osxaddpaths = false;
               break;
           default: /* '?' */
-              cerr << "Usage: " << argv[0] << "[-v] [-q] [-n] [-t TARGETDIR]\n";
+              cerr << "Usage: " << argv[0] << "[-v] [-q] [-n] [-t TARGETDIR]" 
+                   << endl;
               return -1;
         }
     }
@@ -1221,14 +1232,14 @@ int main(int argc, char * const argv[], char *envp[])
     fstream outs(boblogfilename.c_str(),fstream::out | fstream::trunc);
     if (outs.fail()) {
         cout << "Cannot create log file \"bob.log\" in target directory. "
-             << "Stopping.\n";
+             << "Stopping." << endl;
         return 3;
     }
     outs.close();
     outs.open(buildlogfilename.c_str(),fstream::out | fstream::trunc);
     if (outs.fail()) {
         cout << "Cannot create log file \"build.log\" in target directory. "
-             << "Stopping.\n";
+             << "Stopping." << endl;
         return 4;
     }
     outs.close();
@@ -1236,11 +1247,11 @@ int main(int argc, char * const argv[], char *envp[])
     // Change to target directory:
     if (chdir(targetdir.c_str()) != 0) {
         // has worked before, we assume it does again
-        cerr << "Cannot chdir to target dir. Stopping.\n";
+        cerr << "Cannot chdir to target dir. Stopping." << endl;
         return 15;
     }
     stringstream msg;
-    msg << "This is BOB version " << BOBVERSION << ".\n";
+    msg << "This is BOB version " << BOBVERSION << "." << endl;
     out(OK,msg.str());
     out(OK,"Target directory is: "+targetdir);
     struct stat statbuf;
@@ -1285,7 +1296,7 @@ int main(int argc, char * const argv[], char *envp[])
     origCFLAGS = getenvironment("CFLAGS");
     origLDFLAGS = getenvironment("LDFLAGS");
 #if SYS_IS_OSX
-    // For Mac OSX, add things to CFLAGS and LDFLAGS:
+    // For Mac OS X, add things to CFLAGS and LDFLAGS:
     if (osxaddpaths) {
         if (isdir("/usr/local/include")) {
             setenvironment("CFLAGS",getenvironment("CFLAGS") +
@@ -1473,7 +1484,7 @@ int main(int argc, char * const argv[], char *envp[])
     }
     string answer;
     if (interactive && gotwarning) {
-        cout << "\nThere have been warnings, go on regardless? ";
+        cout << endl << "There have been warnings, go on regardless? ";
         cout.flush();
         cin >> answer;
         if (answer.size() == 0 || 
@@ -1522,7 +1533,8 @@ int main(int argc, char * const argv[], char *envp[])
             out(OK,"Building component "+c->name);
             outs.open(buildlogfilename.c_str(),fstream::out | fstream::app);
             if (!outs.fail()) {
-                outs << "\nBOB: Building component " << c->name << "...\n\n";
+                outs << endl << "BOB: Building component " << c->name << "..."
+                     << endl << endl;
                 outs.close();
             }
             res = c->build(targetdir);
