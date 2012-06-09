@@ -1347,8 +1347,12 @@ int main(int argc, char * const argv[], char *envp[])
 
     // Add tuning command if we are using gcc:
     if (C_Compiler_Name.str == "gcc" && Which_Architecture.str != "OSX") {
-        setenvironment("CFLAGS","-march=native "+getenvironment("CFLAGS"));
-        out(OK,"Adding \"-march=native\" to CFLAGS.");
+        if (Have_C_Library("-march=native") == OK) {
+            setenvironment("CFLAGS","-march=native "+getenvironment("CFLAGS"));
+            out(OK,"Adding \"-march=native\" to CFLAGS.");
+        } else {
+            out(OK,"Your compiler does not like \"-march=native\".");
+        }
     }
 
     if (onlycomp != "") {
