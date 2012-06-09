@@ -99,6 +99,8 @@
 > update web page
 report fr problems
 report fink 32bit problems
+add fink hints
+print CFLAGS and LDFLAGS chosen, set CXXFLAGS
 Look through Max's email
 recompile and publish
 copyright/GPL
