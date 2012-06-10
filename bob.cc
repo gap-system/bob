@@ -183,6 +183,7 @@ Test Which_Architecture("Which_Architecture",1,Which_Architecture_Test);
 static int Which_OS_Variant_Test(string &st)
 {
     string path;
+    size_t pos;
 #if SYS_IS_LINUX
     if (which("apt-get",path)) {
         st = "apt-get";
@@ -196,7 +197,9 @@ static int Which_OS_Variant_Test(string &st)
     } 
 #endif
 #if SYS_IS_OSX
-    if (which("apt-get",path)) {
+    if (which("fink",path)) {
+        pos = path.rfind('/');
+        ...
         st = "fink";
         return 0;
     } else if (which("brew",path)) {
