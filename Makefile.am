@@ -1,3 +1,9 @@
+#
+# Makefile.am - part of the GAP installer BOB
+#
+# Copyright (C) by Max Neunhoeffer 2012
+# This file is free software, see license information at the end.
+#
 FORLDADD=@FORLDADD@
 FORLDFLAGS=@FORLDFLAGS@
 bin_PROGRAMS = bob
@@ -30,42 +36,42 @@ distclean-local:
 	       xz-${XZUTILSVERSION}
 
 libs/include/zlib.h:
-	( if [ ! -e ${ZLIBARCH} ] ; then \
-	     curl http://zlib.net/${ZLIBARCH} -o ${ZLIBARCH} ; fi )
+	( if [ ! -e archives/${ZLIBARCH} ] ; then \
+	     curl http://zlib.net/${ZLIBARCH} -o archives/${ZLIBARCH} ; fi )
 	rm -rf zlib-${ZLIBVERSION}
-	tar xzvf ${ZLIBARCH}
+	tar xzvf archives/${ZLIBARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd zlib-${ZLIBVERSION} ; \
 	  ./configure --prefix=$$MYPATH/libs --static ; \
 	  make ; make install )
 
 bz2lib_m32:
-	( if [ ! -e ${BZ2LIBARCH} ] ; then \
+	( if [ ! -e archives/${BZ2LIBARCH} ] ; then \
 	     curl http://bzip.org/${BZ2LIBVERSION}/${BZ2LIBARCH} \
-	     -o ${BZ2LIBARCH} ; fi )
+	     -o archives/${BZ2LIBARCH} ; fi )
 	rm -rf bzip2-${BZ2LIBVERSION}
-	tar xzvf ${BZ2LIBARCH}
+	tar xzvf archives/${BZ2LIBARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd bzip2-${BZ2LIBVERSION} ; \
 	  make CFLAGS="-m32 -Wall -Winline -O2 -g -D_FILE_OFFSET_BITS=64" ; \
 	  make install PREFIX=$$MYPATH/libs )
 
 libs/include/bzlib.h:
-	( if [ ! -e ${BZ2LIBARCH} ] ; then \
+	( if [ ! -e archives/${BZ2LIBARCH} ] ; then \
 	     curl http://bzip.org/${BZ2LIBVERSION}/${BZ2LIBARCH} \
-	     -o ${BZ2LIBARCH} ; fi )
+	     -o archives/${BZ2LIBARCH} ; fi )
 	rm -rf bzip2-${BZ2LIBVERSION}
-	tar xzvf ${BZ2LIBARCH}
+	tar xzvf archives/${BZ2LIBARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd bzip2-${BZ2LIBVERSION} ; \
 	  make ; make install PREFIX=$$MYPATH/libs )
 
 libs/include/curl/curl.h:
-	( if [ ! -e ${CURLARCH} ] ; then \
+	( if [ ! -e archives/${CURLARCH} ] ; then \
 	     curl http://curl.haxx.se/download/${CURLARCH} \
-	     -o ${CURLARCH} ; fi )
+	     -o archives/${CURLARCH} ; fi )
 	rm -rf curl-${CURLVERSION}
-	tar xzvf ${CURLARCH}
+	tar xzvf archives/${CURLARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd curl-${CURLVERSION} ; \
 	  ./configure --prefix=$$MYPATH/libs --disable-shared \
@@ -79,11 +85,11 @@ libs/include/curl/curl.h:
 	  make ; make install )
 
 libs/include/archive.h: libs/include/zlib.h libs/include/bzlib.h libs/include/lzma.h
-	( if [ ! -e ${LIBARCHIVEARCH} ] ; then \
+	( if [ ! -e archives/${LIBARCHIVEARCH} ] ; then \
 	     curl -k https://cloud.github.com/downloads/libarchive/libarchive/${LIBARCHIVEARCH} \
-	     -o ${LIBARCHIVEARCH} ; fi )
+	     -o archives/${LIBARCHIVEARCH} ; fi )
 	rm -rf libarchive-${LIBARCHIVEVERSION}
-	tar xzvf ${LIBARCHIVEARCH}
+	tar xzvf archives/${LIBARCHIVEARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd libarchive-${LIBARCHIVEVERSION} ; \
 	  ./configure --prefix=$$MYPATH/libs --disable-shared \
@@ -95,11 +101,11 @@ libs/include/archive.h: libs/include/zlib.h libs/include/bzlib.h libs/include/lz
 	  make ; make install )
 
 libs/include/openssl/ssl.h:
-	( if [ ! -e ${OPENSSLARCH} ] ; then \
+	( if [ ! -e archives/${OPENSSLARCH} ] ; then \
 	    curl http://www.openssl.org/source/${OPENSSLARCH} \
-	     -o ${OPENSSLARCH} ; fi )
+	     -o archives/${OPENSSLARCH} ; fi )
 	rm -rf openssl-${OPENSSLVERSION}
-	tar xzvf ${OPENSSLARCH}
+	tar xzvf archives/${OPENSSLARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd openssl-${OPENSSLVERSION} ; \
 	  if test `uname -s` == "Darwin" ; then \
@@ -113,29 +119,28 @@ libs/include/openssl/ssl.h:
 	  make ; make install )
 
 libs/include/lzma.h:
-	( if [ ! -e ${XZUTILSARCH} ] ; then \
+	( if [ ! -e archives/${XZUTILSARCH} ] ; then \
 	    curl http://tukaani.org/xz/${XZUTILSARCH} \
-	     -o ${XZUTILSARCH} ; fi )
+	     -o archives/${XZUTILSARCH} ; fi )
 	rm -rf xz-${XZUTILSVERSION}
-	tar xzvf ${XZUTILSARCH}
+	tar xzvf archives/${XZUTILSARCH}
 	if [ ! -e libs ] ; then mkdir libs ; fi
 	( export MYPATH=`pwd` ; cd xz-${XZUTILSVERSION} ; \
 	  ./configure --prefix=$$MYPATH/libs --disable-shared ; make ; \
 	  make install )
 
-tolinux64: bob
-	strip bob
-	cp -a bob /scratch/neunhoef/mywebpage.pub/for/BOB/bob-linux-64bit
-
-tolinux32: bob
-	strip bob
-	cp -a bob /scratch/neunhoef/mywebpage.pub/for/BOB/bob-linux-32bit
-
-toosx64: bob
-	strip bob
-	scp bob neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/for/BOB/bob-osx-64bit
-
-toosx32: bob
-	strip bob
-	scp bob neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/for/BOB/bob-osx-32bit
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
 
