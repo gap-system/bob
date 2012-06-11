@@ -204,8 +204,6 @@ static int Which_OS_Variant_Test(string &st)
 #endif
 #if SYS_IS_OSX
     if (which("fink",path)) {
-        pos = path.rfind('/');
-        ...
         st = "fink";
         return 0;
     } else if (which("brew",path)) {
