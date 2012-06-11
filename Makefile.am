@@ -129,6 +129,11 @@ libs/include/lzma.h:
 	  ./configure --prefix=$$MYPATH/libs --disable-shared ; make ; \
 	  make install )
 
+sourcearchive:
+	( cd .. ; tar czvf bob.tar.gz bob --exclude .git \
+	  --exclude autom4te.cache --exclude TODO )
+	scp ../bob.tar.gz neunhoef@schur.mcs.st-and.ac.uk:/scratch/neunhoef/mywebpage.pub/Computer/Software/Gap/bob/bob.tar.gz
+
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
