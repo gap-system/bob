@@ -183,7 +183,6 @@ Test Which_Architecture("Which_Architecture",1,Which_Architecture_Test);
 static int Which_OS_Variant_Test(string &st)
 {
     string path;
-    size_t pos;
 #if SYS_IS_LINUX
     if (which("apt-get",path)) {
         st = "apt-get";
@@ -1343,6 +1342,8 @@ int main(int argc, char * const argv[], char *envp[])
         }
     }
 #endif
+    out(OK,"Using CFLAGS=\""+getenvironment("CFLAGS")+"\"");
+    out(OK,"Using LDFLAGS=\""+getenvironment("LDFLAGS")+"\"");
     
     out(OK,"");
     out(OK,"Performing tests...");

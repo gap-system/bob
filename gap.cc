@@ -173,7 +173,7 @@ static void GAP_sortoutenvironment(void)
     setenvironment("COPTS",merkCPPFLAGS + " " + merkCFLAGS);
     setenvironment("LOPTS",merkLDFLAGS);
     out(OK,"Using COPTS=\""+getenvironment("COPTS")+"\"");
-    out(OK,"Using LOPTS=\""+getenvironment("COPTS")+"\"");
+    out(OK,"Using LOPTS=\""+getenvironment("LOPTS")+"\"");
 }
 
 static void GAP_restoreenvironment(void)
@@ -622,6 +622,10 @@ static Status fplsa_patchfunc(string targetdir)
 static Status fplsa_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"fplsa", WARN); }
 Component fplsa("fplsa",deps_onlyGAP,NULL,fplsa_patchfunc,fplsa_buildfunc);
+
+static Status citrus_buildfunc(string targetdir)
+{ return BuildOldGAPPackage(targetdir,"citrus-0.9", WARN); }
+Component citrus("citrus",deps_onlyGAP,NULL,NULL,citrus_buildfunc);
 
 static Status fr_prerequisites(string, Status depsresult)
 {
