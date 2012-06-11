@@ -99,17 +99,17 @@
 > update web page
 > report fr problems
 > report fink 32bit problems
-remove gsl dependency in fr, print warning if released version
+> remove gsl dependency in fr, print warning if released version
 > qaos --> no, no C-part
 > linboxing --> not for the time being.
 > citrus --> done
 > print CFLAGS and LDFLAGS chosen, set CXXFLAGS
-read off fink path from executable
-add fink hints
-add /usr/X11 on OS X to CFLAGS and LDFLAGS and CXXFLAGS
-Look through Max's email
-recompile and publish
 > copyright/GPL
+> Look through Max's email
+> read off fink path from executable
+> add fink hints
+> add /usr/X11 on OS X to CFLAGS and LDFLAGS and CXXFLAGS
+> recompile and publish
 
 
 

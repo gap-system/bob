@@ -561,7 +561,7 @@ static Status BuildOldGAPPackage(string targetdir, string pkgname, Status err)
                          " package's directory.";
             out(err,msg);
             ret = err;
-            break;
+            continue;
         }
         msg = string("Running ./configure ../.. for ")+pkgname+" package...";
         out(OK,msg);
@@ -569,7 +569,7 @@ static Status BuildOldGAPPackage(string targetdir, string pkgname, Status err)
         catch (Status e) {
             out(err,"Error in configure stage.");
             ret = err;
-            break;
+            continue;
         }
         msg = string("Running make for ")+pkgname+" package...";
         out(OK,msg);
@@ -577,7 +577,7 @@ static Status BuildOldGAPPackage(string targetdir, string pkgname, Status err)
         catch (Status e) {
             out(err,"Error in compilation stage.");
             ret = err;
-            break;
+            continue;
         }
     }
     if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
@@ -638,44 +638,6 @@ static Status fr_prerequisites(string, Status depsresult)
 {
     string path;
     if (depsresult != OK) return depsresult;
-    if (Have_C_Header("gsl/gsl_vector.h") != OK) {
-        out(OK,"");
-        out(WARN,"Need gsl library installed for component fr.");
-        out(OK,"");
-        if (Which_Architecture.str == "LINUX" &&
-            Which_OS_Variant.str == "apt-get") {
-          out(ADVICE,"You can install the necessary libraries by doing:");
-          out(ADVICE,"  apt-get install libgsl0-dev");
-          out(ADVICE,"with root privileges (using su or sudo).");
-          out(OK,"");
-        }
-        if (Which_Architecture.str == "LINUX" &&
-            Which_OS_Variant.str == "rpm") {
-          out(ADVICE,"You can install the necessary libraries from"
-                     " the following rpm-packages:");
-          out(ADVICE,"  gsl-devel");
-          out(ADVICE,"Use");
-          out(ADVICE,"  yum install gsl-devel");
-          out(ADVICE,"with root privileges (using su or sudo).");
-          out(OK,"");
-        }
-        if (Which_Architecture.str == "OSX") {
-          if (which("port",path)) {
-            out(ADVICE,"You can install the necessary additional libraries "
-                       "by doing:");
-            out(ADVICE,"  port install gsl");
-            out(ADVICE,"with root privileges (using su or sudo).");
-            out(OK,"");
-          }
-          if (which("brew",path)) {
-            out(ADVICE,"You can install the necessary additional libraries "
-                       "by doing:");
-            out(ADVICE,"  brew install gsl");
-            out(OK,"");
-          }
-        }
-        return WARN;
-    }
     if (!which("wget",path)) {
         out(OK,"");
         out(WARN,"Need wget utility installed for component fr.");
@@ -721,7 +683,21 @@ static Status fr_prerequisites(string, Status depsresult)
     return OK;
 }
 static Status fr_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir,"fr",true,WARN); }
+{ 
+    vector<string> PackageInfo;
+    try { 
+        readlines(targetdir+"gap4r5/pkg/fr/PackageInfo.g",PackageInfo); 
+        if (PackageInfo.size() >= 10 &&
+            PackageInfo[9] == "Version := \"1.2.6.4\",") {
+            out(WARN,"This version 1.2.6.4 of fr has known compilation "
+                     "problems.");
+        }
+    }
+    catch (Status e) { 
+        out(WARN,"Could not read gap4r5/pkg/fr/PackageInfo.g");
+    }
+    return BuildGAPPackage(targetdir,"fr",true,WARN); 
+}
 Component fr("fr",deps_onlyGAP,fr_prerequisites,NULL,fr_buildfunc);
 
 static Status grape_buildfunc(string targetdir)

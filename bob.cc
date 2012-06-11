@@ -1213,6 +1213,9 @@ int main(int argc, char * const argv[], char *envp[])
                   }
               } else {
                   targetdir = optarg;
+                  cwd = realpath(targetdir.c_str(),NULL);
+                  targetdir = cwd;
+                  free(cwd);
                   if (targetdir[targetdir.size()-1] != '/')
                       targetdir.push_back('/');
               }
@@ -1307,45 +1310,63 @@ int main(int argc, char * const argv[], char *envp[])
 #if SYS_IS_OSX
     // For Mac OS X, add things to CFLAGS and LDFLAGS:
     if (osxaddpaths) {
-        if (isdir("/usr/local/include")) {
+        if (isdir("/usr/X11/include")) {
             setenvironment("CFLAGS",getenvironment("CFLAGS") +
-                           " -I/usr/local/include");
-            out(OK,"Adding \"-I/usr/local/include\" to CFLAGS.");
-        }
-        if (isdir("/sw/include")) {
-            setenvironment("CFLAGS",getenvironment("CFLAGS") +
-                           " -I/sw/include");
-            out(OK,"Adding \"-I/sw/include\" to CFLAGS.");
+                           " -I/usr/X11/include");
+            out(OK,"Adding \"-I/usr/X11/include\" to CFLAGS.");
         }
         if (isdir("/opt/local/include")) {
             setenvironment("CFLAGS",getenvironment("CFLAGS") +
                            " -I/opt/local/include");
             out(OK,"Adding \"-I/opt/local/include\" to CFLAGS.");
         }
+        if (isdir("/usr/local/include")) {
+            setenvironment("CFLAGS",getenvironment("CFLAGS") +
+                           " -I/usr/local/include");
+            out(OK,"Adding \"-I/usr/local/include\" to CFLAGS.");
+        }
         if (isdir("/opt/include")) {
             setenvironment("CFLAGS",getenvironment("CFLAGS") +
                            " -I/opt/include");
             out(OK,"Adding \"-I/opt/include\" to CFLAGS.");
         }
-        if (isdir("/usr/local/lib")) {
+        if (isdir("/usr/X11/lib")) {
             setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
-                           " -L/usr/local/lib");
-            out(OK,"Adding \"-L/usr/local/lib\" to LDFLAGS.");
-        }
-        if (isdir("/sw/lib")) {
-            setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
-                           " -L/sw/lib");
-            out(OK,"Adding \"-L/sw/lib\" to LDFLAGS.");
+                           " -I/usr/X11/lib");
+            out(OK,"Adding \"-I/usr/X11/lib\" to LDFLAGS.");
         }
         if (isdir("/opt/local/lib")) {
             setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
                            " -L/opt/local/lib");
             out(OK,"Adding \"-L/opt/local/lib\" to LDFLAGS.");
         }
+        if (isdir("/usr/local/lib")) {
+            setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
+                           " -L/usr/local/lib");
+            out(OK,"Adding \"-L/usr/local/lib\" to LDFLAGS.");
+        }
         if (isdir("/opt/lib")) {
             setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
                            " -L/opt/lib");
             out(OK,"Adding \"-L/opt/lib\" to LDFLAGS.");
+        }
+        string finkpath;
+        if (which("fink",finkpath)) {
+            size_t pos;
+            pos = finkpath.rfind("bin/fink");
+            if (pos != string::npos) {
+                finkpath = finkpath.substr(0,pos);
+                if (isdir(finkpath+"include")) {
+                    setenvironment("CFLAGS",getenvironment("CFLAGS") +
+                                   " -I"+finkpath+"include");
+                    out(OK,"Adding \"-I"+finkpath+"include\" to CFLAGS.");
+                }
+                if (isdir(finkpath+"lib")) {
+                    setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
+                                   " -L"+finkpath+"lib");
+                    out(OK,"Adding \"-L"+finkpath+"lib\" to LDFLAGS.");
+                }
+            }
         }
     }
 #endif
