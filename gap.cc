@@ -239,7 +239,7 @@ static Status GAP_buildfunc(string)
     if (Double_Compile.str == "DoubleCompile") {
         out(OK,"Compiling for both 32-bit and 64-bit...");
         out(OK,"Running ./configure ABI=32 for GAP...");
-        try { sh("./configure ABI=32"); }
+        try { sh("./configure ABI=32"+readlineopt); }
         catch (Status e) {
             out(ERROR,"Error in configure stage.");
             GAP_restoreenvironment();
