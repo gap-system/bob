@@ -5,7 +5,7 @@
 // This file is free software, see license information at the end.
 //
 
-#define BOBVERSION 9
+#define BOBVERSION 10
 
 #include <unistd.h>
 #include <string.h>
