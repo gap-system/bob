@@ -1330,8 +1330,8 @@ int main(int argc, char * const argv[], char *envp[])
         }
         if (isdir("/usr/X11/lib")) {
             setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
-                           " -I/usr/X11/lib");
-            out(OK,"Adding \"-I/usr/X11/lib\" to LDFLAGS.");
+                           " -L/usr/X11/lib");
+            out(OK,"Adding \"-L/usr/X11/lib\" to LDFLAGS.");
         }
         if (isdir("/opt/local/lib")) {
             setenvironment("LDFLAGS",getenvironment("LDFLAGS") +
