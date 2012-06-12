@@ -106,7 +106,7 @@ static Status GAP_prerequisites(string, Status)
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
-            out(ADVICE,"  port install readline");
+            out(ADVICE,"  port install readline +universal");
             out(ADVICE,"with root privileges (using su or sudo).");
             out(OK,"");
           }
@@ -440,7 +440,7 @@ static Status Browse_prerequisites(string, Status depsresult)
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
-            out(ADVICE,"  port install ncurses");
+            out(ADVICE,"  port install ncurses +universal");
             out(ADVICE,"with root privileges (using su or sudo).");
             out(OK,"");
           }
