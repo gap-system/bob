@@ -112,7 +112,7 @@
 > recompile and publish
 > +universal for MacPorts.
 > fink hints
-add --with-readline=finkpath if readline found there
+> add --with-readline=finkpath if readline found there
 
 
 
