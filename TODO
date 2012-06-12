@@ -110,9 +110,9 @@
 > add fink hints
 > add /usr/X11 on OS X to CFLAGS and LDFLAGS and CXXFLAGS
 > recompile and publish
+> +universal for MacPorts.
 fink hints
 add --with-readline=finkpath if readline found there
-+universal for MacPorts.
 
 
 

@@ -238,7 +238,7 @@ static Status GAP_buildfunc(string)
     }
     if (Double_Compile.str == "DoubleCompile") {
         out(OK,"Compiling for both 32-bit and 64-bit...");
-        out(OK,"Running ./configure ABI=32 for GAP...");
+        out(OK,"Running ./configure ABI=32"+readlineopt+" for GAP...");
         try { sh("./configure ABI=32"+readlineopt); }
         catch (Status e) {
             out(ERROR,"Error in configure stage.");
@@ -254,7 +254,7 @@ static Status GAP_buildfunc(string)
         }
         confignames.push_back("default32");
     }
-    out(OK,"Running ./configure for GAP...");
+    out(OK,"Running ./configure"+readlineopt+" for GAP...");
     try { sh("./configure"+readlineopt); }
     catch (Status e) {
         out(ERROR,"Error in configure stage.");
