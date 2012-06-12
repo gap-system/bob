@@ -1105,6 +1105,8 @@ void listdir(string dirname, vector<string> &names)
     (void) closedir (dp);
 }
     
+string finkpath;
+
 }   // namespace BOB
 
 using namespace BOB;
@@ -1348,7 +1350,6 @@ int main(int argc, char * const argv[], char *envp[])
                            " -L/opt/lib");
             out(OK,"Adding \"-L/opt/lib\" to LDFLAGS.");
         }
-        string finkpath;
         if (which("fink",finkpath)) {
             size_t pos;
             pos = finkpath.rfind("bin/fink");
@@ -1364,7 +1365,7 @@ int main(int argc, char * const argv[], char *envp[])
                                    " -L"+finkpath+"lib");
                     out(OK,"Adding \"-L"+finkpath+"lib\" to LDFLAGS.");
                 }
-            }
+            } else finkpath.clear();
         }
     }
 #endif

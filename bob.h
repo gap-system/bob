@@ -157,6 +157,8 @@ void edit(string edscriptpath);
 void listdir(string dirname, vector<string> &names);
 // Throws ERROR if anything goes wrong.
 
+extern string finkpath;
+
 }  // namespace BOB
 
 //

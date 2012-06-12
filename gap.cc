@@ -106,14 +106,19 @@ static Status GAP_prerequisites(string, Status)
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
-            out(ADVICE,"  port install readline +universal");
-            out(ADVICE,"with root privileges (using su or sudo).");
+            out(ADVICE,"  sudo port install readline +universal");
             out(OK,"");
           }
           if (which("brew",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
             out(ADVICE,"  brew install readline");
+            out(OK,"");
+          }
+          if (which("fink",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  fink install readline5");
             out(OK,"");
           }
         }
@@ -234,6 +239,10 @@ static Status GAP_buildfunc(string)
             // homebrew currently has it here.
             readlineopt = " --with-readline=/usr/local/Cellar/readline/6.2.2";
             // FIXME: Read off version number here
+        } else if (finkpath != "" && 
+                   exists(finkpath+"include/readline/readline.h") &&
+                   exists(finkpath+"lib/libreadline.dylib")) {
+            readlineopt = " --with-readline="+finkpath;
         }
     }
     if (Double_Compile.str == "DoubleCompile") {
@@ -440,12 +449,17 @@ static Status Browse_prerequisites(string, Status depsresult)
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
-            out(ADVICE,"  port install ncurses +universal");
-            out(ADVICE,"with root privileges (using su or sudo).");
+            out(ADVICE,"  sudo port install ncurses +universal");
             out(OK,"");
           }
           if (which("brew",path)) {
             out(ADVICE,"Currently you cannot install ncurses via homebrew.");
+            out(OK,"");
+          }
+          if (which("fink",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  fink install libncurses5");
             out(OK,"");
           }
         }
@@ -494,14 +508,19 @@ static Status nq_prerequisites(string, Status depsresult)
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
-            out(ADVICE,"  port install gawk");
-            out(ADVICE,"with root privileges (using su or sudo).");
+            out(ADVICE,"  sudo port install gawk");
             out(OK,"");
           }
           if (which("brew",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
                        "by doing:");
             out(ADVICE,"  brew install gawk");
+            out(OK,"");
+          }
+          if (which("fink",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  fink install gawk");
             out(OK,"");
           }
         }
@@ -651,7 +670,7 @@ static Status fr_prerequisites(string, Status depsresult)
         }
         if (Which_Architecture.str == "LINUX" &&
             Which_OS_Variant.str == "rpm") {
-          out(ADVICE,"You can install the necessary libraries from"
+          out(ADVICE,"You can install the necessary tools from"
                      " the following rpm-packages:");
           out(ADVICE,"  wget");
           out(ADVICE,"Use");
@@ -662,16 +681,21 @@ static Status fr_prerequisites(string, Status depsresult)
         if (Which_Architecture.str == "OSX") {
           out(OK,"");
           if (which("port",path)) {
-            out(ADVICE,"You can install the necessary additional libraries "
+            out(ADVICE,"You can install the necessary additional tools "
                        "by doing:");
-            out(ADVICE,"  port install wget");
-            out(ADVICE,"with root privileges (using su or sudo).");
+            out(ADVICE,"  sudo port install wget");
             out(OK,"");
           }
           if (which("brew",path)) {
-            out(ADVICE,"You can install the necessary additional libraries "
+            out(ADVICE,"You can install the necessary additional tools "
                        "by doing:");
             out(ADVICE,"  brew install wget");
+            out(OK,"");
+          }
+          if (which("fink",path)) {
+            out(ADVICE,"You can install the necessary additional tools "
+                       "by doing:");
+            out(ADVICE,"  fink install wget");
             out(OK,"");
           }
         }
@@ -944,6 +968,12 @@ static Status xgap_prerequisites(string, Status)
           }
           if (which("brew",path)) {
             out(ADVICE,"You can currently not install X11 using homebrew.");
+            out(OK,"");
+          }
+          if (which("fink",path)) {
+            out(ADVICE,"You can install the necessary additional libraries "
+                       "by doing:");
+            out(ADVICE,"  fink install x11-dev");
             out(OK,"");
           }
         }
