@@ -100,8 +100,11 @@ static Status GAP_prerequisites(string, Status)
         }
         if (Which_Architecture.str == "OSX") {
           out(OK,"");
-          out(ADVICE,"First you need to install XCode with \"gcc\" \"make\""
-                     " and \"m4\".");
+          out(ADVICE,"First you need to install the Apple Developer Tools "
+                     "(aka XCode)");
+          out(ADVICE,"with \"gcc\" \"make\" and \"m4\".");
+          out(ADVICE,"See https://developer.apple.com/technologies/tools/");
+          out(ADVICE,"and http://www.gap-system.org/Download/tools.html");
           out(OK,"");
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "
@@ -204,8 +207,19 @@ static Status GAP_buildfunc(string)
         if (interactive) {
             string answer;
             cout << "\nATTENTION!\n\n"
-                 << "There seems to be an old installation of GAP 4.5 in the "
-                 << "gap4r5 directory.\n\nRemove old installation?\n\n"
+                 << "There seems to be a previous installation of GAP 4.5 in "
+                 << "the gap4r5 directory.\n\n";
+            fstream stamp("gap4r5/BOBusedArchive",fstream::in);
+            if (!stamp.fail()) {
+                string stamparchive;
+                getline(stamp,stamparchive);
+                stamp.close();
+                if (stamparchive == GAP_archivename) {
+                    cout << "Note that the previous installation was done "
+                            "from the same archive as this one!\n\n";
+                }
+            }
+            cout << "Remove old installation?\n\n"
                  << "Answer \"yes\" to proceed or anything else to abort --> ";
             cin >> answer;
             if (answer != "yes") {
@@ -224,6 +238,13 @@ static Status GAP_buildfunc(string)
         return ERROR;
     }
     try { cd("gap4r5"); } catch (Status e) { return ERROR; }
+    fstream stamp("BOBusedArchive",fstream::out | fstream::trunc);
+    if (stamp.fail()) {
+        out(WARN,"Could not create file BOBusedArchive.");
+    } else {
+        stamp << GAP_archivename << endl;
+        stamp.close();
+    }
     // Clean up environment due to GAP's funny behaviour:
     GAP_sortoutenvironment();
     string readlineopt = "";
@@ -294,10 +315,12 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
                               bool withabi32 = false)
 {
     string msg;
-    string pkgdir = string("gap4r5/pkg/")+pkgname;
+    string pkgdir;
     string cmd;
     Status res = OK;
-    try { cd(pkgdir); } catch (Status e) { return err; }
+    try { cd("gap4r5/pkg"); } catch (Status e) { return err; }
+
+    try { cdprefix(pkgname,pkgdir); } catch (Status e) { return err; }
     if (Double_Compile.str == "DoubleCompile") {
         cmd = string("./configure CONFIGNAME=default32");
         if (withm32) cmd += " CFLAGS=-m32";
@@ -529,7 +552,7 @@ static Status nq_prerequisites(string, Status depsresult)
 }
 
 static Status nq_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "nq-2.4", true, WARN, true, true); }
+{ return BuildGAPPackage(targetdir, "nq", true, WARN, true, true); }
 Component nq("nq",deps_onlyGAP,nq_prerequisites,NULL,nq_buildfunc);
 
 
@@ -568,20 +591,17 @@ static Status switch_sysinfo_link(string targetdir, int towhat)
 
 static Status BuildOldGAPPackage(string targetdir, string pkgname, Status err)
 {
+    string dirfound;
     string msg;
     int i;
     Status ret = OK;
     for (i = 0;i <= Double_Compile.num;i++) {
         if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
-        string pkgdir = string("gap4r5/pkg/")+pkgname;
+        string pkgdir = string("gap4r5/pkg");
         string cmd;
-        if (chdir(pkgdir.c_str())) {
-            msg = string("Cannot change to the ")+pkgname+
-                         " package's directory.";
-            out(err,msg);
-            ret = err;
-            continue;
-        }
+        try { cd("gap4r5/pkg"); } catch (Status e) { ret = err; continue; }
+        try { cdprefix(pkgname,dirfound); } 
+        catch (Status e) { ret = err; continue; }
         msg = string("Running ./configure ../.. for ")+pkgname+" package...";
         out(OK,msg);
         try { sh("./configure ../.."); }
@@ -650,7 +670,7 @@ static Status fplsa_buildfunc(string targetdir)
 Component fplsa("fplsa",deps_onlyGAP,NULL,fplsa_patchfunc,fplsa_buildfunc);
 
 static Status citrus_buildfunc(string targetdir)
-{ return BuildOldGAPPackage(targetdir,"citrus-0.9", WARN); }
+{ return BuildOldGAPPackage(targetdir,"citrus", WARN); }
 Component citrus("citrus",deps_onlyGAP,NULL,NULL,citrus_buildfunc);
 
 static Status fr_prerequisites(string, Status depsresult)
@@ -735,20 +755,17 @@ Component Gauss("Gauss",deps_onlyGAP,NULL,NULL,Gauss_buildfunc);
 static Status guava_buildfunc(string targetdir)
 { 
     string msg;
-    string pkgname = "guava-3.12";
+    string pkgname = "guava";
+    string dirfound;
     int i;
     Status ret = OK;
     for (i = 0;i <= Double_Compile.num;i++) {
         if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
-        string pkgdir = string("gap4r5/pkg/")+pkgname;
+        string pkgdir = string("gap4r5/pkg/");
         string cmd;
-        if (chdir(pkgdir.c_str())) {
-            msg = string("Cannot change to the ")+pkgname+
-                         " package's directory.";
-            out(WARN,msg);
-            ret = WARN;
-            break;
-        }
+        try { cd("gap4r5/pkg"); } catch (Status e) { ret = WARN; continue; }
+        try { cdprefix(pkgname,dirfound); } 
+        catch (Status e) { ret = WARN; continue; }
         mkdir("bin",0755);  // intentionally ignore errors here
         msg = string("Running ./configure ../.. for ")+pkgname+" package...";
         out(OK,msg);

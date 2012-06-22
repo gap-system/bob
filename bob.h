@@ -5,7 +5,7 @@
 // This file is free software, see license information at the end.
 //
 
-#define BOBVERSION 10
+#define BOBVERSION 11
 
 #include <unistd.h>
 #include <string.h>
@@ -144,6 +144,12 @@ Status cp(string from, string to);
 
 void cd(string dir);
 // Throws an exception of type Status in case of an error
+
+void cdprefix(string dir, string &dirfound);
+// dir is a prefix of a directory name in the current directory
+// If this uniquely determines the directory, the current directory
+// is changed and dir is changed accordingly. Otherwise an ERROR 
+// exception is thrown.
 
 void readlines(string filename, vector<string> &v);
 // Throws ERROR if anything goes wrong.
