@@ -5,7 +5,7 @@
 // This file is free software, see license information at the end.
 //
 
-#define BOBVERSION 11
+#define BOBVERSION 12
 
 #include <unistd.h>
 #include <string.h>
@@ -147,9 +147,9 @@ void cd(string dir);
 
 void cdprefix(string dir, string &dirfound);
 // dir is a prefix of a directory name in the current directory
-// If this uniquely determines the directory, the current directory
-// is changed and dir is changed accordingly. Otherwise an ERROR 
-// exception is thrown.
+// If this uniquely determines the directory or there is a perfect 
+// match, the current directory is changed and dirfound is changed
+// accordingly. Otherwise an ERROR exception is thrown.
 
 void readlines(string filename, vector<string> &v);
 // Throws ERROR if anything goes wrong.

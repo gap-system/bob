@@ -1014,9 +1014,9 @@ void cd(string dir)
 
 void cdprefix(string dir, string &dirfound)
 // dir is a prefix of a directory name in the current directory
-// If this uniquely determines the directory, the current directory
-// is changed and dir is changed accordingly. Otherwise an ERROR 
-// exception is thrown.
+// If this uniquely determines the directory or there is a perfect 
+// match, the current directory is changed and dirfound is changed
+// accordingly. Otherwise an ERROR exception is thrown.
 {
     vector<string> filenames;
     size_t i,j;
@@ -1035,10 +1035,12 @@ void cdprefix(string dir, string &dirfound)
         out(ERROR,"Directory name prefix "+dir+" not found!");
         throw ERROR;
     }
-    for (j = i+1;j < filenames.size();j++) {
-        if (filenames[j].compare(0,len,dir) == 0) {
-            out(ERROR,"Directory name prefix "+dir+" is not unique!");
-            throw ERROR;
+    if (filenames[i] != dir) {
+        for (j = i+1;j < filenames.size();j++) {
+            if (filenames[j].compare(0,len,dir) == 0) {
+                out(ERROR,"Directory name prefix "+dir+" is not unique!");
+                throw ERROR;
+            }
         }
     }
     dirfound = filenames[i];
