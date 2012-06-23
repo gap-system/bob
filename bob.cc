@@ -1029,13 +1029,16 @@ void cdprefix(string dir, string &dirfound)
 
     listdir(".",filenames);
     len = dir.size();
+    // First look for a perfect match:
     for (i = 0;i < filenames.size();i++)
-        if (filenames[i].compare(0,len,dir) == 0) break;
+        if (filenames[i] == dir) break;
     if (i == filenames.size()) {
-        out(ERROR,"Directory name prefix "+dir+" not found!");
-        throw ERROR;
-    }
-    if (filenames[i] != dir) {
+        for (i = 0;i < filenames.size();i++)
+            if (filenames[i].compare(0,len,dir) == 0) break;
+        if (i == filenames.size()) {
+            out(ERROR,"Directory name prefix "+dir+" not found!");
+            throw ERROR;
+        }
         for (j = i+1;j < filenames.size();j++) {
             if (filenames[j].compare(0,len,dir) == 0) {
                 out(ERROR,"Directory name prefix "+dir+" is not unique!");
