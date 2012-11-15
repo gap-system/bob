@@ -113,8 +113,13 @@
 > +universal for MacPorts.
 > fink hints
 > add --with-readline=finkpath if readline found there
+> Deal with packages changing their names with the version
+> Improve XCode hint and web page
+> Put timestamp into installation
+> Before removing gap4r5, check timestamp and report accordingly
+> Bump version number
+> Report fr problem
 If LANG is not set, set it to "C"
-
 
 Future:
 

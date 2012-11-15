@@ -974,6 +974,10 @@ Status cp(string from, string to)
     char buf[1024];
     size_t len;
 
+    fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
+    logfile << "COMMAND:cp " << from << " " << to << endl;
+    if (verbose >= 4) cout << "COMMAND:cd " << from << " " << to << endl;
+
     fin.exceptions(ifstream::badbit);
     fout.exceptions(ofstream::badbit);
     try {
@@ -998,6 +1002,7 @@ void cd(string dir)
 {
     fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
     logfile << "COMMAND:cd " << dir << endl;
+    if (verbose >= 4) cout << "COMMAND:cd " << dir << endl;
     if (chdir(dir.c_str()) != 0) {
         out(ERROR,"Could not change to directory "+dir);
         logfile << "ERROR: Could not change to directory "+dir << endl;
@@ -1006,6 +1011,45 @@ void cd(string dir)
     }
     logfile.close();
 }
+
+void cdprefix(string dir, string &dirfound)
+// dir is a prefix of a directory name in the current directory
+// If this uniquely determines the directory or there is a perfect 
+// match, the current directory is changed and dirfound is changed
+// accordingly. Otherwise an ERROR exception is thrown.
+{
+    vector<string> filenames;
+    size_t i,j;
+    size_t len;
+
+    fstream logfile(buildlogfilename.c_str(),fstream::out | fstream::app);
+    logfile << "COMMAND:cdprefix " << dir << endl;
+    logfile.close();
+    if (verbose >= 4) cout << "COMMAND:cdprefix " << dir << endl;
+
+    listdir(".",filenames);
+    len = dir.size();
+    // First look for a perfect match:
+    for (i = 0;i < filenames.size();i++)
+        if (filenames[i] == dir) break;
+    if (i == filenames.size()) {
+        for (i = 0;i < filenames.size();i++)
+            if (filenames[i].compare(0,len,dir) == 0) break;
+        if (i == filenames.size()) {
+            out(ERROR,"Directory name prefix "+dir+" not found!");
+            throw ERROR;
+        }
+        for (j = i+1;j < filenames.size();j++) {
+            if (filenames[j].compare(0,len,dir) == 0) {
+                out(ERROR,"Directory name prefix "+dir+" is not unique!");
+                throw ERROR;
+            }
+        }
+    }
+    dirfound = filenames[i];
+    cd(dirfound);
+}
+
 
 bool interactive = true;
 bool osxaddpaths = true;
