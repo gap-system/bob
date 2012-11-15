@@ -113,7 +113,7 @@
 > +universal for MacPorts.
 > fink hints
 > add --with-readline=finkpath if readline found there
-
+If LANG is not set, set it to "C"
 
 
 Future:
