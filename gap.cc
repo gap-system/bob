@@ -1104,12 +1104,66 @@ static Status anupq_buildfunc(string targetdir)
 }
 Component anupq("anupq",deps_onlyGAP,anupq_prerequisites,NULL,anupq_buildfunc);
 
+static Status float_prerequisites(string, Status depsresult)
+{
+    string path;
+    if (depsresult != OK) return depsresult;
+    if (!which("wget",path)) {
+        out(OK,"");
+        out(WARN,"Need wget utility installed for component fr.");
+        out(OK,"");
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "apt-get") {
+          out(ADVICE,"You can install the necessary tool by doing:");
+          out(ADVICE,"  apt-get install wget");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "LINUX" &&
+            Which_OS_Variant.str == "rpm") {
+          out(ADVICE,"You can install the necessary tools from"
+                     " the following rpm-packages:");
+          out(ADVICE,"  wget");
+          out(ADVICE,"Use");
+          out(ADVICE,"  yum install wget");
+          out(ADVICE,"with root privileges (using su or sudo).");
+          out(OK,"");
+        }
+        if (Which_Architecture.str == "OSX") {
+          out(OK,"");
+          if (which("port",path)) {
+            out(ADVICE,"You can install the necessary additional tools "
+                       "by doing:");
+            out(ADVICE,"  sudo port install wget");
+            out(OK,"");
+          }
+          if (which("brew",path)) {
+            out(ADVICE,"You can install the necessary additional tools "
+                       "by doing:");
+            out(ADVICE,"  brew install wget");
+            out(OK,"");
+          }
+          if (which("fink",path)) {
+            out(ADVICE,"You can install the necessary additional tools "
+                       "by doing:");
+            out(ADVICE,"  fink install wget");
+            out(OK,"");
+          }
+        }
+    }
+    return OK;
+}
+static Status float_buildfunc(string targetdir)
+{ return BuildGAPPackage(targetdir, "float", true, ERROR); }
+Component floatpkg("float",deps_onlyGAP,float_prerequisites,
+                   NULL,float_buildfunc);
+
 // Finishing off the installation:
 
 const char *AllPkgs[] =
   { " io", " orb", " edim", " example", " Browse", " cvec", " ace", " atlasrep",
     " cohomolo", " fplsa", " fr", " grape", " guava", " kbmag", " carat", 
-    " xgap", " Gauss", " anupq", NULL };
+    " xgap", " Gauss", " anupq", " float", NULL };
 
 static Status GAP_cp_scripts_func(string targetdir)
 {
@@ -1186,8 +1240,8 @@ static Status GAP_workspace_func(string targetdir)
         fputs(cmd.c_str(),stdin);
         fputs("quit;\n",stdin);
         fclose(stdin);
-        int status,res;
-        res = waitpid(pid,&status,0);
+        int status;
+        waitpid(pid,&status,0);
         if (WEXITSTATUS(status) != 0) {
             out(ERROR,"Creation of workspace did not work.");
             ret = WARN;
