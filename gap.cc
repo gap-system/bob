@@ -1106,6 +1106,8 @@ static Status anupq_buildfunc(string targetdir)
 }
 Component anupq("anupq",deps_onlyGAP,anupq_prerequisites,NULL,anupq_buildfunc);
 
+// float disabled since 32bit/64bit compile does not work at all.
+#if 0
 static Status float_prerequisites(string, Status depsresult)
 {
     string path;
@@ -1159,13 +1161,14 @@ static Status float_buildfunc(string targetdir)
 { return BuildGAPPackage(targetdir, "float", true, ERROR); }
 Component floatpkg("float",deps_onlyGAP,float_prerequisites,
                    NULL,float_buildfunc);
+#endif 
 
 // Finishing off the installation:
 
 const char *AllPkgs[] =
   { " io", " orb", " edim", " example", " Browse", " cvec", " ace", " atlasrep",
     " cohomolo", " fplsa", " grape", " guava", " kbmag", " carat", 
-    " xgap", " Gauss", " anupq", " float", NULL };
+    " xgap", " Gauss", " anupq", NULL };
 
 static Status GAP_cp_scripts_func(string targetdir)
 {
