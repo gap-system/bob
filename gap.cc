@@ -673,6 +673,7 @@ static Status citrus_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"citrus", WARN); }
 Component citrus("citrus",deps_onlyGAP,NULL,NULL,citrus_buildfunc);
 
+#if 0
 static Status fr_prerequisites(string, Status depsresult)
 {
     string path;
@@ -743,6 +744,7 @@ static Status fr_buildfunc(string targetdir)
     return BuildGAPPackage(targetdir,"fr",true,WARN); 
 }
 Component fr("fr",deps_onlyGAP,fr_prerequisites,NULL,fr_buildfunc);
+#endif
 
 static Status grape_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"grape", WARN); }
@@ -1162,7 +1164,7 @@ Component floatpkg("float",deps_onlyGAP,float_prerequisites,
 
 const char *AllPkgs[] =
   { " io", " orb", " edim", " example", " Browse", " cvec", " ace", " atlasrep",
-    " cohomolo", " fplsa", " fr", " grape", " guava", " kbmag", " carat", 
+    " cohomolo", " fplsa", " grape", " guava", " kbmag", " carat", 
     " xgap", " Gauss", " anupq", " float", NULL };
 
 static Status GAP_cp_scripts_func(string targetdir)
