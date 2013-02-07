@@ -56,6 +56,12 @@ static Status GAP_prerequisites(string, Status)
         out(WARN,"GAP will be compiled without readline support.");
         hint = true;
     }
+    if (Which_Architecture.str == "OSX" &&
+        (!which("/usr/bin/gcc",path) || 
+         !which("/usr/bin/xcodebuild",path))) {
+        out(WARN,"It seems that you do not have the XCode command line tools.");
+        hint = true;
+    }
     if (Double_Compile.str == "DoubleCompile") {
         if (Have_C_Library("-lreadline -lncurses",true) != OK) {
             out(OK,"");
@@ -105,6 +111,10 @@ static Status GAP_prerequisites(string, Status)
           out(ADVICE,"with \"gcc\" \"make\" and \"m4\".");
           out(ADVICE,"See https://developer.apple.com/technologies/tools/");
           out(ADVICE,"and http://www.gap-system.org/Download/tools.html");
+          out(ADVICE,"Launch Xcode, then open its Preferences dialog, and go");
+          out(ADVICE,"to the \"Downloads\" pane. You will be presented with");
+          out(ADVICE,"an optional list of extra components. From there,");
+          out(ADVICE,"install the \"Command Line tools\" component.");
           out(OK,"");
           if (which("port",path)) {
             out(ADVICE,"You can install the necessary additional libraries "

@@ -119,8 +119,10 @@
 > Before removing gap4r5, check timestamp and report accordingly
 > Bump version number
 > Report fr problem
-Add test for command line tools, add documentation
-If LANG is not set, set it to "C"
+> Add float compilation
+> Report float 32bit on 64bit failure
+> Add test for command line tools, add documentation
+> If LANG is not set, set it to "C"
 
 Future:
 
