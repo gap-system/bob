@@ -601,13 +601,15 @@ static Status switch_sysinfo_link(string targetdir, int towhat)
     return OK;
 }
 
-static Status BuildOldGAPPackage(string targetdir, string pkgname, Status err)
+static Status BuildOldGAPPackage(string targetdir, string pkgname, Status err,
+                                 bool only64=false)
 {
     string dirfound;
     string msg;
     int i;
     Status ret = OK;
     for (i = 0;i <= Double_Compile.num;i++) {
+        if (i < Double_Compile.num && only64) continue;
         if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
         string pkgdir = string("gap4r6/pkg");
         string cmd;
@@ -1187,20 +1189,18 @@ static Status polymakeinterface_prerequisites(string, Status depsresult)
         out(OK,"");
         out(ADVICE,"You need to download and install polymake from");
         out(ADVICE,"  http://polymake.org/doku.php/download/start");
-        out(OK,"");
     }
     if (Double_Compile.str == "DoubleCompile") {
         out(OK,"");
         out(ADVICE,"Note that polymake does not provide 32bit libraries.");
         out(ADVICE,"therefore only your 64bit GAP will have access to it.");
-        out(OK,"");
     }
     return ret;
 }
 static Status polymakeinterface_buildfunc(string targetdir)
 {   
     chmod( "gap4r6/pkg/PolymakeInterface/configure", 0755 );
-    return BuildOldGAPPackage(targetdir,"PolymakeInterface", WARN); 
+    return BuildOldGAPPackage(targetdir,"PolymakeInterface", WARN, true); 
 }
 Component PolymakeInterface("PolymakeInterface",deps_onlyGAP,
                             polymakeinterface_prerequisites,NULL,

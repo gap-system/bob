@@ -124,6 +124,7 @@
 > Add test for command line tools, add documentation
 > If LANG is not set, set it to "C"
 > Add support for PolymakeInterface
+> Only compile polymakeinterface for 64bit on 64bit
 
 Future:
 
