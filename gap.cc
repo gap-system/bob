@@ -1172,9 +1172,36 @@ static Status float_buildfunc(string targetdir)
 Component floatpkg("float",deps_onlyGAP,float_prerequisites,
                    NULL,float_buildfunc);
 
+static Status polymakeinterface_prerequisites(string, Status depsresult)
+{
+    string path;
+    Status ret;
+    if (depsresult != OK) return depsresult;
+    ret = OK;
+    if (!(which("polymake-config",path))) {
+        out(OK,"");
+        out(WARN,"Need polymake installed for PolymakeInterface-Pkg.");
+        ret = WARN;
+    }
+    if (ret != OK) {
+        out(OK,"");
+        out(ADVICE,"You need to download and install polymake from");
+        out(ADVICE,"  http://polymake.org/doku.php/download/start");
+        if (Double_Compile.str == "DoubleCompile") {
+            out(ADVICE,"Note that polymake does not provide 32bit libraries.");
+            out(ADVICE,"therefore only your 64bit GAP will have access to it.");
+        }
+        out(OK,"");
+    }
+    return ret;
+}
 static Status polymakeinterface_buildfunc(string targetdir)
-{ return BuildOldGAPPackage(targetdir,"PolymakeInterface", WARN); }
-Component polymakeinterface("polymakeinterface",deps_onlyGAP,NULL,NULL,
+{   
+    chmod( "gap4r6/pkg/PolymakeInterface/configure", 755 );
+    return BuildOldGAPPackage(targetdir,"PolymakeInterface", WARN); 
+}
+Component PolymakeInterface("PolymakeInterface",deps_onlyGAP,
+                            polymakeinterface_prerequisites,NULL,
                             polymakeinterface_buildfunc);
 
 // Finishing off the installation:
