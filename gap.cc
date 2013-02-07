@@ -1187,17 +1187,19 @@ static Status polymakeinterface_prerequisites(string, Status depsresult)
         out(OK,"");
         out(ADVICE,"You need to download and install polymake from");
         out(ADVICE,"  http://polymake.org/doku.php/download/start");
-        if (Double_Compile.str == "DoubleCompile") {
-            out(ADVICE,"Note that polymake does not provide 32bit libraries.");
-            out(ADVICE,"therefore only your 64bit GAP will have access to it.");
-        }
+        out(OK,"");
+    }
+    if (Double_Compile.str == "DoubleCompile") {
+        out(OK,"");
+        out(ADVICE,"Note that polymake does not provide 32bit libraries.");
+        out(ADVICE,"therefore only your 64bit GAP will have access to it.");
         out(OK,"");
     }
     return ret;
 }
 static Status polymakeinterface_buildfunc(string targetdir)
 {   
-    chmod( "gap4r6/pkg/PolymakeInterface/configure", 755 );
+    chmod( "gap4r6/pkg/PolymakeInterface/configure", 0755 );
     return BuildOldGAPPackage(targetdir,"PolymakeInterface", WARN); 
 }
 Component PolymakeInterface("PolymakeInterface",deps_onlyGAP,
