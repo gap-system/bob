@@ -312,7 +312,7 @@ Component GAP("GAP",GAP_dependencies,GAP_prerequisites,
 
 static Status BuildGAPPackage(string, string pkgname, bool withm32,
                               Status err, bool withmakeclean = false,
-                              bool withabi32 = false)
+                              bool withabi32 = false, bool only64 = false)
 {
     string msg;
     string pkgdir;
@@ -322,32 +322,34 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
 
     try { cdprefix(pkgname,pkgdir); } catch (Status e) { return err; }
     if (Double_Compile.str == "DoubleCompile") {
-        cmd = string("./configure CONFIGNAME=default32");
-        if (withm32) cmd += " CFLAGS=-m32";
-        if (withabi32) cmd += " ABI=32";
-        msg = string("Running "+cmd+" for ")+pkgname+" package...";
-        out(OK,msg);
-        try { sh(cmd); }
-        catch (Status e) {
-            out(err,"Error in configure stage.");
-            res = err;
-            goto dosixtyfour;
-        }
-        msg = string("Running make for ")+pkgname+" package...";
-        out(OK,msg);
-        try { sh("make"); }
-        catch (Status e) {
-            out(err,"Error in compilation stage.");
-            res = err;
-            goto dosixtyfour;
-        }
-        if (withmakeclean) {
-            msg = string("Running make clean for ")+pkgname+" package...";
+        if (!only64) {
+            cmd = string("./configure CONFIGNAME=default32");
+            if (withm32) cmd += " CFLAGS=-m32";
+            if (withabi32) cmd += " ABI=32";
+            msg = string("Running "+cmd+" for ")+pkgname+" package...";
             out(OK,msg);
-            try { sh("make clean"); }
+            try { sh(cmd); }
             catch (Status e) {
-                out(err,"Error in make clean stage.");
+                out(err,"Error in configure stage.");
                 res = err;
+                goto dosixtyfour;
+            }
+            msg = string("Running make for ")+pkgname+" package...";
+            out(OK,msg);
+            try { sh("make"); }
+            catch (Status e) {
+                out(err,"Error in compilation stage.");
+                res = err;
+                goto dosixtyfour;
+            }
+            if (withmakeclean) {
+                msg = string("Running make clean for ")+pkgname+" package...";
+                out(OK,msg);
+                try { sh("make clean"); }
+                catch (Status e) {
+                    out(err,"Error in make clean stage.");
+                    res = err;
+                }
             }
         }
       dosixtyfour:
@@ -1106,8 +1108,6 @@ static Status anupq_buildfunc(string targetdir)
 }
 Component anupq("anupq",deps_onlyGAP,anupq_prerequisites,NULL,anupq_buildfunc);
 
-// float disabled since 32bit/64bit compile does not work at all.
-#if 0
 static Status float_prerequisites(string, Status depsresult)
 {
     string path;
@@ -1158,10 +1158,9 @@ static Status float_prerequisites(string, Status depsresult)
     return OK;
 }
 static Status float_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "float", true, ERROR); }
+{ return BuildGAPPackage(targetdir, "float", true, ERROR, false, false, true); }
 Component floatpkg("float",deps_onlyGAP,float_prerequisites,
                    NULL,float_buildfunc);
-#endif 
 
 // Finishing off the installation:
 
