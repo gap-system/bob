@@ -125,6 +125,8 @@
 > If LANG is not set, set it to "C"
 > Add support for PolymakeInterface
 > Only compile polymakeinterface for 64bit on 64bit
+Under sudo carat cannot create link?
+Add line end in warning about polymakeinterface
 
 Future:
 
