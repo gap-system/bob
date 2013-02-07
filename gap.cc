@@ -1168,7 +1168,7 @@ static Status float_prerequisites(string, Status depsresult)
     return OK;
 }
 static Status float_buildfunc(string targetdir)
-{ return BuildGAPPackage(targetdir, "float", true, ERROR, false, false, true); }
+{ return BuildGAPPackage(targetdir, "float", true, WARN, false, false, true); }
 Component floatpkg("float",deps_onlyGAP,float_prerequisites,
                    NULL,float_buildfunc);
 
