@@ -1172,6 +1172,11 @@ static Status float_buildfunc(string targetdir)
 Component floatpkg("float",deps_onlyGAP,float_prerequisites,
                    NULL,float_buildfunc);
 
+static Status polymakeinterface_buildfunc(string targetdir)
+{ return BuildOldGAPPackage(targetdir,"PolymakeInterface", WARN); }
+Component polymakeinterface("polymakeinterface",deps_onlyGAP,NULL,NULL,
+                            polymakeinterface_buildfunc);
+
 // Finishing off the installation:
 
 const char *AllPkgs[] =
