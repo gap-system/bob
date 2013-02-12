@@ -462,16 +462,23 @@ bool which(string name, string &res)
         string path = getenvironment("PATH");
         pos = path.find(':');
         posold = 0;
-        while (pos != string::npos) {
-            absname = path.substr(posold,pos-posold);
+        while (posold != string::npos) {
+            if (pos == string::npos) 
+                absname = path.substr(posold);
+            else
+                absname = path.substr(posold,pos-posold);
             if (absname[absname.size()-1] != '/') absname.push_back('/');
             absname += name;
             if (access(absname.c_str(),X_OK) == 0) {
                 res = absname;
                 return true;
             }
-            posold = pos+1;
-            pos = path.find(':',pos+1);
+            if (pos == string::npos) 
+                posold = string::npos;
+            else {
+                posold = pos+1;
+                pos = path.find(':',pos+1);
+            }
         }
         res = "";
         return false;
