@@ -1,43 +1,40 @@
 <!DOCTYPE html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Bob : BOB - an automatic installation/compilation tool for GAP and its packages" />
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 
-    <title>Bob</title>
+    <title>Bob by neunhoef</title>
   </head>
 
   <body>
+    <header>
+      <div class="inner">
+        <h1>Bob</h1>
+        <h2>BOB - an automatic installation/compilation tool for GAP and its packages</h2>
+        <a href="https://github.com/neunhoef/bob" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/neunhoef/bob">View on GitHub</a>
-
-          <h1 id="project_title">Bob</h1>
-          <h2 id="project_tagline">BOB - an automatic installation/compilation tool for GAP and its packages</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/neunhoef/bob/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/neunhoef/bob/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
 <a name="gap-source-installer-bob" class="anchor" href="#gap-source-installer-bob"><span class="octicon octicon-link"></span></a>GAP source installer BOB</h1>
 
 <h2>
 <a name="what-is-bob" class="anchor" href="#what-is-bob"><span class="octicon octicon-link"></span></a>What is BOB?</h2>
 
-<p>This program downloads, extracts, compiles and configures GAP 4.6 on your machine. BOB is written in C++ and comes as a precompiled binary for your operating system and architecture (see [table] below).</p>
+<p>This program downloads, extracts, compiles and configures GAP 4.6 on your machine. BOB is written in C++ and comes as a precompiled binary for your operating system and architecture (see <a href="table">table</a> below).</p>
 
 <p>It has builtin support for downloading and extracting archives and it uses the C-compiler, development tools and libraries on your system to compile GAP and its packages. BOB will first check whether everything it needs from your system is installed and if not it will warn you and tell you what is needed. In the end, a status report and some log files will be produced such that you can easily see whether or not everything went well.</p>
 
@@ -80,11 +77,23 @@
 </ul><h3>
 <a name="download-binary" class="anchor" href="#download-binary"><span class="octicon octicon-link"></span></a>Download binary:</h3>
 
-<p>Operating System    Architecture    Link to binary  Alternative binary
-Linux   x86_64 (64-bit)     bob-linux-64bit.tar.gz  bob-linux-64bit.tar.gz
-Linux   i686 (32-bit)   bob-linux-32bit.tar.gz  bob-linux-32bit.tar.gz
-Mac OS X    Intel   bob-osx.dmg     bob-osx.tar.gz
-Download source:</p>
+<p></p>Operating System
+Architecture
+Link to binary
+Alternative binary
+Linux
+x86_64 (64-bit)
+bob-linux-64bit.tar.gz
+bob-linux-64bit.tar.gz
+Linux
+i686 (32-bit)
+bob-linux-32bit.tar.gz
+bob-linux-32bit.tar.gz
+Mac OS X
+Intel
+bob-osx.dmg
+bob-osx.tar.gz
+<p>Download source:</p>
 
 <p>If you want to build BOB from source, just clone the repository and have a go.
 However, I do not intend to give support for this. For me, it is enough to be able to build BOB myself on Linux and Mac OS X.</p>
@@ -146,20 +155,29 @@ However, I do not intend to give support for this. For me, it is enough to be ab
 
 <p>to install the required additional libraries and tools. Note that this does not install 32bit-libraries and so the 32-bit compile of GAP will not be fully functional.</p>
 
-<p>Please send any questions, comments or bug reports to me:
-max AT 9hoeffer.de</p>
-      </section>
+<p>Please send any questions, comments or bug reports to me:</p>
+
+<pre><code>max AT 9hoeffer.de
+</code></pre>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/neunhoef/bob/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/neunhoef/bob/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/neunhoef/bob"></a> is maintained by <a href="https://github.com/neunhoef">neunhoef</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
     </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Bob maintained by <a href="https://github.com/neunhoef">neunhoef</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
+  
   </body>
 </html>
