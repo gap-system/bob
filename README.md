@@ -9,7 +9,7 @@ What is BOB?
 This program downloads, extracts, compiles and configures GAP 4.6 on
 your machine. BOB is written in C++ and comes as a precompiled binary
 for your operating system and architecture (see
-[table](#download-binary) below).
+[table](#download_binary) below).
 
 It has builtin support for downloading and extracting archives and it
 uses the C-compiler, development tools and libraries on your system to
@@ -23,7 +23,7 @@ How to use BOB?
 ---------------
 
 First you might want to look at Section [Installing the
-prerequisites](#installing-the-prerequisites) below. 
+prerequisites](#installing_the_prerequisites) below. 
 There are installation instructions for
 the prerequisites, depending on your operating system. However, you can
 also ignore this for now and just move on.
