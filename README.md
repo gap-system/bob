@@ -1,10 +1,15 @@
-#GAP source installer BOB#
-##What is BOB?##
+---
+---
+GAP source installer BOB
+========================
+
+What is BOB?
+------------
 
 This program downloads, extracts, compiles and configures GAP 4.6 on
 your machine. BOB is written in C++ and comes as a precompiled binary
 for your operating system and architecture (see
-[table](download-binary) below).
+[table](#download-binary) below).
 
 It has builtin support for downloading and extracting archives and it
 uses the C-compiler, development tools and libraries on your system to
@@ -14,10 +19,11 @@ you what is needed. In the end, a status report and some log files will
 be produced such that you can easily see whether or not everything went
 well.
 
-##How to use BOB?##
+How to use BOB?
+---------------
 
 First you might want to look at Section [Installing the
-prerequisites](installing-the-prerequisites) below. 
+prerequisites](#installing-the-prerequisites) below. 
 There are installation instructions for
 the prerequisites, depending on your operating system. However, you can
 also ignore this for now and just move on.
@@ -47,7 +53,8 @@ You can copy them to an arbitrary place in your PATH to complete the
 installation. If you want, you can remove the directory "bobdownloads"
 to save disk space, it is not needed after the installation.
 
-##Motivation##
+Motivation
+----------
 
 Compiling GAP with all its packages has become more difficult over
 time. This is, first of all, because there are a lot more packages.
@@ -67,7 +74,7 @@ This program BOB tries to make a compromise between these two approaches
 by offering convenience for the user whilst still working with a source
 distribution.
 
-###Advantages of this way to install GAP:###
+###Advantages of this way to install GAP:
 
  * Hassle free full installation of GAP 4.6.
  * Nearly all packages compiled for which this is necessary.
@@ -75,14 +82,14 @@ distribution.
  * Good and quick reports about missing prerequisites.
  * Hints to fix missing prerequisites.
 
-###Disadvantages of this way to install GAP:###
+###Disadvantages of this way to install GAP:
 
  * Takes some time, depending on the speed of your internet connection,
    hard disk and computer.
  * Limited choice of special compilers and compilation flags.
  * Limited choice of special compilation options for GAP.
 
-###Download binary:###
+###Download binary:
 
 <table>
 <tr>
@@ -94,20 +101,26 @@ distribution.
 <tr>
 <td>Linux</td>
 <td>x86\_64 (64-bit)</td>
-<td>[bob-linux-64bit.tar.gz](http://neunhoef.github.io/bob/bob-linux-64bit.tar.gz)</td>
-<td>[bob-linux-64bit-new.tar.gz](http://neunhoef.github.io/bob/bob-linux-64bit-new.tar.gz)</td>
+<td><a href="http://neunhoef.github.io/bob/bob-linux-64bit.tar.gz">
+    bob-linux-64bit.tar.gz</a></td>
+<td><a href="http://neunhoef.github.io/bob/bob-linux-64bit-new.tar.gz">
+    bob-linux-64bit-new.tar.gz</a></td>
 </tr>
 <tr>
 <td>Linux</td>
 <td>i686 (32-bit)</td>
-<td>[bob-linux-32bit.tar.gz](http://neunhoef.github.io/bob/bob-linux-32bit.tar.gz)</td>
-<td>[bob-linux-32bit-new.tar.gz](http://neunhoef.github.io/bob/bob-linux-32bit-new.tar.gz)</td>
+<td><a href="http://neunhoef.github.io/bob/bob-linux-32bit.tar.gz">
+    bob-linux-32bit.tar.gz</a></td>
+<td><a href="http://neunhoef.github.io/bob/bob-linux-32bit-new.tar.gz">
+    bob-linux-32bit-new.tar.gz</a></td>
 </tr>
 <tr>
 <td>Mac OS X</td>
 <td>Intel</td>
-<td>[bob-osx.dmg](http://neunhoef.github.io/bob/bob-osx.dmg)</td>
-<td>[bob-osx.tar.gz](http://neunhoef.github.com/bob/bob-osx.tar.gz)</td>
+<td><a href="http://neunhoef.github.io/bob/bob-osx.dmg">
+    bob-osx.dmg</a></td>
+<td><a href="http://neunhoef.github.com/bob/bob-osx.tar.gz">
+    bob-osx.tar.gz</a></td>
 </tr>
 </table>
 
@@ -115,12 +128,13 @@ If you want to build BOB from source, just clone the repository and    .
 have a go However, I do not intend to give support for this. For me, it
 is enough to be able to build BOB myself on Linux and Mac OS X.
 
-##Installing the prerequisites##
+Installing the prerequisites
+----------------------------
 
 Here we present simple commands to install all required software to
 compile GAP on a machine running x86\_64 Linux or Mac OS X:
 
-###For debian-based Linux, do as root (or using sudo):###
+###For debian-based Linux, do as root (or using sudo):
 
 <pre>
   # apt-get install gcc make m4 libc6-dev libreadline-dev \
@@ -134,7 +148,7 @@ On a 64bit-machine you probably also want to do:
   # apt-get install g++-multilib gcc-multilib
 </pre>
 
-###For rpm-based Linux with yum, do as root (or using sudo):###
+###For rpm-based Linux with yum, do as root (or using sudo):
 
 <pre>
   # yum install gcc make m4 glibc-devel readline-devel \
@@ -145,7 +159,7 @@ On a 64bit-machine you probably also want to do:
                 libXext-devel libSM-devel libICE-devel
 </pre>
 
-###For Mac OS X using MacPorts:###
+###For Mac OS X using MacPorts:
 
 If you haven't installed the Apple Developer Tools (aka "XCode") yet
 (i.e., if your boot disk does not have a folder "Developer"), you must
@@ -166,7 +180,7 @@ Then you have to install MacPorts (see this page). Finally you can do:
 
 to install the required additional libraries and tools.
 
-###For Mac OS X using Fink:###
+###For Mac OS X using Fink:
 
 If you haven't installed the Apple Developer Tools (aka "XCode") yet
 (i.e., if your boot disk does not have a folder "Developer"), you must
