@@ -2,7 +2,7 @@
 export D=../bobpages
 rm -rf GAP_Installer_BOB bob-osx.dmg
 mkdir GAP_Installer_BOB
-cp -a README GAP_Installer_BOB
+cp -a README.md GAP_Installer_BOB
 cp -a bob GAP_Installer_BOB
 cp -a BOB.app GAP_Installer_BOB
 hdiutil create -srcfolder GAP_Installer_BOB bob-osx.dmg
