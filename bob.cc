@@ -1339,7 +1339,7 @@ int main(int argc, char * const argv[], char *envp[])
         string versionfile;
         string version;
         try {
-            get(targetdir,"http://neunhoef.github.com/bob/BOBVERSION",versionfile,true);
+            get(targetdir,"http://neunhoef.github.io/bob/BOBVERSION",versionfile,true);
             verbose = merkverbose;
             fstream file(versionfile.c_str(),fstream::in);
             getline(file,version);
