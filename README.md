@@ -98,7 +98,7 @@ distribution.
 </tr>
 <tr>
 <td>Linux</td>
-<td>x86_64 (64-bit)</td>
+<td>x86\_64 (64-bit)</td>
 <td><a href="http://neunhoef.github.io/bob/bob-linux-64bit.tar.gz">
     bob-linux-64bit.tar.gz</a></td>
 <td><a href="http://neunhoef.github.io/bob/bob-linux-64bit-new.tar.gz">
@@ -122,8 +122,8 @@ distribution.
 </tr>
 </table>
 
-If you want to build BOB from source, just clone the repository and    .
-have a go However, I do not intend to give support for this. For me, it
+If you want to build BOB from source, just clone the repository and
+have a go. However, I do not intend to give support for this. For me, it
 is enough to be able to build BOB myself on Linux and Mac OS X.
 
 Installing the prerequisites
