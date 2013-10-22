@@ -96,7 +96,7 @@ distribution.
 <tr>
 <td>Linux</td>
 <td>x86\_64 (64-bit)</td>
-<td>[bob-linux-64bit.tar.gz](http://neunhoef.github.io/bob/bob-linux-64bit.tar.gz)</td>
+<td><span>[bob-linux-64bit.tar.gz](http://neunhoef.github.io/bob/bob-linux-64bit.tar.gz)</span></td>
 <td>[bob-linux-64bit-new.tar.gz](http://neunhoef.github.io/bob/bob-linux-64bit-new.tar.gz)</td>
 </tr>
 <tr>
