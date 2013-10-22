@@ -3,8 +3,8 @@
 
 This program downloads, extracts, compiles and configures GAP 4.6 on
 your machine. BOB is written in C++ and comes as a precompiled binary
-for your operating system and architecture (see [table](#downloadtab)
-below).
+for your operating system and architecture (see
+[table](download-binary) below).
 
 It has builtin support for downloading and extracting archives and it
 uses the C-compiler, development tools and libraries on your system to
@@ -17,7 +17,8 @@ well.
 ##How to use BOB?##
 
 First you might want to look at Section [Installing the
-prerequisites](#install) below. There are installation instructions for
+prerequisites](installing-the-prerequisites) below. 
+There are installation instructions for
 the prerequisites, depending on your operating system. However, you can
 also ignore this for now and just move on.
 
@@ -81,7 +82,6 @@ distribution.
  * Limited choice of special compilers and compilation flags.
  * Limited choice of special compilation options for GAP.
 
-<a name="downloadtab"/>
 ###Download binary:###
 
 <table>
@@ -94,20 +94,20 @@ distribution.
 <tr>
 <td>Linux</td>
 <td>x86\_64 (64-bit)</td>
-<td>[bob-linux-64bit.tar.gz](https://raw.github.com/neunhoef/bob/release/bob-linux-64bit.tar.gz)</td>
-<td>[bob-linux-64bit-new.tar.gz](https://raw.github.com/neunhoef/bob/release/bob-linux-64bit-new.tar.gz)</td>
+<td>[bob-linux-64bit.tar.gz](http://neunhoef.github.io/bob/bob-linux-64bit.tar.gz)</td>
+<td>[bob-linux-64bit-new.tar.gz](http://neunhoef.github.io/bob/bob-linux-64bit-new.tar.gz)</td>
 </tr>
 <tr>
 <td>Linux</td>
 <td>i686 (32-bit)</td>
-<td>[bob-linux-32bit.tar.gz](https://raw.github.com/neunhoef/bob/release/bob-linux-32bit.tar.gz)</td>
-<td>[bob-linux-32bit-new.tar.gz](https://raw.github.com/neunhoef/bob/release/bob-linux-32bit-new.tar.gz)</td>
+<td>[bob-linux-32bit.tar.gz](http://neunhoef.github.io/bob/bob-linux-32bit.tar.gz)</td>
+<td>[bob-linux-32bit-new.tar.gz](http://neunhoef.github.io/bob/bob-linux-32bit-new.tar.gz)</td>
 </tr>
 <tr>
 <td>Mac OS X</td>
 <td>Intel</td>
-<td>[bob-osx.dmg](https://raw.github.com/neunhoef/bob/release/bob-osx.dmg)</td>
-<td>[bob-osx.tar.gz](https://raw.github.com/neunhoef/bob/release/bob-osx.tar.gz)</td>
+<td>[bob-osx.dmg](http://neunhoef.github.io/bob/bob-osx.dmg)</td>
+<td>[bob-osx.tar.gz](http://neunhoef.github.com/bob/bob-osx.tar.gz)</td>
 </tr>
 </table>
 
@@ -115,7 +115,7 @@ If you want to build BOB from source, just clone the repository and    .
 have a go However, I do not intend to give support for this. For me, it
 is enough to be able to build BOB myself on Linux and Mac OS X.
 
-##Installing the prerequisites##   <a name="install"/>
+##Installing the prerequisites##
 
 Here we present simple commands to install all required software to
 compile GAP on a machine running x86\_64 Linux or Mac OS X:
