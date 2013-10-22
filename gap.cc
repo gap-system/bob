@@ -145,7 +145,7 @@ static Status GAP_getfunc(string targetdir)
 {
     try {
         getind(targetdir,
-           "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/GAP.link",
+           "https://raw.github.com/neunhoef/bob/release/pub/GAP.link",
            GAP_archivename);
     }
     catch (Status e) {
@@ -668,7 +668,7 @@ static Status fplsa_patchfunc(string targetdir)
     out(OK,"Patching fplsa for Mac OSX...");
     try {
         getind(targetdir,
-           "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/fplsa.edit.link",
+           "https://raw.github.com/neunhoef/bob/release/pub/fplsa.edit.link",
            edscriptname);
     }
     catch (Status e) {
@@ -891,7 +891,7 @@ static Status carat_buildfunc(string targetdir)
         out(OK,"Patching carat for Mac OSX...");
         try {
             getind(targetdir,
-               "http://www-groups.mcs.st-and.ac.uk/~neunhoef/Computer/Software/Gap/bob/carat.edit.link",
+               "https://raw.github.com/neunhoef/bob/release/pub/carat.edit.link",
                edscriptname);
         }
         catch (Status e) {

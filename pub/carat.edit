@@ -1,0 +1,9 @@
+Makefile
+91
+91
+Gmp
+   
+46
+46
+CFLAGS = -g -Wall -DDIAG1
+CFLAGS = -g -Wall -I/usr/include/malloc -DDIAG1
