@@ -54,7 +54,7 @@ bin_PROGRAMS = bob$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.h.in $(top_srcdir)/cnf/depcomp README TODO \
+	$(srcdir)/config.h.in $(top_srcdir)/cnf/depcomp TODO \
 	cnf/config.guess cnf/config.sub cnf/depcomp cnf/install-sh \
 	cnf/missing $(top_srcdir)/cnf/config.guess \
 	$(top_srcdir)/cnf/config.sub $(top_srcdir)/cnf/install-sh \
