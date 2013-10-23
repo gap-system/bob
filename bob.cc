@@ -1357,7 +1357,7 @@ int main(int argc, char * const argv[], char *envp[])
     }
 
     // Clean up environment a bit:
-    if (getenvironment("LANG") == "") setenvironment("LANG","C");
+    setenvironment("LC_ALL","C");
 
     origCFLAGS = getenvironment("CFLAGS");
     origLDFLAGS = getenvironment("LDFLAGS");
