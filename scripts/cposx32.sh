@@ -8,7 +8,7 @@ cp -a BOB.app GAP_Installer_BOB
 hdiutil create -srcfolder GAP_Installer_BOB bob-osx.dmg
 cp bob-osx.dmg ../bobpages
 cd GAP_Installer_BOB
-tar czvf ../bob-osx.tar.gz bob README BOB.app
+tar czvf ../bob-osx.tar.gz bob README.md BOB.app
 cp ../bob-osx.tar.gz ../$D
 cd ..
 cd $D
