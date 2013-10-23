@@ -1186,11 +1186,16 @@ static Status polymakeinterface_prerequisites(string, Status depsresult)
         out(OK,"");
         out(ADVICE,"You need to download and install polymake from");
         out(ADVICE,"  http://polymake.org/doku.php/download/start");
+        out(ADVICE,"This means only that the package PolymakeInterface "
+                   "will not work.");
+        out(ADVICE,"The rest of GAP is unaffected by this problem.");
+        out(OK,"");
     }
     if (Double_Compile.str == "DoubleCompile") {
         out(OK,"");
         out(ADVICE,"Note that polymake does not provide 32bit libraries.");
         out(ADVICE,"therefore only your 64bit GAP will have access to it.");
+        out(OK,"");
     }
     return ret;
 }
