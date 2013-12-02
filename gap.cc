@@ -681,10 +681,6 @@ static Status fplsa_buildfunc(string targetdir)
 { return BuildOldGAPPackage(targetdir,"fplsa", WARN); }
 Component fplsa("fplsa",deps_onlyGAP,NULL,fplsa_patchfunc,fplsa_buildfunc);
 
-static Status citrus_buildfunc(string targetdir)
-{ return BuildOldGAPPackage(targetdir,"citrus", WARN); }
-Component citrus("citrus",deps_onlyGAP,NULL,NULL,citrus_buildfunc);
-
 #if 0
 static Status fr_prerequisites(string, Status depsresult)
 {
@@ -1062,60 +1058,70 @@ static Status xgap_buildfunc(string targetdir)
 Component xgap("xgap",deps_onlyGAP,
                xgap_prerequisites,xgap_getfunc,xgap_buildfunc);
 
-static Status anupq_prerequisites(string, Status depsresult)
+static Status anupq_buildfunc(string)
 {
-    if (depsresult != OK) return depsresult;
-    if (Which_Wordsize.num == 64 &&
-        Can_Compile_32bit.num != 0) {
-        out(WARN,"Need to compile in 32-bit mode using -m32 for component "
-                 "anupq.");
-        out(WARN,"Please use gcc or clang and install the necessary 32-bit "
-                 "libraries.");
-        return WARN;
+    string msg;
+    string pkgdir;
+    string cmd;
+    Status res = OK;
+    try { cd("gap4r7/pkg"); } catch (Status e) { return WARN; }
+    try { cdprefix("anupq",pkgdir); } catch (Status e) { return WARN; }
+    if (Double_Compile.str == "DoubleCompile") {
+        cmd = "./configure CONFIGNAME=default32 CFLAGS=-m32 LDFLAGS=-m32";
+        msg = string("Running "+cmd+" for anupq package...");
+        out(OK,msg);
+        try { sh(cmd); }
+        catch (Status e) {
+            out(WARN,"Error in configure stage.");
+            res = WARN;
+            goto dosixtyfour;
+        }
+        msg = "Running make for anupq package...";
+        out(OK,msg);
+        try { sh("make CFLAGS=-m32 LDFLAGS=-m32"); }
+        catch (Status e) {
+            out(WARN,"Error in compilation stage.");
+            res = WARN;
+            goto dosixtyfour;
+        }
+        out(OK,"Cleaning object files for anupq package...");
+        try { sh("sh -c rm~src/*.o"); }
+        catch (Status e) {
+            out(WARN,"Error cleaning object files stage.");
+            res = WARN;
+        }
+      dosixtyfour:
+        msg = "Running ./configure CONFIGNAME=default64 for anupq package...";
+        out(OK,msg);
+        try { sh("./configure CONFIGNAME=default64"); }
+        catch (Status e) {
+            out(WARN,"Error in configure stage.");
+            return WARN;
+        }
+        out(OK,"Running make for anupq package...");
+        try { sh("make"); }
+        catch (Status e) {
+            out(WARN,"Error in compilation stage.");
+            return WARN;
+        }
+        return res;
+    } else {
+        out(OK,"Running ./configure for anupq package...");
+        try { sh("./configure"); }
+        catch (Status e) {
+            out(WARN,"Error in configure stage.");
+            return WARN;
+        }
+        out(OK,"Running make for anupq package...");
+        try { sh("make"); }
+        catch (Status e) {
+            out(WARN,"Error in compilation stage.");
+            return WARN;
+        }
     }
     return OK;
 }
-
-static Status anupq_buildfunc(string targetdir)
-{
-    string msg;
-    int i;
-    Status ret = OK;
-    for (i = 0;i <= Double_Compile.num;i++) {
-        if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
-        string pkgdir = "gap4r7/pkg/anupq";
-        string cmd;
-        if (chdir(pkgdir.c_str())) {
-            msg = "Cannot change to the anupq package's directory.";
-            out(WARN,msg);
-            ret = WARN;
-            break;
-        }
-        msg = "Running ./configure ../.. for anupq package...";
-        out(OK,msg);
-        try { sh("./configure ../.."); }
-        catch (Status e) {
-            out(WARN,"Error in configure stage.");
-            ret = WARN;
-            break;
-        }
-        out(OK,"Running make for anupq package...");
-
-        if (Which_Wordsize.num == 64)
-            msg = "make linux-iX86-gcc2 COPTS=-m32~-g LOPTS=-m32~-g";
-        else
-            msg = "make linux-iX86-gcc2";
-        try { sh(msg); }
-        catch (Status e) {
-            out(WARN,"Error in compilation stage.");
-            ret = WARN;
-            break;
-        }
-    }
-    if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
-    return ret;
-}
-Component anupq("anupq",deps_onlyGAP,anupq_prerequisites,NULL,anupq_buildfunc);
+Component anupq("anupq",deps_onlyGAP,NULL,NULL,anupq_buildfunc);
 
 static Status float_prerequisites(string, Status depsresult)
 {

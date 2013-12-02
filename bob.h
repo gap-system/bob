@@ -1,11 +1,11 @@
 //
 // bob.h - part of the GAP installer BOB
 //
-// Copyright (C) by Max Neunhoeffer 2012
+// Copyright (C) by Max Neunhoeffer 2012-2013
 // This file is free software, see license information at the end.
 //
 
-#define BOBVERSION 15
+#define BOBVERSION 16
 
 #include <unistd.h>
 #include <string.h>
