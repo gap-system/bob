@@ -167,11 +167,11 @@ static void DetermineGAParchs(void)
     if (GAParchs.size() > 0) return;
     for (i = 0;i <= Double_Compile.num;i++) {
         if (Double_Compile.num == 1 && i == 0)
-            f.open("gap4r6/sysinfo.gap-default32",fstream::in);
+            f.open("gap4r7/sysinfo.gap-default32",fstream::in);
         else if (Double_Compile.num == 1 && i == 1)
-            f.open("gap4r6/sysinfo.gap-default64",fstream::in);
+            f.open("gap4r7/sysinfo.gap-default64",fstream::in);
         else
-            f.open("gap4r6/sysinfo.gap",fstream::in);
+            f.open("gap4r7/sysinfo.gap",fstream::in);
         if (f.fail()) {
             out(ERROR,"Cannot determine GAParchs.");
             return;
@@ -212,13 +212,13 @@ static void GAP_restoreenvironment(void)
 static Status GAP_buildfunc(string)
 {
     // By convention, we are in the target directory.
-    if (access("gap4r6",F_OK) == 0) {
+    if (access("gap4r7",F_OK) == 0) {
         if (interactive) {
             string answer;
             cout << "\nATTENTION!\n\n"
-                 << "There seems to be a previous installation of GAP 4.6 in "
-                 << "the gap4r6 directory.\n\n";
-            fstream stamp("gap4r6/BOBusedArchive",fstream::in);
+                 << "There seems to be a previous installation of GAP 4.7 in "
+                 << "the gap4r7 directory.\n\n";
+            fstream stamp("gap4r7/BOBusedArchive",fstream::in);
             if (!stamp.fail()) {
                 string stamparchive;
                 getline(stamp,stamparchive);
@@ -237,8 +237,8 @@ static Status GAP_buildfunc(string)
             }
         }
         out(OK,"Removing old installation...");
-        if (rmrf("gap4r6") == ERROR) 
-            out(WARN,"Could not remove directory \"gap4r6\" recursively!");
+        if (rmrf("gap4r7") == ERROR) 
+            out(WARN,"Could not remove directory \"gap4r7\" recursively!");
     }
     out(OK,"Unpacking GAP archive...");
     try { unpack(GAP_archivename); }
@@ -246,7 +246,7 @@ static Status GAP_buildfunc(string)
         out(ERROR,"A problem occurred when extracting the archive.");
         return ERROR;
     }
-    try { cd("gap4r6"); } catch (Status e) { return ERROR; }
+    try { cd("gap4r7"); } catch (Status e) { return ERROR; }
     fstream stamp("BOBusedArchive",fstream::out | fstream::trunc);
     if (stamp.fail()) {
         out(WARN,"Could not create file BOBusedArchive.");
@@ -327,7 +327,7 @@ static Status BuildGAPPackage(string, string pkgname, bool withm32,
     string pkgdir;
     string cmd;
     Status res = OK;
-    try { cd("gap4r6/pkg"); } catch (Status e) { return err; }
+    try { cd("gap4r7/pkg"); } catch (Status e) { return err; }
 
     try { cdprefix(pkgname,pkgdir); } catch (Status e) { return err; }
     if (Double_Compile.str == "DoubleCompile") {
@@ -572,7 +572,7 @@ static Status switch_sysinfo_link(string targetdir, int towhat)
     if (Double_Compile.str == "SingleCompile") return OK;
 
     if (chdir(targetdir.c_str()) != 0 ||
-        chdir("gap4r6") != 0 ||
+        chdir("gap4r7") != 0 ||
         unlink("sysinfo.gap") != 0 ||
         unlink("Makefile") != 0) {
         out(ERROR,"Could not switch sysinfo.gap symbolic link.");
@@ -610,9 +610,9 @@ static Status BuildOldGAPPackage(string targetdir, string pkgname, Status err,
     for (i = 0;i <= Double_Compile.num;i++) {
         if (i < Double_Compile.num && only64) continue;
         if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
-        string pkgdir = string("gap4r6/pkg");
+        string pkgdir = string("gap4r7/pkg");
         string cmd;
-        try { cd("gap4r6/pkg"); } catch (Status e) { ret = err; continue; }
+        try { cd("gap4r7/pkg"); } catch (Status e) { ret = err; continue; }
         try { cdprefix(pkgname,dirfound); } 
         catch (Status e) { ret = err; continue; }
         msg = string("Running ./configure ../.. for ")+pkgname+" package...";
@@ -646,7 +646,7 @@ Component ace("ace",deps_onlyGAP,NULL,NULL,ace_buildfunc);
 
 static Status atlasrep_buildfunc(string)
 {
-    try { cd("gap4r6/pkg/atlasrep"); } catch (Status e) { return WARN; }
+    try { cd("gap4r7/pkg/atlasrep"); } catch (Status e) { return WARN; }
     if (chmod("datagens",01777) < 0 ||
         chmod("dataword",01777) < 0) {
         out(WARN,"Cannot set permissions for \"datagens\" and \"dataword\"."); 
@@ -743,7 +743,7 @@ static Status fr_buildfunc(string targetdir)
 { 
     vector<string> PackageInfo;
     try { 
-        readlines(targetdir+"gap4r6/pkg/fr/PackageInfo.g",PackageInfo); 
+        readlines(targetdir+"gap4r7/pkg/fr/PackageInfo.g",PackageInfo); 
         if (PackageInfo.size() >= 10 &&
             PackageInfo[9] == "Version := \"1.2.6.4\",") {
             out(WARN,"This version 1.2.6.4 of fr has known compilation "
@@ -751,7 +751,7 @@ static Status fr_buildfunc(string targetdir)
         }
     }
     catch (Status e) { 
-        out(WARN,"Could not read gap4r6/pkg/fr/PackageInfo.g");
+        out(WARN,"Could not read gap4r7/pkg/fr/PackageInfo.g");
     }
     return BuildGAPPackage(targetdir,"fr",true,WARN); 
 }
@@ -775,9 +775,9 @@ static Status guava_buildfunc(string targetdir)
     Status ret = OK;
     for (i = 0;i <= Double_Compile.num;i++) {
         if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
-        string pkgdir = string("gap4r6/pkg/");
+        string pkgdir = string("gap4r7/pkg/");
         string cmd;
-        try { cd("gap4r6/pkg"); } catch (Status e) { ret = WARN; continue; }
+        try { cd("gap4r7/pkg"); } catch (Status e) { ret = WARN; continue; }
         try { cdprefix(pkgname,dirfound); } 
         catch (Status e) { ret = WARN; continue; }
         mkdir("bin",0755);  // intentionally ignore errors here
@@ -832,7 +832,7 @@ static Status kbmag_buildfunc(string targetdir)
     Status ret = OK;
     for (i = 0;i <= Double_Compile.num;i++) {
         if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
-        string pkgdir = "gap4r6/pkg/kbmag";
+        string pkgdir = "gap4r7/pkg/kbmag";
         string cmd;
         if (chdir(pkgdir.c_str())) {
             msg = "Cannot change to the kbmag package's directory.";
@@ -870,7 +870,7 @@ static Status carat_buildfunc(string targetdir)
 {
     string topdir;
     DetermineGAParchs();
-    try { cd("gap4r6/pkg/carat"); } catch (Status e) { return WARN; }
+    try { cd("gap4r7/pkg/carat"); } catch (Status e) { return WARN; }
     try {unpack("carat-2.1b1.tgz"); }
     catch (Status e) {
         out(ERROR,"Cannot unpack carat archive.");
@@ -899,9 +899,9 @@ static Status carat_buildfunc(string targetdir)
         try { 
             readlines(edscriptname,edscript);
             edscript[edscript.size()-1] 
-              += " -I"+targetdir+"gap4r6/bin/"+GAParchs[Double_Compile.num]+
+              += " -I"+targetdir+"gap4r7/bin/"+GAParchs[Double_Compile.num]+
                  "/extern/gmp/include"+
-                 " -L"+targetdir+"gap4r6/bin/"+GAParchs[Double_Compile.num]+
+                 " -L"+targetdir+"gap4r7/bin/"+GAParchs[Double_Compile.num]+
                  "/extern/gmp/lib";
             edit(edscript);
         }
@@ -911,7 +911,7 @@ static Status carat_buildfunc(string targetdir)
         }
     }
 
-    topdir = targetdir + "gap4r6/pkg/carat/carat-2.1b1";
+    topdir = targetdir + "gap4r7/pkg/carat/carat-2.1b1";
     try { sh("make TOPDIR="+topdir); }
     catch (Status e) {
         out(ERROR,"Failed to build standalone carat program.");
@@ -1033,7 +1033,7 @@ static Status xgap_buildfunc(string targetdir)
 { 
     Status res;
 #if 0
-    if (chdir("gap4r6/pkg") != 0) {
+    if (chdir("gap4r7/pkg") != 0) {
         out(ERROR,"Cannot change to GAP's pkg directory.");
         return WARN;
     }
@@ -1050,7 +1050,7 @@ static Status xgap_buildfunc(string targetdir)
 #endif
     res = BuildGAPPackage(targetdir, "xgap", false, WARN); 
     if (res != OK) return res;
-    res = cp(targetdir+"gap4r6/pkg/xgap/bin/xgap.sh",targetdir+"xgap");
+    res = cp(targetdir+"gap4r7/pkg/xgap/bin/xgap.sh",targetdir+"xgap");
     if (res != OK) {
         out(WARN,"Could not copy startup script for xgap.");
         return WARN;
@@ -1083,7 +1083,7 @@ static Status anupq_buildfunc(string targetdir)
     Status ret = OK;
     for (i = 0;i <= Double_Compile.num;i++) {
         if (switch_sysinfo_link(targetdir,i) == ERROR) return ERROR;
-        string pkgdir = "gap4r6/pkg/anupq";
+        string pkgdir = "gap4r7/pkg/anupq";
         string cmd;
         if (chdir(pkgdir.c_str())) {
             msg = "Cannot change to the anupq package's directory.";
@@ -1201,7 +1201,7 @@ static Status polymakeinterface_prerequisites(string, Status depsresult)
 }
 static Status polymakeinterface_buildfunc(string targetdir)
 {   
-    chmod( "gap4r6/pkg/PolymakeInterface/configure", 0755 );
+    chmod( "gap4r7/pkg/PolymakeInterface/configure", 0755 );
     return BuildOldGAPPackage(targetdir,"PolymakeInterface", WARN, true); 
 }
 Component PolymakeInterface("PolymakeInterface",deps_onlyGAP,
@@ -1218,21 +1218,21 @@ const char *AllPkgs[] =
 static Status GAP_cp_scripts_func(string targetdir)
 {
     if (Double_Compile.str == "DoubleCompile") {
-        if (cp(targetdir+"gap4r6/bin/gap-default64.sh",targetdir+"gap64") 
+        if (cp(targetdir+"gap4r7/bin/gap-default64.sh",targetdir+"gap64") 
                  == ERROR) return WARN;
         if (chmod((targetdir+"gap64").c_str(),0755) != 0)
             out(WARN,"Cannot make gap64 script executable.");
-        if (cp(targetdir+"gap4r6/bin/gap-default64.sh",targetdir+"gap") 
+        if (cp(targetdir+"gap4r7/bin/gap-default64.sh",targetdir+"gap") 
                  == ERROR) return WARN;
         if (chmod((targetdir+"gap").c_str(),0755) != 0)
             out(WARN,"Cannot make gap script executable.");
-        if (cp(targetdir+"gap4r6/bin/gap-default32.sh",targetdir+"gap32") 
+        if (cp(targetdir+"gap4r7/bin/gap-default32.sh",targetdir+"gap32") 
                  == ERROR) return WARN;
         if (chmod((targetdir+"gap32").c_str(),0755) != 0)
             out(WARN,"Cannot make gap32 script executable.");
         return OK;
     } else {
-        if (cp(targetdir+"gap4r6/bin/gap.sh",targetdir+"gap") 
+        if (cp(targetdir+"gap4r7/bin/gap.sh",targetdir+"gap") 
                  == ERROR) return WARN;
         if (chmod((targetdir+"gap").c_str(),0755) != 0)
             out(WARN,"Cannot make gap32 script executable.");
@@ -1286,7 +1286,7 @@ static Status GAP_workspace_func(string targetdir)
         setlinebuf(stdin);
         //fputs("??blablabla",stdin);  // To load help books
         cmd = string("SaveWorkspace(\"")+targetdir+
-              "gap4r6/bin/ws"+bits+".ws\");\n";
+              "gap4r7/bin/ws"+bits+".ws\");\n";
         fputs(cmd.c_str(),stdin);
         fputs("quit;\n",stdin);
         fclose(stdin);
@@ -1306,10 +1306,10 @@ static Status GAP_workspace_func(string targetdir)
             break;
         }
         outs << "#!/bin/sh\n";
-        outs << targetdir << "gap4r6/bin/gap";
+        outs << targetdir << "gap4r7/bin/gap";
         if (bits != "") 
             outs << "-default" << bits;
-        outs << ".sh -L " << targetdir << "gap4r6/bin/ws"
+        outs << ".sh -L " << targetdir << "gap4r7/bin/ws"
              << bits << ".ws $*\n";
         outs.close();
         if (outs.fail()) {
