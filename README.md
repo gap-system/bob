@@ -4,7 +4,7 @@ GAP source installer BOB
 What is BOB?
 ------------
 
-This program downloads, extracts, compiles and configures GAP 4.6 on
+This program downloads, extracts, compiles and configures GAP 4.7 on
 your machine. BOB is written in C++ and comes as a precompiled binary
 for your operating system and architecture (see
 [table](#downloadtab) below).
@@ -74,7 +74,7 @@ distribution.
 
 ###Advantages of this way to install GAP:
 
- * Hassle free full installation of GAP 4.6.
+ * Hassle free full installation of GAP 4.7.
  * Nearly all packages compiled for which this is necessary.
  * Dynamic linking against libraries on your system.
  * Good and quick reports about missing prerequisites.
