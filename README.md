@@ -45,7 +45,7 @@ diagnosis and hints on how to fix the problems. If all necessary tools
 are there, after 10-30 minutes (depending on the speed of your internet
 connection, hard disk and computer), you will see a status report about
 the installation process and hopefully have a fully functional GAP
-4.6 in the `gap4r6` directory of the current directory. Additionally,
+4.7 in the `gap4r7` directory of the current directory. Additionally,
 you have a few startup scripts to start GAP in the current directory.
 You can copy them to an arbitrary place in your PATH to complete the
 installation. If you want, you can remove the directory "bobdownloads"
