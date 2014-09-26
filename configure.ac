@@ -4,7 +4,6 @@ AC_CONFIG_SRCDIR([bob.cc])
 AC_CONFIG_AUX_DIR([cnf])
 AC_CONFIG_HEADER(config.h:config.h.in)
 AM_INIT_AUTOMAKE([foreign])
-AM_MAINTAINER_MODE
 AC_PROG_CXX
 AC_CANONICAL_HOST
 case "$host_os" in
