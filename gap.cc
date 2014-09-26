@@ -144,7 +144,7 @@ static string GAP_archivename;
 static Status GAP_getfunc(string targetdir)
 {
     try {
-        getind(targetdir, "http://neunhoef.github.io/bob/GAP.link",
+        getind(targetdir, "http://gap-system.github.io/bob/GAP.link",
            GAP_archivename);
     }
     catch (Status e) {
@@ -666,7 +666,7 @@ static Status fplsa_patchfunc(string targetdir)
     if (Which_Architecture.str != "OSX") return OK;
     out(OK,"Patching fplsa for Mac OSX...");
     try {
-        getind(targetdir, "http://neunhoef.github.io/bob/fplsa.edit.link",
+        getind(targetdir, "http://gap-system.github.io/bob/fplsa.edit.link",
            edscriptname);
     }
     catch (Status e) {
@@ -884,7 +884,7 @@ static Status carat_buildfunc(string targetdir)
     if (Which_Architecture.str == "OSX") {
         out(OK,"Patching carat for Mac OSX...");
         try {
-            getind(targetdir, "http://neunhoef.github.io/bob/carat.edit.link",
+            getind(targetdir, "http://gap-system.github.io/bob/carat.edit.link",
                edscriptname);
         }
         catch (Status e) {

@@ -100,25 +100,25 @@ distribution.
 <tr>
 <td>Linux</td>
 <td>x86\_64 (64-bit)</td>
-<td><a href="http://neunhoef.github.io/bob/bob-linux-64bit.tar.gz">
+<td><a href="http://gap-system.github.io/bob/bob-linux-64bit.tar.gz">
     bob-linux-64bit.tar.gz</a></td>
-<td><a href="http://neunhoef.github.io/bob/bob-linux-64bit-new.tar.gz">
+<td><a href="http://gap-system.github.io/bob/bob-linux-64bit-new.tar.gz">
     bob-linux-64bit-new.tar.gz</a></td>
 </tr>
 <tr>
 <td>Linux</td>
 <td>i686 (32-bit)</td>
-<td><a href="http://neunhoef.github.io/bob/bob-linux-32bit.tar.gz">
+<td><a href="http://gap-system.github.io/bob/bob-linux-32bit.tar.gz">
     bob-linux-32bit.tar.gz</a></td>
-<td><a href="http://neunhoef.github.io/bob/bob-linux-32bit-new.tar.gz">
+<td><a href="http://gap-system.github.io/bob/bob-linux-32bit-new.tar.gz">
     bob-linux-32bit-new.tar.gz</a></td>
 </tr>
 <tr>
 <td>Mac OS X</td>
 <td>Intel</td>
-<td><a href="http://neunhoef.github.io/bob/bob-osx.dmg">
+<td><a href="http://gap-system.github.io/bob/bob-osx.dmg">
     bob-osx.dmg</a></td>
-<td><a href="http://neunhoef.github.com/bob/bob-osx.tar.gz">
+<td><a href="http://gap-system.github.com/bob/bob-osx.tar.gz">
     bob-osx.tar.gz</a></td>
 </tr>
 </table>
