@@ -91,7 +91,7 @@ distribution.
 ###Download binary:
 
  * [Linux (64-bit)](http://gap-system.github.io/bob/bob-linux-64bit.tar.gz)
- * [OS X (64-bit Intel)](http://gap-system.github.io/bob/bob-osx.dmg)
+ * [OS X (64-bit Intel)](http://gap-system.github.io/bob/bob-osx.tar.gz)
 
 If you want to build BOB from source, just clone the repository and
 have a go. However, I do not intend to give support for this. For me, it
