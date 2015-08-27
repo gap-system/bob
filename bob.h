@@ -5,7 +5,7 @@
 // This file is free software, see license information at the end.
 //
 
-#define BOBVERSION 16
+#define BOBVERSION 17
 
 #include <unistd.h>
 #include <string.h>
