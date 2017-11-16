@@ -1,6 +1,10 @@
 GAP source installer BOB
 ========================
 
+# ATTENTION: THIS REPOSITORY IS NOW ARCHIVED!
+# BOB IS NOT CURRENTLY SUPPORTED.
+# ITS LAST VERSION USED GAP 4.7.9 (December 2015)
+
 What is BOB?
 ------------
 
